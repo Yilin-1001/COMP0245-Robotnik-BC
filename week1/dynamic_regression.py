@@ -52,17 +52,17 @@ def main():
 
     # Data collection loop
     while current_time < max_time:
-        # Measure current state
+        # Measure current states. The 0 selects which robot in the simulation to read
         q_mes = sim.GetMotorAngles(0)
         qd_mes = sim.GetMotorVelocities(0)
-        qdd_mes = sim.ComputeMotorAccelerationTMinusOne(0)
+        # qdd_mes = sim.ComputeMotorAccelerationTMinusOne(0)
         
         # Compute sinusoidal reference trajectory
         q_d, qd_d = ref.get_values(current_time)  # Desired position and velocity
         
         # Control command
-        tau_cmd = feedback_lin_ctrl(dyn_model, q_mes, qd_mes, q_d, qd_d, kp, kd)  # Zero torque command
-        cmd.SetControlCmd(tau_cmd, ["torque"]*7)  # Set the torque com
+        tau_cmd = feedback_lin_ctrl(dyn_model, q_mes, qd_mes, q_d, qd_d, kp, kd)  # Zero torque command q_d means Desired joint position, and qd_d means Desired joint velocity
+        cmd.SetControlCmd(tau_cmd, ["torque"]*7)  # Set the torque command
         sim.Step(cmd, "torque")
 
         # Get measured torque
@@ -81,11 +81,11 @@ def main():
 
         
         # TODO Compute regressor and store it
-        # Read acceleration after the step so it matches the applied torque.
+        # qdd_mes represent the acceleration of last step.
         qdd_mes = sim.ComputeMotorAccelerationTMinusOne(0)
         # Y describes how the robot's mass and inertia produce joint torques.
         Y_step = dyn_model.ComputeDynamicRegressor(q_mes, qd_mes, qdd_mes)
-        # Save a copy because the next calculation may reuse the same matrix.
+        # Save a copy because the next calculation may reuse the same matrix. Y_step.copy() is for put the only the value into the container. If using Y_step directly, the next step will overwrite the previous one.
         regressor_all.append(Y_step.copy())
         # Put torques in the same joint order as the rows of Y_step.
         tau_mes_all.append(dyn_model.ReoderJoints2PinVec(tau_mes, "vel").copy())
@@ -95,9 +95,6 @@ def main():
         print(f"Current time in seconds: {current_time:.2f}")
 
     # TODO After data collection, stack all the regressor and all the torque and compute the parameters 'a'  using pseudoinverse for all the joint
-    if not regressor_all:
-        print("No samples collected; identification skipped.")
-        return
     # Join all small matrices into one tall matrix, with one row per joint per step.
     Y = np.vstack(regressor_all)
     # Join the torque readings into a vector with the same row order.
@@ -109,9 +106,11 @@ def main():
     print("All-joint inertial parameters a:", a)
     
     # TODO reshape the regressor and the torque vector to isolate the last joint and find the its dynamical parameters
-    # Reshape into (time steps, joints, parameters), then select the last joint.
-    # Only the final link's 10 mass and inertia parameters affect its torque.
+    # Reshape into [time steps, joints, parameters], then select the last joint.
+    # Only the final link's 10 mass and inertia parameters affect its torque. Become a 3D matrix [time, joints, parameters]
     Y_last = Y.reshape(-1, num_joints, Y.shape[1])[:, -1, -10:]
+    # Y_grouped = Y.reshape(-1, num_joints, Y.shape[1])
+    # Y_last = Y_grouped[:, -1, -10:]
     tau_last = tau.reshape(-1, num_joints)[:, -1]
     a_last = np.linalg.pinv(Y_last) @ tau_last
     print("Last-joint inertial parameters:", a_last)
