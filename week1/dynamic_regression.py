@@ -106,12 +106,15 @@ def main():
     print("All-joint inertial parameters a:", a)
     
     # TODO reshape the regressor and the torque vector to isolate the last joint and find the its dynamical parameters
-    # Reshape into [time steps, joints, parameters], then select the last joint.
-    # Only the final link's 10 mass and inertia parameters affect its torque. Become a 3D matrix [time, joints, parameters]
-    Y_last = Y.reshape(-1, num_joints, Y.shape[1])[:, -1, -10:]
-    # Y_grouped = Y.reshape(-1, num_joints, Y.shape[1])
-    # Y_last = Y_grouped[:, -1, -10:]
-    tau_last = tau.reshape(-1, num_joints)[:, -1]
+    # Load the supplied inertial parameters of links 1-6 in regressor column order.
+    a_known = np.concatenate([
+        dyn_model.pin_model.inertias[joint].toDynamicParameters()
+        for joint in range(1, num_joints)
+    ])
+    # Keep all joint torque rows to identify all 10 parameters of the final link.
+    Y_last = Y[:, -10:]
+    # Remove the known links' torque contribution before fitting the final link.
+    tau_last = tau - Y[:, :-10] @ a_known
     a_last = np.linalg.pinv(Y_last) @ tau_last
     print("Last-joint inertial parameters:", a_last)
     
@@ -119,7 +122,7 @@ def main():
     # Check both models using the same samples used to fit them.
     for label, matrix, measured, predicted in (
         ("All joints", Y, tau, tau_pred),
-        ("Last joint", Y_last, tau_last, Y_last @ a_last),
+        ("Last link (known links 1-6)", Y_last, tau_last, Y_last @ a_last),
     ):
         # RMSE and MAE measure prediction error; smaller values are better.
         residual = measured - predicted
