@@ -55,7 +55,7 @@ def main():
         # Measure current states. The 0 selects which robot in the simulation to read
         q_mes = sim.GetMotorAngles(0)
         qd_mes = sim.GetMotorVelocities(0)
-        # qdd_mes = sim.ComputeMotorAccelerationTMinusOne(0)
+        qdd_mes = sim.ComputeMotorAccelerationTMinusOne(0)
         
         # Compute sinusoidal reference trajectory
         q_d, qd_d = ref.get_values(current_time)  # Desired position and velocity
@@ -82,7 +82,7 @@ def main():
         
         # TODO Compute regressor and store it
         # qdd_mes represent the acceleration of last step.
-        qdd_mes = sim.ComputeMotorAccelerationTMinusOne(0)
+        # qdd_mes = sim.ComputeMotorAccelerationTMinusOne(0)
         # Y describes how the robot's mass and inertia produce joint torques.
         Y_step = dyn_model.ComputeDynamicRegressor(q_mes, qd_mes, qdd_mes)
         # Save a copy because the next calculation may reuse the same matrix. Y_step.copy() is for put the only the value into the container. If using Y_step directly, the next step will overwrite the previous one.
