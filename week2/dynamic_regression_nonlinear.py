@@ -2,6 +2,7 @@ import numpy as np
 import time
 import os
 import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeRegressor
 from simulation_and_control import pb, MotorCommands, PinWrapper, feedback_lin_ctrl, SinusoidalReference 
 
 def main():
@@ -126,6 +127,10 @@ def main():
     last_joint_torque = tau_all[last_joint::num_joints, 0]
 
     # TODO: Implement decision tree regression fitting and add results to plots below
+    tree_model = DecisionTreeRegressor(max_depth=10, random_state=0)
+    tree_model.fit(regressor_fit, tau_fit.ravel())
+    tau_est_tree = tree_model.predict(regressor_all).reshape(-1, 1)
+    error_tree = tau_est_tree - tau_all
 
     fig, (ax_pred, ax_error) = plt.subplots(
         1, 2, figsize=(14, 6), sharey=True
@@ -145,6 +150,16 @@ def main():
     ax_error.plot(
         error1[last_joint::num_joints],
         label="Linear regression error",
+    )
+    ax_pred.plot(
+        tau_est_tree[last_joint::num_joints],
+        label="Decision tree regression",
+        color="tab:orange",
+    )
+    ax_error.plot(
+        error_tree[last_joint::num_joints],
+        label="Decision tree regression error",
+        color="tab:orange",
     )
 
     ax_pred.set_title(f"Torque Estimates vs Measured Torque (Joint {last_joint + 1})")
