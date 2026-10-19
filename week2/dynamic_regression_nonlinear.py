@@ -44,7 +44,7 @@ def main():
     # Simulation parameters
     time_step = sim.GetTimeStep()
     current_time = 0
-    max_time = 2  # seconds
+    max_time = 10  # seconds
     
     # Command and control loop
     cmd = MotorCommands()  # Initialize command structure for motors
@@ -131,6 +131,9 @@ def main():
     tree_model.fit(regressor_fit, tau_fit.ravel())
     tau_est_tree = tree_model.predict(regressor_all).reshape(-1, 1)
     error_tree = tau_est_tree - tau_all
+
+
+
 
     fig, (ax_pred, ax_error) = plt.subplots(
         1, 2, figsize=(14, 6), sharey=True
