@@ -224,3 +224,13 @@ a_last = np.linalg.pinv(Y_last) @ tau_last
 
 The result contains 10 parameter estimates, although they may not all be uniquely identifiable.
 
+Some parameter changes produce identical effects on the measured joint torques. The measurements therefore cannot distinguish which link contributed that effect.
+
+The measured torque tells us the combined effect of several links, rather than each link’s contribution separately.
+It is like knowing that two objects together weigh 10 kg. They could weigh 4 kg and 6 kg, or 3 kg and 7 kg. Knowing the total does not tell us each weight.
+Similarly, different combinations of the robot’s masses and inertias can produce the same joint torques, even when we measure its movement. We therefore cannot tell which combination is the true one.
+If the first six links’ parameters are known, we can subtract their effects. The remaining information then allows us to calculate the seventh link’s parameters.
+
+The torque measurements contain no information about this parameter. Its corresponding column in Y is entirely zero. Link 1 rotates around a fixed vertical axis, and its mass parameter alone produces no torque about that axis.
+Therefore, the regression fits the torque equally well whether this mass is 0 kg, 2.34 kg, or another value. The pseudoinverse chooses zero because it selects the solution with the smallest **parameter-vector norm**.
+So the estimated zero means “this mass cannot be determined from these measurements,” not “the link has no mass.” The supplied model’s actual link 1 mass is 2.34 kg.
