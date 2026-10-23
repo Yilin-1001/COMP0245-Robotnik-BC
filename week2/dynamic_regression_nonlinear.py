@@ -126,7 +126,8 @@ def main():
     last_joint = num_joints - 1
     last_joint_torque = tau_all[last_joint::num_joints, 0]
 
-    tree_model = DecisionTreeRegressor(max_depth=10, random_state=0)
+# TODO: Implement decision tree regression fitting and add results to plots below
+    tree_model = DecisionTreeRegressor(max_depth=12, random_state=0)
     tree_model.fit(regressor_fit, tau_fit.ravel())
     tau_est_tree = tree_model.predict(regressor_all).reshape(-1, 1)
     error_tree = tau_est_tree - tau_all
