@@ -22,11 +22,13 @@ cd final/robotnik_arm_task
 python robotnik_arm_task.py                                  # original task with GUI
 ROBOENV_HEADLESS=1 python robotnik_arm_task.py               # original task, headless
 
-python -m data_collection.collect --n 500                    # expert data with DART  -> data/D0.npz
+python -m data_collection.collect --n 512                    # expert data with DART  -> data/D0.npz
 python -m training.train_mlp --data data/D0.npz              # baseline MLP           -> checkpoints/mlp_r0.pt
 python -m data_collection.dagger --rounds 4                  # DAgger rounds          -> data/D_roundN.npz
 python -m evaluation.evaluate --policy expert --split val    # score a policy         -> results/results.csv
 python -m evaluation.plots                                   # report figures         -> results/figures/
+python markovian_expert_demo.py                              # Markovian expert with GUI (--target X Y Z, --start X Y, --bearing B)
+python -m evaluation.compare_controllers --n 30              # template vs Markovian time to reach -> results/controller_timing.csv
 ```
 
 Hyperparameters and paths are in `final/robotnik_arm_task/settings.yaml`.
