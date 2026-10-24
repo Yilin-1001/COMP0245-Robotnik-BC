@@ -25,6 +25,8 @@ final/robotnik_arm_task/models/*
 *.ckpt
 *.npz
 *.pkl
+final/robotnik_arm_task/data/
+final/robotnik_arm_task/checkpoints/
 outputs/
 runs/
 wandb/
