@@ -1,0 +1,36 @@
+# Upstream RoboEnv source/build: install it into your own environment instead
+RoboEnv/
+
+# Python environments and caches
+.venv/
+venv/
+.pixi/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.ipynb_checkpoints/
+
+# Only commit the robot assets the final task actually loads
+final/robotnik_arm_task/configs/*
+!final/robotnik_arm_task/configs/robotnik_arm.json
+final/robotnik_arm_task/models/*
+!final/robotnik_arm_task/models/summit_xl_arm_description/
+
+# Generated outputs (datasets, checkpoints, plots, logs)
+*.log
+*.pt
+*.pth
+*.ckpt
+*.npz
+*.pkl
+outputs/
+runs/
+wandb/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
