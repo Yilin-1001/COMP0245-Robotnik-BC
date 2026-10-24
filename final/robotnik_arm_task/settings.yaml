@@ -1,6 +1,7 @@
 # Every hyperparameter and path in one place. The report quotes values from here.
 
-control_hz: 100
+control_hz: 1000              # every physics step, as the template; holding torques >= 3 steps destabilises its PD
+train_stride: 10               # training keeps every 10th logged step
 reach_tolerance: 0.01          # m, success threshold
 
 paths:
@@ -10,16 +11,17 @@ paths:
   figures: results/figures
 
 scenarios:
+  # Sobol dimensions in the robot's frame; the world target follows from the start pose
   target_dist: [0.5, 3.0]      # m
-  target_azimuth: [-3.14159, 3.14159]
+  target_azimuth: [-3.14159, 3.14159]   # relative to the base heading
   target_height: [0.1, 1.25]   # m
 
 collect:
-  n_episodes: 500
+  n_episodes: 512              # powers of 2: 512, 1024, 2048 are prefixes of one Sobol sequence
   dart_noise_std: null         # set once the expert is verified
 
 dagger:
-  rounds: 4
+  rounds: 4                    # minimum; stop when validation success stops rising
   episodes_per_round: 100
   beta_start: 0.5              # decays to 0
 

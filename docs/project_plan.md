@@ -25,7 +25,7 @@ Every question the brief asks has a decision, the experiment that justifies it, 
 
 | Brief task | What we build | Code |
 | --- | --- | --- |
-| Implement a regressor: base pose, arm joints, target → `torque_arm`, `wheel_cmds` | BC-MLP policy at 100 Hz; ACT as an optional comparison | `train_mlp.py`, `policies.py` |
+| Implement a regressor: base pose, arm joints, target → `torque_arm`, `wheel_cmds` | BC-MLP policy at 1 kHz, the template's own control rate | `train_mlp.py`, `policies.py` |
 | Generate training data (expert trajectories) | Markovian version of the template controller, run on randomised scenarios with DART noise, then DAgger relabelling | `expert.py`, `scenarios.py`, `collect.py`, `dagger.py` |
 | Design an evaluation methodology | Closed-loop runs on three frozen scenario sets (T1–T3), plus offline and efficiency metrics | `evaluate.py`, `test_sets.py` |
 | Justify your choices | Each design choice below is paired with an ablation or a validation result | `results.csv`, `plots.py` |
@@ -34,11 +34,11 @@ Every question the brief asks has a decision, the experiment that justifies it, 
 
 | Brief question | Our decision | Justified by | Shown in report |
 | --- | --- | --- | --- |
-| Quantity and quality of data needed? | About 2,000 expert episodes (1–2 M samples at 100 Hz). DART noise on executed actions with clean labels, then 4+ DAgger rounds. Split by scenario seed, never by timestep. | Learning curve at 500 / 1,000 / 2,000 episodes; ablations without DART and without DAgger | Validation success vs episodes and vs DAgger round; dataset size per round |
-| Would extra sensors or input data help? | Add derived inputs to the raw state: target in the base frame, sin/cos of bearing error, end-effector error from forward kinematics (pinocchio), phase flag. 27 inputs in total. | Raw inputs only vs derived inputs; world frame vs base frame | Ablation rows on T1 and T2 |
-| Single instant vs temporal interval? | Single state. The Markovian expert's action depends only on the current state, so history should be unnecessary. | Single state vs a 5-step stacked history (and ACT chunking if time allows) | Ablation row plus error-over-time curves |
-| ML regressor architecture? | MLP, 3×256 with LayerNorm, separate heads for wheels (4) and arm torques (7) | Width and depth sweep (2×128, 3×256, 4×512) on validation success | Success vs parameter count |
-| Training method and hyperparameters? | Supervised BC with Huber loss, AdamW and a cosine schedule. Near-target samples weighted up. Normalisation from training data only. Models chosen on closed-loop validation success, not offline loss. | Near-target weighting on vs off; offline loss vs closed-loop success compared across checkpoints | Hyperparameter table; loss curves next to validation success |
+| Quantity and quality of data needed? | 2,048 expert episodes, sampled with a scrambled Sobol sequence in the robot's frame and logged at 1 kHz; training keeps every 10th step. DART noise on executed actions with clean labels, then 4+ DAgger rounds. Split by scenario seed, never by timestep. | Learning curve at 512 / 1,024 / 2,048 episodes; ablations without DART and without DAgger, plus an equal-data control; coverage diagnostics | Validation success vs episodes and vs DAgger round; dataset size per round; failures against distance to the nearest training state |
+| Would extra sensors or input data help? | Add derived inputs to the raw state: target in the base frame, sin/cos of bearing error, end-effector error from forward kinematics (pinocchio), phase flag. 23 inputs in total. Datasets store the raw state, so every input set is built from the same data. | Input ladder (raw → base frame → + EE error → + phase) and leaving out one group at a time | Ablation rows on T1 and T2 |
+| Single instant vs temporal interval? | Single state. The Markovian expert's action depends only on the current state, so history should be unnecessary. | Single state vs a 5-step stacked history | Ablation row plus error-over-time curves |
+| ML regressor architecture? | MLP, 3×256 with LayerNorm, separate heads for wheels (4) and arm torques (7) | Width and depth sweep (2×128, 3×256, 4×512) and split vs shared heads, on validation success | Success vs parameter count |
+| Training method and hyperparameters? | Supervised BC with Huber loss, AdamW and a cosine schedule. Uniform sample weights. Every run gets the same number of gradient steps; the learning rate is tuned once (3 values), then frozen. Normalisation from training data only. Models chosen on closed-loop validation success, not offline loss. | Near-target weighting on vs off; offline loss vs closed-loop success compared across checkpoints | Hyperparameter table; loss curves next to validation success |
 
 ### Evaluation (slide 6)
 
@@ -47,9 +47,9 @@ Every question the brief asks has a decision, the experiment that justifies it, 
 | How accurate? | T1: 200 in-distribution scenarios with unseen seeds; the expert as a reference | Success within 10 mm, final EE error (mm), time to reach (s). Offline torque and wheel RMSE on held-out validation episodes. | Main results table, every policy against the expert |
 | How generalisable to targets and initial conditions? | T2: a 72-target grid (8 directions × 3 distances × 3 heights). T1's randomised start poses. Targets beyond the training range (up to 3.5 m) in T3. | Success and final error per grid cell; success vs distance | Workspace heatmap |
 | How robust to adversities? | T3: 100 scenarios with friction ×0.5 / ×1.5, link masses ±25%, double sensor noise, a mid-episode push, unreachable targets | Success drop from nominal; recovery after the push; behaviour on unreachable targets | Robustness bar chart per perturbation |
-| How efficient (memory, parameters, compute)? | Every model on the same laptop, CPU inference | Parameter count, model size (MB), inference time per step against the 10 ms budget, training time, data-collection time | Efficiency table; success vs inference time |
+| How efficient (memory, parameters, compute)? | Every model on the same laptop, CPU inference | Parameter count, model size (MB), inference time per step against the 1 ms budget at 1 kHz, training time, data-collection time | Efficiency table; success vs inference time |
 
-Every success rate is reported with a 95% Wilson confidence interval. The main MLP is trained with 3 random seeds, so differences between ablations can be told apart from noise.
+Every success rate is reported with a 95% Wilson confidence interval. Each variant is first screened with 1 seed on 50 validation scenarios. The reference model, the Must rows and variants close to the best are then confirmed with 3 seeds on all 300, so differences can be told apart from noise. The full matrix is in ablation_strategy.md.
 
 ## Reaching the 80–100% band
 
@@ -61,7 +61,7 @@ The 80–100% band requires everything in the 70–79% band plus well-justified 
 | **70–79:** well documented and reproducible | Fixed seeds, configs in Git, every run logged with its checkpoint path. The README gives a command and the expected outputs for each script, and it is checked on a clean clone on Thu 5 Nov. | README, repo link, a hyperparameter table that matches the configs |
 | **70–79:** excellent understanding of the method and of how code resources are used or modified | The report explains why the template controller cannot be cloned or relabelled as-is: it stores `q_des_arm` and a phase between steps. It then shows how it was made Markovian, and how pinocchio forward kinematics produces the EE-error input. The README separates external, modified and from-scratch code. | A Methodology subsection, "From the template controller to a Markovian expert"; the README's code-provenance list |
 | **80–100:** novel ideas in method design, well used and justified | Plain behaviour cloning drifts once the policy leaves the expert's states (covariate shift). DART noise and DAgger relabelling target that drift, and the Markovian expert is what makes relabelling possible. Derived base-frame inputs encode the task geometry. | Each idea has its own ablation (no DART, no DAgger, raw vs derived inputs), so its value is a measured number, not a claim |
-| **80–100:** novel ideas in experimental validation | The T2 workspace grid shows where failures occur, not only how often. The T3 suite tests adversities outside training. Offline loss is compared with closed-loop success, and accuracy is set against inference cost. Every rate carries a confidence interval over 3 seeds. | Workspace heatmap, robustness chart, success-vs-cost plot, intervals in every table |
+| **80–100:** novel ideas in experimental validation | The T2 workspace grid shows where failures occur, not only how often. Coverage diagnostics tell failures caused by missing data from model errors. The T3 suite tests adversities outside training. Offline loss is compared with closed-loop success, and accuracy is set against inference cost. Every rate carries a confidence interval over 3 seeds. | Workspace heatmap, coverage plot, robustness chart, success-vs-cost plot, intervals in every table |
 
 **Lower-band traps to avoid**
 
@@ -81,14 +81,14 @@ Fourteen topics underpin the plan. They are ordered by the date each is first ne
 | Sat 24 Oct | Markovian policies | A policy whose action depends only on the current state can label any state it is shown. The template stores `q_des_arm` and a phase between steps, so it cannot. | Needed for clean labels and for DAgger relabelling. This is the template change the report must explain. | [Osa et al. 2018](https://arxiv.org/abs/1811.06711), policy representation; `robotnik_arm_control.py` |
 | Sat 24 Oct | PyBullet and Pinocchio | Stepping the simulation, headless DIRECT mode, joint motor control; computing link placements and Jacobians from joint angles | Every rollout, data run and evaluation runs on them | [PyBullet Quickstart Guide](https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit); [Pinocchio docs and tutorials](https://stack-of-tasks.github.io/pinocchio/) |
 | Sat 24 Oct | Frames and forward kinematics | Homogeneous transforms, moving a point from the world frame to the base frame, end-effector position from joint angles | The derived inputs: the target in the base frame and the EE error | [Lynch and Park](https://hades.mech.northwestern.edu/index.php/Modern_Robotics), Ch. 3–4 |
-| Mon 26 Oct | Arm dynamics and torque control | How joint torques relate to q, qd and acceleration; PD control plus gravity compensation | `torque_arm` is a torque output, which explains why qd must be an input | [Lynch and Park](https://hades.mech.northwestern.edu/index.php/Modern_Robotics), Ch. 8 and 11 |
+| Mon 26 Oct | Arm dynamics and torque control | How joint torques relate to q, qd and acceleration; PD control plus gravity compensation | `torque_arm` is a torque output, which explains why qd must be an input and why control stays at 1 kHz: the template PD (kp 100, kd 30) fails once a torque is held for 3 or more physics steps | [Lynch and Park](https://hades.mech.northwestern.edu/index.php/Modern_Robotics), Ch. 8 and 11 |
 | Mon 26 Oct | Wheeled mobile base | How four wheel speeds move and turn the base; heading (bearing) error | `wheel_cmds` outputs and the sin/cos bearing inputs | [Lynch and Park](https://hades.mech.northwestern.edu/index.php/Modern_Robotics), Ch. 13 |
-| Tue 27 Oct | Scenario and physics randomisation | Sampling targets, start poses and physics parameters so training covers the conditions seen at test time | Generalisation (T1, T2) and robustness (T3) | [Tobin et al. 2017](https://arxiv.org/abs/1703.06907) |
+| Tue 27 Oct | Scenario and physics randomisation | Sampling targets, start poses and physics parameters so training covers the conditions seen at test time; low-discrepancy (Sobol) sampling and how to measure coverage | Generalisation (T1, T2) and robustness (T3) | [Tobin et al. 2017](https://arxiv.org/abs/1703.06907) |
 | Tue 27 Oct | DART noise injection | Inject noise into the executed action but store the clean expert action as the label, and set the noise level | Puts recovery states in the data without querying the expert online | [Laskey et al. 2017](https://arxiv.org/abs/1703.09327) |
 | Wed 28 Oct | MLP training recipe | Input normalisation, LayerNorm, Huber loss (robust to large torque errors), AdamW's decoupled weight decay, cosine learning-rate schedule | Every hyperparameter in the report needs a reason | [Ba et al. 2016](https://arxiv.org/abs/1607.06450); [Loshchilov and Hutter 2019](https://arxiv.org/abs/1711.05101); [Loshchilov and Hutter 2017](https://arxiv.org/abs/1608.03983) |
 | Wed 28 Oct | Offline loss vs closed-loop success | A low validation loss does not guarantee the robot reaches the target, so choose checkpoints by rollouts | The model-selection rule and one of the report's comparisons | [Mandlekar et al. 2021](https://arxiv.org/abs/2108.03298) |
 | Thu 29 Oct | DAgger | Roll out the learner, have the expert relabel the visited states, aggregate and retrain; the β mixing schedule; why a few rounds fix covariate shift | The main method contribution | [Ross et al. 2011](https://arxiv.org/abs/1011.0686), Sections 3–4 |
-| Sat 31 Oct | ACT (optional) | A transformer that predicts chunks of future actions, with temporal ensembling and a CVAE | The architecture comparison, and a second answer to the temporal-interval question | [Zhao et al. 2023](https://arxiv.org/abs/2304.13705) |
+| Sat 31 Oct | ACT (deferred, not in the current plan) | A transformer that predicts chunks of future actions, with temporal ensembling and a CVAE | The architecture comparison, and a second answer to the temporal-interval question | [Zhao et al. 2023](https://arxiv.org/abs/2304.13705) |
 | Sun 1 Nov | History inputs and causal confusion | Adding past states can make a cloned policy copy its own previous actions instead of reacting to the task | Justifies single-state input as the default and frames the history ablation | [de Haan et al. 2019](https://arxiv.org/abs/1905.11979) |
 | Tue 3 Nov | Reporting with uncertainty | Wilson intervals for success rates; results across seeds; not over-reading small differences | Rigour in every results table, aimed at the 80–100% band | [Binomial proportion intervals](https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval) (summarises Brown, Cai and DasGupta 2001); [Agarwal et al. 2021](https://arxiv.org/abs/2108.13264) |
 
@@ -112,17 +112,17 @@ Fourteen topics underpin the plan. They are ordered by the date each is first ne
 
 ## Scope and deliverables
 
-The must-haves meet the brief by themselves, so work can stop at any priority level and still hand in a complete project. The should-haves answer the brief's methodology questions directly, so they come before ACT. ACT starts only if the best MLP is tagged by Sat 31 Oct.
+The must-haves meet the brief by themselves, so work can stop at any priority level and still hand in a complete project. The should-haves answer the brief's methodology questions directly. ACT is set aside for now.
 
 | Priority | Item | Brief question it answers |
 | --- | --- | --- |
 | Must | Markovian expert, DART data, BC-MLP, DAgger, frozen T1–T3 test sets | Regressor, training data, evaluation methodology |
-| Must | Ablations: without DART, without DAgger | Quality of data needed |
+| Must | Ablations: without DART, without DAgger, equal-data control | Quality of data needed |
 | Must | Efficiency metrics for every model: parameters, size, inference ms per step, training time | How efficient is the solution |
-| Should | Learning curve: 500 / 1,000 / 2,000 expert episodes | Quantity of data needed |
+| Should | Learning curve: 512 / 1,024 / 2,048 expert episodes | Quantity of data needed |
 | Should | Single state vs 5-step history as input | Single instant vs temporal interval |
 | Should | Engineered inputs vs raw inputs; world frame vs base frame | Would extra input data help |
-| Could | ACT policy with 2–3 DAgger rounds | Architecture comparison |
+| Should | Other ablation rows: network size, heads, near-target weighting, selection rule, physics randomisation (DAgger without DART is Could) | Architecture, training method, robustness |
 
 **Deliverables at submission (Fri 6 Nov):**
 
@@ -149,41 +149,48 @@ The method is behaviour cloning from a Markovian expert, with DART noise during 
 1. **Prepare the expert** (`expert.py`). Make the action depend only on the current state.
    - Replace the stored `q_des_arm` with `q + qd_des·τ`.
    - Choose the base phase from distance and heading error.
-   - Run at 100 Hz and hold each action for 10 physics steps (physics stays at 1 kHz).
+   - Run at 1 kHz with no action hold, as the template does. Holding each action for 3 or more physics steps makes the template expert fail (24 Oct test: 1 of 9 runs reached the target at 3–5 steps, 0 of 3 at 10).
    - Gate: at least 19 of 20 random targets reached within 10 mm.
-2. **Sample scenarios** (`scenarios.py`). Draw the target in polar form: 0.5–3.0 m, azimuth −π to π, height 0.1–1.25 m.
+2. **Sample scenarios** (`scenarios.py`). Draw a scrambled Sobol sequence in the robot's frame: target distance 0.5–3.0 m, relative azimuth −π to π, height 0.1–1.25 m, plus arm offset and physics. The world target follows from the start pose.
    - Start pose: base ±0.5 m, bearing −π to π, arm joints within ±0.2 rad of home.
    - Physics: friction ×0.7–1.3, motor gains ±20%, link masses ±15%, plus joint sensor noise.
+   - Episode counts are powers of 2 (512, 1,024, 2,048), taken as prefixes of one Sobol sequence.
    - Split by scenario seed, never by timestep.
-3. **Collect data** (`collect.py`). Run the expert headless on 500 training scenarios, scaling to about 2,000.
+3. **Collect data** (`collect.py`). Run the expert headless on 512 training scenarios, scaling to 2,048.
    - DART: add Gaussian noise to the executed action and store the clean expert action as the label.
+   - Store raw observations, `ee_pos` and clean labels at every 1 kHz step, never feature vectors. Training keeps every 10th step.
+   - Check coverage (`data_coverage.py`): episodes per distance × azimuth × height cell, and the distance from each validation state to its nearest training state.
    - Compute normalisation statistics on training data only.
 4. **Train the baseline MLP** (`train_mlp.py`). Use 3×256 layers with LayerNorm, separate wheel and arm heads, Huber loss, AdamW and a cosine schedule.
-   - Weight samples near the target more heavily.
-   - Offline loss is used only for early stopping.
+   - Uniform sample weights; near-target weighting is an ablation.
+   - Every run gets the same number of gradient steps. Checkpoints are chosen by closed-loop validation success, not offline loss.
 5. **Run DAgger rounds** (`dagger.py`). Roll out the policy on about 100 new scenarios per round, mixing in the expert with probability β (0.5 decaying to 0).
    - The expert relabels every visited state, the new samples join D, and the MLP retrains on all of D.
-   - Stop when validation success stops rising, usually after 5–10 rounds.
-6. **Train ACT** (optional, `train_act.py`). Use a 5–10 step state history, predict chunks of 10–20 actions with temporal ensembling, and set a small KL weight.
-7. **Final test** (`evaluate.py`). Run once on Tue 3 Nov (day 11) for the expert, best MLP, ACT and the ablations.
+   - Run at least 4 rounds and stop when validation success stops rising, by Sat 31 Oct.
+6. **Run the ablations** (`experiments/run.py`). Each variant is a config override on the reference model, scored on validation only. The matrix is in ablation_strategy.md.
+7. **Final test** (`evaluate.py`). Run once on Tue 3 Nov (day 11) for the expert, best MLP and the ablations.
 
-**Interface contract.** `interfaces.py` is fixed on day 1 and changed only in a commit of its own. The expert, MLP and ACT all implement the same `Policy` class, so `evaluate.py` can score the expert before any model exists.
+**Interface contract.** `interfaces.py` is fixed on day 1 and changed only in a commit of its own. The expert and every MLP variant implement the same `Policy` class, so `evaluate.py` can score the expert before any model exists.
 
 ```python
-OBS_LAYOUT = ["target_dx", "target_dy", "target_dz", "sin_bearing_err", "cos_bearing_err",
-              "q[7]", "qd[7]", "ee_err[3]", "phase_flag"]       # 27 values, base frame
-ACT_LAYOUT = ["wheel_cmds[4]", "torque_arm[7]"]                  # 11 values
-CONTROL_HZ = 100
+# core/interfaces.py: raw measurements in, raw commands out
+@dataclass
+class Observation:  # base_pos (3), base_bearing, q_mes (7), qd_mes (7), target_ee_pos (3), world frame
+@dataclass
+class Action:       # torque_arm (7), wheel_cmds (4)
 
 class Policy:
-    def reset(self, scenario): ...
-    def act(self, obs) -> np.ndarray: ...                          # shape (11,)
+    def reset(self): ...
+    def act(self, obs: Observation) -> Action: ...
 
+# core/features.py: network inputs built from named groups, chosen in the config
+# FULL = arm_state (14) + target_base (3) + bearing_err (2) + ee_err (3) + phase (1) = 23 values
+CONTROL_HZ = 1000
 SEEDS = {"train": range(0, 10_000), "val": range(10_000, 10_300), "test": range(20_000, 20_372)}
-# .npz: obs (N,27) float32, act (N,11) float32, episode_id (N,), source ("expert"|"dart"|"dagger_k")
+# .npz: raw Observation fields, ee_pos, act (N,11), episode_id, source ("expert"|"dart"|"dagger_k")
 ```
 
-**Evaluation.** Every policy runs in closed loop on scenario lists, not on stored samples. Each run records success within 10 mm, time to reach, final error, base path length, torque jerk and finger drift. For efficiency, each model also records its parameter count, size on disk, inference time per control step (the budget is 10 ms at 100 Hz) and training time.
+**Evaluation.** Every policy runs in closed loop on scenario lists, not on stored samples. Each run records success within 10 mm, time to reach, final error, base path length, torque jerk and finger drift. For efficiency, each model also records its parameter count, size on disk, inference time per control step (the budget is 1 ms at 1 kHz) and training time.
 
 | Test set | Contents | Episodes | Measures |
 | --- | --- | --- | --- |
@@ -195,13 +202,13 @@ Models are chosen only on the 300 validation scenarios. The test seed range is r
 
 ## Workstreams
 
-Yilin writes all the code, so the three workstreams run one after another along the critical path, not in parallel. Long runs (data collection, DAgger retraining, ablations) are left running while the next script is written. ACT drops to stretch: it starts only if the best MLP is tagged by Sat 31 Oct.
+Yilin writes all the code, so the three workstreams run one after another along the critical path, not in parallel. Long runs (data collection, DAgger retraining, ablations) are left running while the next script is written. ACT is set aside for now.
 
 | Workstream | Files | Delivers | Writes in report |
 | --- | --- | --- | --- |
 | 1 · Sim and expert | expert.py, env.py, scenarios.py, collect.py, dagger.py | Markovian expert, D0 with DART, every DAgger round's data, T3 perturbations, learning-curve datasets | Methodology: expert, scenario sampling, DART, DAgger |
-| 2 · Learning | dataset.py, train\_mlp.py, train\_act.py, policies.py | Normalisation stats, π₀, retrained MLP each round, history and input ablations, ACT if time allows | Methodology: models, inputs, training and hyperparameters |
-| 3 · Eval and report | interfaces.py, evaluate.py, test\_sets.py, plots.py, results.csv, README, the report | Expert baseline, frozen T1–T3, validation score after each round, efficiency metrics, the single test run, all figures | Introduction, Results, Conclusion, contribution statement, final cut to 6 pages |
+| 2 · Learning | dataset.py, train\_mlp.py, policies.py, experiments/run.py | Normalisation stats, π₀, retrained MLP each round, every ablation variant | Methodology: models, inputs, training and hyperparameters |
+| 3 · Eval and report | interfaces.py, evaluate.py, test\_sets.py, data\_coverage.py, plots.py, results.csv, README, the report | Expert baseline, frozen T1–T3, coverage check, validation score after each round, efficiency metrics, the single test run, all figures | Introduction, Results, Conclusion, contribution statement, final cut to 6 pages |
 
 The evaluate.py skeleton comes first, on day 1, so the expert is scored before any model exists and every later stage has a pass/fail number.
 
@@ -217,27 +224,29 @@ The Code row is what Yilin writes; the Runs row is compute left running meanwhil
 
 1. **Sat 24 Oct, Contract:** `interfaces.py` is merged, and `robotnik_arm_task.py` runs headless.
 2. **Mon 26 Oct, M1 expert ok:** the expert reaches 10 mm on at least 19 of 20 random targets. `evaluate.py --policy expert --split val` prints a row.
-3. **Wed 28 Oct, M2 π₀ scored:** D0 has 500+ episodes, and π₀ has a closed-loop validation score in `results.csv`. π₀ runs in the GUI, so there is something to demo.
+3. **Wed 28 Oct, M2 π₀ scored:** D0 has 512 episodes and passes the coverage check, and π₀ has a closed-loop validation score in `results.csv`. π₀ runs in the GUI, so there is something to demo.
 4. **Fri 30 Oct, report draft:** the IEEE skeleton has drafts of the Introduction and Methodology. The demo window opens; book the first available lab session.
 5. **Sat 31 Oct, M3 best MLP:** at least 4 DAgger rounds are done, validation success has plateaued, and the best checkpoint is tagged.
-6. **Mon 2 Nov, M4 freeze:** ACT, the ablations and the learning curve are scored on validation, and efficiency metrics are logged. No training happens after this.
-7. **Tue 3 Nov, final test:** the expert, best MLP, ACT and ablations each run once on T1–T3. Results are committed and never rerun.
+6. **Mon 2 Nov, M4 freeze:** the ablations and the learning curve are scored on validation, and efficiency metrics are logged. No training happens after this.
+7. **Tue 3 Nov, final test:** the expert, best MLP and ablations each run once on T1–T3. Results are committed and never rerun.
 8. **Fri 6 Nov, submit:** the report is at most 6 pages plus the contribution page, the README is checked on a clean clone, and the demo is done.
 
 ## Workflow
 
-Work happens in one Git repo, `COMP_0245_2026_Final`. Code and configs live in Git; data and checkpoints stay outside it in git-ignored folders. `main` must always run `evaluate.py --policy expert`.
+Work happens in one Git repo, `COMP_0245_2026_Final`. Code and configs live in Git; data and checkpoints stay outside it in git-ignored folders. `develop` and `main` must always run `evaluate.py --policy expert`.
 
 **Repo layout**
 
 ```
 final/robotnik_arm_task/
-  robotnik_arm_task.py  robotnik_arm_control.py    # original task and controller
-  configs/robotnik_arm.json                        # only config the task loads
-  models/summit_xl_arm_description/                # only robot model the task loads
-  interfaces.py  expert.py  scenarios.py  env.py  collect.py  dagger.py
-  dataset.py  train_mlp.py  train_act.py  policies.py
-  evaluate.py  test_sets.py  plots.py  settings.yaml
+  robotnik_arm_task.py  robotnik_arm_control.py    # course template, unmodified
+  configs/robotnik_arm.json  models/               # robot config and URDF the task loads
+  settings.yaml                                    # hyperparameters and paths
+  core/             interfaces.py  env.py  features.py
+  data_collection/  expert.py  scenarios.py  collect.py  dagger.py
+  training/         dataset.py  policies.py  train_mlp.py
+  evaluation/       test_sets.py  evaluate.py  data_coverage.py  plots.py
+  experiments/      ablations.yaml  overrides/  run.py
   results/results.csv                              # committed: every run, one row
   data/  checkpoints/                              # git-ignored, kept locally
 ```
@@ -249,14 +258,14 @@ final/robotnik_arm_task/
 
 **Git rules**
 
-- Work on a short-lived branch per task, such as `expert-markovian` or `train-mlp`, and merge into `main` at least daily.
+- Work on a short-lived branch per task, such as `expert-markovian` or `train-mlp`, and merge into `develop` at least daily. `main` gets each milestone merge and the `final-test` tag.
 - Before each merge, check that `evaluate.py --policy expert` still runs. Changes to `interfaces.py` go in a commit of their own.
 - Ignored by `.gitignore`: `*.npz`, `*.pt`, `*.pth`, `*.ckpt`, `*.pkl`, `runs/`, `wandb/`, `__pycache__/`. Record the path of every dataset and model in `results.csv`.
 
 **Data files**
 
-- Name files by round: `D0.npz`, `D_round3.npz`, `mlp_r3.pt`, `act_r2.pt`.
-- Every evaluation appends one row to `results.csv` with these columns: `run_id`, `policy`, `ckpt`, `split`, `n`, `success_10mm`, `time_to_reach`, `final_err`, `path_len`, `torque_jerk`, `finger_drift`.
+- Name datasets by round (`D0.npz`, `D_round3.npz`) and runs as `<stage>-<series>-<variant>-s<seed>`, e.g. `A-dart-off-s0`. Each run's folder `checkpoints/<run_id>/` holds the merged config, the Git commit and the normaliser statistics.
+- Every evaluation appends one row to `results.csv` with these columns: `run_id`, `exp`, `stage`, `seed`, `git_sha`, `policy`, `ckpt`, `split`, `n`, `success_10mm`, `time_to_reach`, `final_err`, `path_len`, `torque_jerk`, `finger_drift`.
 - Report numbers and plots come only from `results.csv`.
 
 **Daily log.** Each evening, note what finished, what is blocked and today's validation score. A failed milestone check becomes the next day's only task until it is fixed.
@@ -268,14 +277,14 @@ The biggest risk is the expert, because every later stage depends on it. Each ri
 | Risk | Early sign | Fallback | Decide by |
 | --- | --- | --- | --- |
 | Markovian expert misses 10 mm | Fewer than 19/20 targets reached on Mon 26 Oct | Spend one more day on the expert. If it still fails, keep the original expert for D0, add its phase as an input, and compute the phase from distance and heading when relabelling. | Tue 27 Oct |
-| Data collection too slow | Under 30 episodes/min headless | Run `collect.py` as parallel processes, one seed range each. Stop at 500 episodes and spend the time on DAgger rounds. | Tue 27 Oct |
-| π₀ barely moves | Validation success near 0 on Wed 28 Oct | Check normalisation and the base-frame transform, then raise the near-target sample weight. | Thu 29 Oct |
+| Data collection too slow | Under 30 episodes/min headless, all processes together | Run `collect.py` as parallel processes, one seed range each. Stop at 512 episodes and spend the time on DAgger rounds. | Tue 27 Oct |
+| π₀ barely moves | Validation success near 0 on Wed 28 Oct | Check normalisation and the base-frame transform, then turn on near-target weighting early (ablation D1). | Thu 29 Oct |
 | Nothing to show at the lab demo | No policy runs in the GUI by Thu 29 Oct | Demo the expert pipeline and whichever π exists. The brief accepts work in progress, but skipping the demo fails the assessment. | Thu 29 Oct |
-| ACT not trained in time | No ACT validation score by Sun 1 Nov | Report ACT as partial. MLP with DART and DAgger is the main result, and the should-have ablations still stand. | Sun 1 Nov |
+| Policy too slow for 1 kHz control | Inference over 1 ms per step when π₀ is scored on Wed 28 Oct | Run the forward pass in numpy instead of torch, then try the 2×128 network. Last resort: hold each action for 2 steps (500 Hz reached all 3 test targets on 24 Oct). | Thu 29 Oct |
 | Report over 6 pages | Draft past 5 pages on Wed 4 Nov | Move secondary plots to fewer, denser figures; cut generic background before results. | Wed 4 Nov |
 | Code and report disagree | Report states a setting not in the configs | Report tables are generated from `results.csv` and configs in Git; check each stated hyperparameter against them on Thu 5 Nov. | Thu 5 Nov |
 | Test set leaks into tuning | Any script imports the test seed range before Tue 3 Nov | The test runs once, on Tue 3 Nov. Results are committed and never rerun. | Ongoing |
-| Sole coder loses 2 days (illness, other deadlines) | A milestone check slips a day | Cut to the must-haves: drop ACT first, then the history and input ablations. Keep the DART and DAgger ablations. | Same day |
+| Sole coder loses 2 days (illness, other deadlines) | A milestone check slips a day | Cut to the must-haves: drop the Should ablations, most expensive first. Keep the DART and DAgger ablations. | Same day |
 
 **Open questions**
 

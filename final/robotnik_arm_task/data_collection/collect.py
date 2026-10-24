@@ -3,7 +3,7 @@
 Noise is added to the executed action; the clean expert action is stored as the label.
 Output: data/D0.npz
 
-Usage: python -m data_collection.collect --n 500 --seed-start 0
+Usage: python -m data_collection.collect --n 512 --seed-start 0
 """
 import argparse
 
