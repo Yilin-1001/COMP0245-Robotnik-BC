@@ -201,15 +201,17 @@ For B, all three rows require a consistent teacher-state update. A teacher with 
 
 <a id="r10"></a>
 
-### R10. Adaptive Asymmetric DAgger (A2D)
+### R10. Robust Asymmetric Learning in POMDPs (A2D)
 
-**Reference:** Andrew Warrington, Jonathan W. Lavington, Adam Scibior, Mark Schmidt and Frank Wood. *Robust Asymmetric Learning in POMDPs*. ICML 2021, PMLR 139:11013–11023. [Paper](https://proceedings.mlr.press/v139/warrington21a.html). [Author code](https://github.com/plai-group/a2d).
+**Reference:** Andrew Warrington, Jonathan W. Lavington, Adam Scibior, Mark Schmidt and Frank Wood. *Robust Asymmetric Learning in POMDPs*. ICML 2021, PMLR 139:11013–11023. [Paper and citation metadata](https://proceedings.mlr.press/v139/warrington21a.html). [PDF](https://proceedings.mlr.press/v139/warrington21a/warrington21a.pdf). [Author code](https://github.com/plai-group/a2d).
 
-**Published finding:** An expert with privileged information can choose behavior inappropriate for a partially informed student. A2D jointly adapts the expert and trainee rather than assuming that a fixed privileged expert always supplies a suitable target.
+**Published finding:** A privileged expert can choose behavior unsuitable for a partially informed student. Adaptive Asymmetric DAgger (A2D) jointly adapts expert and trainee instead of assuming a fixed privileged teacher always supplies an appropriate target. Partial observability must therefore be considered when interpreting imitation performance.
 
-**Project application:** Treat Dataset B's omitted orientation information as an explicit limitation. Compare its deployable student with the teacher in closed loop and inspect whether failures reflect unavailable information, estimation errors or policy errors.
+**Project application:** Dataset B omits true orientation and teacher memory. Evaluate whether its deployable student completes tasks, separately from matching every expert action. Investigate information mismatch alongside estimation and policy errors.
 
-**Limit:** Hand-designing Dataset A's reactive teacher is not A2D. The paper motivates examining teacher/student information mismatch; it does not validate our feature dimensions or prove that the modified teacher is optimal.
+**Connection to relative-position inputs (project inference):** Relative navigation-goal and heading features can express B's known world-origin-based task reference without directly feeding world x/y coordinates. These features do not supply hidden `q_des`, phase or completion memory. A current-observation MLP may still learn useful task behavior when available features suffice in the sampled scenarios; this remains an empirical hypothesis. Generalization to new geometry and exact imitation under hidden-state ambiguity are different questions.
+
+**Limit:** The paper does not validate our 26 inputs or guarantee memoryless BC success. Our fixed-teacher MLP baseline and hand-designed Markovian teacher are not implementations of A2D.
 
 <a id="copycat"></a>
 
@@ -343,6 +345,7 @@ A deterministic external task reference is a separate case: if a known trajector
 | Defer body-frame gravity direction | User-selected scope; R10 explains the resulting information mismatch | B remains partially observed. Use teacher-side orientation diagnostics without silently adding them to student inputs. |
 | Use nominal physics before broader randomization | R01, S04 and local teacher validation | Project experiment order, not a published optimal curriculum. Keep disturbance conditions identifiable. |
 | Evaluate closed-loop behavior and uncertainty | R02, R04, S08–S09 | Required evaluation approach. Include sustained hold, recovery, saturation and variation across runs. |
+| Test a relative-feature MLP with incomplete teacher state | R10; project-specific feature construction | Baseline hypothesis. Measure task success and action error separately; increase capacity only after checking information limitations. |
 
 ### 8.3 Minimal comparisons and limits of the evidence
 
