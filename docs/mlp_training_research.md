@@ -176,7 +176,7 @@ Train M2 on A with a **constant** LR after warm-up, at 1e-3 and at 3e-4, for 50k
 
 ### 4.3 Huber or MSE
 
-Run one extra M2 pilot at the chosen budget, with MSE in place of Huber. Compare the hold-phase bias, the error on saturated and high-|qd| steps, and the 8-scenario rollouts.
+After choosing the budget from the constant-LR Huber pilots, run a matched pair of M2-A fits with Huber and MSE: same seed, selected pilot LR, frozen update budget, warm-up/cosine schedule, fitting data and initial weights. Compare hold-phase bias, errors on saturated and high-|qd| steps, and the 8-scenario rollouts. Do not compare the shorter cosine-schedule MSE run directly against a 50k constant-LR Huber run. A fit can be reused as the first baseline only when its complete resolved configuration matches.
 
 Huber with δ = 1 standardised unit behaves like L1 for residuals beyond about 2–6 N·m. It reduces the influence of large prediction residuals relative to MSE; saturation or chatter alone does not determine whether a sample lies in that regime. Inspect residuals on saturated and high-|qd| samples, which may be harder to fit. The effect on damping and stability must be measured. Freeze the loss choice before the architecture screen.
 
@@ -203,20 +203,20 @@ Run these checks on the 32 validation scenarios after each training run. They ta
 3. **Phase-split errors**: navigation, approach and hold, in physical units, as the plan already lists.
 4. **Same-side front/rear wheel mismatch**: FR−BR and FL−BL are zero by construction with the mirrored head. Left and right wheel speeds may differ during turns.
 
-Before the first student rollout, validate the harness itself:
+Validate the harness in dependency order:
 
-- (a) Run the expert through the student's code path (features → policy wrapper → action ordering → limits). It must reproduce its recorded success.
-- (b) Overfit one training episode, then replay it.
-- (c) Run an action-noise sanity check: add the measured student validation error as noise to the expert and confirm the rollout degrades as predicted.
+- (a) Before fitting, run the expert from raw observations through the same action encoding, normalisation round trip, action ordering, limits and rollout evaluator used by the student. Build student features in parallel to verify dimensions and finiteness; do not attempt to reconstruct the expert's full input from the compressed student features. Use the unified evaluation predicate for the expert reference.
+- (b) Once the baseline trainer exists, overfit one fitting episode, check its offline action replay, then run a diagnostic closed-loop replay. Keep this sanity run separate from architecture selection.
+- (c) After the first fitted student supplies validation residuals, add documented residual-matched noise to an expert diagnostic rollout. Record the resulting degradation; matching an error marginal does not guarantee the same state-dependent student failure, so a different outcome is diagnostic evidence rather than an automatic harness failure.
 
 ## 6. Revised order of work
 
 | Stage | Work | Exit evidence |
 | --- | --- | --- |
 | 0 | Install PyTorch ≥ 2.7 (cu128) in the sim venv; verify `sm_120` or fall back to CPU; add thread pinning to workers | Import and device check recorded |
-| 1 | Feature cache, split manifest, normaliser and checkpoint round trips, NumPy inference export, harness checks (a)–(c) | All checks pass |
+| 1 | Feature cache, split manifest, normaliser and checkpoint round trips, NumPy inference export; harness check (a), then (b) when the trainer is ready | Data/interface checks pass; separate overfit/replay evidence |
 | 2 | M2-A pilot: constant-LR curves at 1e-3 and 3e-4; budget chosen; Huber vs MSE | Saved pilot curves, frozen budget and loss |
-| 3 | **First verified baseline**: M2-A, then M2-B, through the offline gates, with 8- and 32-scenario rollouts | Checkpoints with closed-loop results |
+| 3 | **First verified baseline**: M2-A, then M2-B, through the offline gates, with 8- and 32-scenario rollouts; residual-noise diagnostic (c) now has fitted-student residuals | Checkpoints with closed-loop results and separately recorded diagnostic |
 | 4 | Screen M1–M6 × {A, B} with a per-architecture LR sweep (offline) and one rollout candidate each | 12 closed-loop results plus 36 offline runs |
 | 5 | Seeds 1–2 for the top two per teacher | 3 seeds per finalist |
 | 6 | Damping-Jacobian loss only: BC+J versus the selected plain-BC architecture for each teacher, following §4.4 | Separate checkpoints and paired validation results for seeds 0–2 |

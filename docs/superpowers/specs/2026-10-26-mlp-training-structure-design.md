@@ -4,6 +4,8 @@ Date: 26 October 2026. Status: unified implementation target; documentation only
 
 Companion documents: [training research and recipe](../../mlp_training_research.md), [baseline training plan](../../mlp_baseline_training_plan.md), and [dataset contract](../../expert_datasets.md).
 
+Implementation tasks for the current clean BC/BC+J stage are in the [implementation plan](../plans/2026-10-26-mlp-baseline-and-jacobian.md). Later DART/DAgger collection stays outside that plan.
+
 Authority by subject: this document defines code boundaries, configuration resolution, run identity and artifacts; the research recipe defines the current numerical training settings and BC+J protocol; the baseline plan defines the exact clean scenario split and evaluation predicate; dataset manifests define the recorded teacher, action order and execution limits. The older total plan and ablation matrix are historical where these documents replace them. An inconsistency between a manifest, checkpoint and requested runtime interface must fail validation rather than be resolved by a silent override.
 
 ## 1. Intent and scope
@@ -87,6 +89,7 @@ experiments/
       A.yaml                    # teacher A, 21 inputs, source data/version
       B.yaml                    # teacher B, 26 inputs, source data/version
   splits/                       # versioned scenario split manifests
+  protocols/                    # frozen decisions and evidence hashes, not config defaults
   run.py                        # launch existing entry points for a declared matrix
 ```
 
@@ -109,6 +112,8 @@ experiments/
 Dependency direction: baseline and Jacobian modules use `training/common`; Jacobian loss may reuse baseline action loss. DART and DAgger workflows may choose either loss implementation and call the common engine. Common code and the clean-training entry points never import the DART or DAgger workflows. Imports perform no collection, training or simulator construction.
 
 Baseline and BC+J share the exact same `MLP` and `MLPPolicy` definitions. Their distinction is the objective, entry point, configuration and saved experiment identity. Jacobian-specific imports should be local to the Jacobian branch so baseline training does not execute the derivative-loss path. Offline damping diagnostics are available for either model and do not contribute gradients to baseline training.
+
+NumPy deployment loads an explicit `.npz` inference export; it does not deserialize a PyTorch `.pt` checkpoint without torch. The torch backend loads `.pt`. Save the source checkpoint step/hash in every NumPy export, and record both artifact paths in evaluations. A selected `inference.npz` must correspond to the selected `best.pt` or terminal `final.pt`; candidate step exports have distinct step-specific names. Reject backend/file-format mismatches rather than silently loading an unrelated sibling artifact.
 
 ## 5. Entry points and method identity
 
@@ -153,6 +158,8 @@ common.yaml
 ```
 
 Merge mappings recursively; replace scalar and list values rather than concatenating lists. Reject unknown keys, missing required values and invalid combinations. Workflow files own workflow settings, objective files own loss settings, and teacher files own teacher/data/feature settings. Defining the same method-specific field in an unrelated layer is an error, not an extra source of defaults. Shared tunable training fields such as LR and update budget can be overridden explicitly and their effective values are recorded.
+
+Versioned `experiments/protocols/` records frozen pilot, loss/budget, finalist and final-evaluation decisions with evidence hashes. It selects explicit template/CLI values; it is not another implicit override layer. Initial numerical implementation defaults are input scale floor 1e-6, arm/wheel scale floors 0.1 N·m/0.05 rad/s, torque-boundary tolerance `epsilon_tau=1e-4 N·m`, and LayerNorm epsilon 1e-5. Record and freeze inspected floors/tolerance before paired comparisons.
 
 The clean launchers pin `regime=clean` and their respective objective; teacher input dimensions are fixed by the selected feature definition. CLI/config overrides cannot defeat these invariants. DART and DAgger launchers permit `--objective bc` or `--objective bcj` and validate the matching objective template. An objective change creates a new experiment rather than an exact resume.
 
@@ -210,6 +217,10 @@ Use the same globally unique `run_id` in the directory, checkpoint metadata, per
 ```
 
 `cohort` identifies the declared data recipe, such as `clean253`, `clean223` or `aggregate`. Write learning rates with an explicit exponent sign, e.g. `3e-4`. `config_id` is the first 12 hex characters of a canonical effective-config hash covering data/split/feature hashes, model, loss and λ_J, normalisation policy, update budget, fit stage, source digest and parent/round identity; exclude the generated run ID, output directory and transient timestamps. Save the full hash and reject a short-hash collision. Within an exact configuration, an existing output directory requires explicit resume with a compatible `latest.pt`; it is never overwritten. A separate rerun requires a new recorded seed or replicate identifier included in the identity hash.
+
+Finalise identity only after manifest/split validation, fitting-only normaliser construction and any fitting-only λ_J calibration. Save normaliser and calibration hashes in that identity. Device selection, worker count and destination root are operational fields: record them but exclude them from the scientific identity, so CPU fallback or moving artifacts does not create a new experiment. Exact resume restores the saved configuration and RNG states and records operational changes; it does not silently refit scales or recalibrate λ_J.
+
+Verify bitwise resume equivalence only on the same device/backend and pinned software stack. Moving between CPU/GPU or library versions is recorded as a resumed continuation, not a promise of bitwise-identical training; PyTorch explicitly does not guarantee reproducibility across platforms ([official reproducibility notes](https://docs.pytorch.org/docs/2.7/notes/randomness.html)). Preserve scientific identity and record each continuation's environment/device separately.
 
 Examples below use illustrative 12-character hashes:
 

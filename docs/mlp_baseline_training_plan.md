@@ -116,7 +116,8 @@ Unified training recipe, with loss and budget frozen after the pilot:
 | Training updates | Common budget from the M2-A constant-LR pilot plateau, approximately 1.5× plateau updates |
 | LR schedule | Short linear warm-up (e.g. 500 updates), then cosine over the frozen budget |
 | Offline validation logging | Every 500 updates |
-| Checkpoints and screening rollouts | Every 2,000 updates |
+| Checkpoints | Every 2,000 updates and the terminal update |
+| Screening rollouts | Evaluate saved checkpoints on the eight scenarios only for the selected LR of each architecture/teacher, after the offline LR sweep |
 | Screening initialization seed | 0 |
 | Finalist seeds | 0, 1 and 2 |
 
