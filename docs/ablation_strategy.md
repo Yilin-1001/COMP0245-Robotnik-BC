@@ -2,6 +2,12 @@
 
 Oct 24, 2026 · @Yilin · Companion to `project_plan.md` and `milestones.md`
 
+**Status update, 26 October:** the numbered matrix, budgets, commands and reference defaults below are the archived 24 October proposal, not the active training configuration. Current clean-baseline and BC+J experiments follow [the baseline plan](mlp_baseline_training_plan.md), [the numerical research recipe](mlp_training_research.md), and [the code structure design](superpowers/specs/2026-10-26-mlp-training-structure-design.md). Preserve the general principle of paired comparisons; translate later DART/DAgger rows into their own workflows before execution.
+
+Current overrides: use the 221/32 clean split, 8/32 validation rollouts and 64 untouched test scenarios; use full-rate random episode/timestep sampling, M1–M6 with seven torque and two mirrored wheel outputs, a per-architecture/teacher three-LR sweep, and a pilot-derived common update budget. BC+J is a separate paired objective experiment. Config templates live in `experiments/configs/`; resolved snapshots and globally unique run IDs follow the structure design. The old `experiments/overrides/`, flat checkpoint paths, stride 10, fixed reference LR, 50/300 validation counts and 21-config total below must not be used as current defaults. These overrides leave future DART/DAgger collection budgets to their declared experiment configurations.
+
+## Archived 24 October strategy
+
 ## Summary
 
 Every ablation changes one thing against a fixed reference model and keeps everything else the same. Variants are config overrides on one codebase (`develop`), not Git branches. The work runs in four stages (data, inputs, network, training), and each stage's winner is frozen before the next starts. That keeps the study at 21 configs instead of a full factorial of several hundred.

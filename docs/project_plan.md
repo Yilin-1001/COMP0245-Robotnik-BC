@@ -4,6 +4,8 @@
 
 Oct 24, 2026 · @Yilin
 
+**Implementation authority, updated 26 October.** The current implementation is governed by [MLP training research](mlp_training_research.md) for the numerical recipe, [the baseline plan](mlp_baseline_training_plan.md) for exact clean-data splits and evaluation, [the structure design](superpowers/specs/2026-10-26-mlp-training-structure-design.md) for code/configuration/artifacts, and source dataset manifests for teacher/action interfaces. The 24 October method tables and budgets below are archived planning context: their 23-feature input, stride 10, fixed 3×256 reference, 2,048-episode budget, 50/300 validation scenarios and T1–T3 counts are not active defaults for the current clean-baseline experiment. Current inputs are 21/26, the primary clean split is 221/32 with 64 untouched test scenarios, and DART/DAgger follow the separately scoped workflows. Future extra evaluation sets require a declared design before use.
+
 ## Overview
 
 Yilin, the only person coding, has until **Friday 6 November 2026** to submit code and a 6-page IEEE report. That is 14 days from today, Saturday 24 October. The project is behaviour cloning for the Robotnik mobile manipulator. The policy maps base pose (`base_pos`, `base_bearing`), arm state (`q_mes`, `qd_mes`) and `TARGET_EE_POS` to `torque_arm` (7) and `wheel_cmds` (4), and is trained on expert trajectories from `robotnik_arm_control.py`.
@@ -237,17 +239,24 @@ Work happens in one Git repo, `COMP_0245_2026_Final`. Code and configs live in G
 
 **Repo layout**
 
+The target training layout below supersedes the earlier flat skeleton; these new modules are not yet implemented. Existing `core/` and clean collection stay in place.
+
 ```
 final/robotnik_arm_task/
   robotnik_arm_task.py  robotnik_arm_control.py    # course template, unmodified
   configs/robotnik_arm.json  models/               # robot config and URDF the task loads
-  settings.yaml                                    # hyperparameters and paths
+  settings.yaml                                    # simulator and clean-collection settings
   core/             interfaces.py  env.py  features.py
   data_collection/  expert.py  scenarios.py  collect.py  dagger.py
-  training/         dataset.py  policies.py  train_mlp.py
-  evaluation/       test_sets.py  evaluate.py  data_coverage.py  plots.py
-  experiments/      ablations.yaml  overrides/  run.py
-  results/results.csv                              # committed: every run, one row
+  training/common/   config.py  dataset.py  normalisation.py  models.py  policies.py  engine.py  checkpoint.py
+  training/baseline/ loss.py  train.py
+  training/jacobian/ loss.py  train.py
+  dart/              noise.py  collect.py  train.py
+  dagger/            collect.py  aggregate.py  run.py
+  evaluation/        offline.py  test_sets.py  evaluate.py  plots.py
+  experiments/       configs/  splits/  run.py
+  results/results.csv                              # versioned compact evaluation index
+  results/<regime>/<teacher>/<objective>/<run_id>/   # local detailed results and figures
   data/  checkpoints/                              # git-ignored, kept locally
 ```
 
@@ -264,8 +273,9 @@ final/robotnik_arm_task/
 
 **Data files**
 
-- Name datasets by round (`D0.npz`, `D_round3.npz`) and runs as `<stage>-<series>-<variant>-s<seed>`, e.g. `A-dart-off-s0`. Each run's folder `checkpoints/<run_id>/` holds the merged config, the Git commit and the normaliser statistics.
-- Every evaluation appends one row to `results.csv` with these columns: `run_id`, `exp`, `stage`, `seed`, `git_sha`, `policy`, `ckpt`, `split`, `n`, `success_10mm`, `time_to_reach`, `final_err`, `path_len`, `torque_jerk`, `finger_drift`.
+- Preserve existing `data/{Markovian,Stateful}/Clean_253` recordings. New DART data uses `data/<Teacher>/DART/<collection_id>/`; new DAgger data uses `data/<Teacher>/DAgger/<collection_id>/round_<NNN>/`, linked by manifests rather than ambiguous `D_roundN.npz` names.
+- Use globally unique IDs `<regime>-<teacher>-<objective>-<cohort>-<architecture>-lr<lr>-s<seed>-<fit_stage>[-r<round>]-<config_id>` and `checkpoints/<regime>/<teacher>/<objective>/<run_id>/`. Save immutable resolved config, provenance and normaliser; selection uses validation-chosen `best.pt`, while optional all-training-data refit uses frozen terminal `final.pt` without validation selection.
+- Each evaluation row includes the identity and metrics specified by the structure design: regime, teacher, objective, cohort, fit stage, seed, config/split hashes, checkpoint step/path and evaluation split/ID. Version only compact `results/results.csv`; detailed results, figures, raw data and checkpoints stay local.
 - Report numbers and plots come only from `results.csv`.
 
 **Daily log.** Each evening, note what finished, what is blocked and today's validation score. A failed milestone check becomes the next day's only task until it is fixed.

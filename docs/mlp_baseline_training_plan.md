@@ -4,14 +4,16 @@ Planning date: 26 October 2026. Status: proposed implementation and experiment p
 
 The objective is to obtain a working, evaluated behavior-cloning baseline today, then identify the best MLP among a small, controlled candidate set. Use clean demonstrations only. DART, DAgger, new collection, recurrent policies and teacher modification are outside this first training stage.
 
+Unified rules (26 October): this plan owns the clean scenario split and evaluation predicate. The [research recipe](mlp_training_research.md) owns numerical training settings and the separate BC+J experiment; the [structure design](superpowers/specs/2026-10-26-mlp-training-structure-design.md) owns code locations, configuration resolution, run IDs and artifacts. Dataset manifests own recorded teacher/action interfaces. The settings below incorporate the revised recipe; older total-plan and ablation-matrix defaults do not override them. Baseline architecture screening remains action-loss-only BC.
+
 ## 1. Current implementation and resources
 
 - `training/dataset.py`, `training/policies.py`, `training/train_mlp.py` and `evaluation/evaluate.py` still contain `NotImplementedError` placeholders.
 - `core/features.py` already implements the deployable 21-dimensional Markovian and 26-dimensional Stateful inputs.
 - The inspected simulator environment uses Python 3.10.20 and does not currently contain PyTorch.
-- The host exposes 24 CPU threads and about 30 GiB RAM, with approximately 16 GiB available at inspection. `nvidia-smi` could not communicate with the driver; usable GPU training has not been established in this session.
+- The initial inspection exposed 24 CPU threads and about 30 GiB RAM, with approximately 16 GiB available, and could not reach the GPU driver. The later research review reports a usable RTX 5070 Ti Laptop GPU; this earlier CPU-only assumption is superseded.
 
-Plan for CPU execution initially. Install and record a compatible PyTorch build when implementation begins; verify its imports in the same environment as simulation. Do not promise a complete search runtime before measuring training throughput and closed-loop evaluation cost.
+Verify a stable PyTorch ≥ 2.7 CUDA 12.8 build and `sm_120` support in the simulation environment, following the research recipe; use CPU as fallback. Record the actual dependency versions and device. Do not promise a complete search runtime before measuring training throughput and closed-loop evaluation cost.
 
 ## 2. Data and model-selection split
 
@@ -48,7 +50,7 @@ Train two independent policies, one for each teacher. Do not merge labels from t
 | Previous action or observation history | Excluded | Excluded |
 | Expert internal memory as input | Excluded | Excluded |
 
-Use a shared MLP trunk and two linear heads of sizes seven and four. The first shared recipe is `Linear -> LayerNorm -> SiLU` for each hidden layer, with linear outputs. LayerNorm and activation remain fixed during the architecture screen; their usefulness is a later ablation, not assumed from this plan.
+Use a shared MLP trunk and two linear heads of sizes seven and two. Expand right/left wheel predictions to the four-command order `[r, l, l, r]`, so the deployable action still has 11 values. The shared recipe is `Linear -> LayerNorm -> SiLU` for each hidden layer, with linear outputs. LayerNorm and activation remain fixed during the architecture screen; their usefulness is a later ablation, not assumed from this plan. Keep baseline and BC+J entry points separate as specified in the structure design.
 
 The source Markovian recordings use `lead_time=0.50 s`, version `markovian-lt0.50-v1`. Learn those recorded labels; do not accidentally evaluate against a newly instantiated default `lead_time=0.15 s` teacher.
 
@@ -71,14 +73,14 @@ Full-rate feature and label caches for these low-dimensional datasets should be 
 
 Standardize inputs using fitting-only statistics. Standardize each output channel separately using fitting-only statistics and a recorded scale floor to avoid amplifying nearly constant channels. Initial scale-floor candidates are 0.1 Nm for torque and 0.05 rad/s for wheel speed; inspect the resulting scales and freeze them across architectures within a teacher/data condition.
 
-Start with Huber loss with delta=1 in standardized action units:
+Compare Huber loss with delta=1 against MSE once in the M2-A pilot, then freeze the action loss before architecture screening. The Huber candidate is:
 
 ```text
 loss = 0.5 * mean_huber(arm_prediction, arm_target)
      + 0.5 * mean_huber(wheel_prediction, wheel_target)
 ```
 
-The separate means give the two action groups equal weight rather than letting the seven torque dimensions outweigh the four wheel dimensions solely by dimension count. Log physical-unit errors after inverse normalization as well as standardized loss. The loss and scale choices are project hyperparameters, not established optimal values.
+The separate means give the two action groups equal weight rather than letting the seven torque dimensions outweigh the two independent wheel dimensions solely by dimension count. Fit wheel output scales on the right/left labels; expand to four commands after inverse normalisation. Log physical-unit errors after inverse normalization as well as standardized loss. The loss and scale choices are project hyperparameters, not established optimal values. Baseline loss has no Jacobian term; the later paired BC+J experiment follows research §4.4.
 
 ### Sampling and training budget
 
@@ -90,35 +92,35 @@ Control optimizer updates, batch size and sampling rules across architectures. E
 
 ## 5. Candidate architecture matrix
 
-These six candidates vary depth, width and taper while keeping features, normalization, activation, heads, loss and optimization fixed.
+These six candidates vary depth, width and taper while keeping features, normalization, activation, heads, selected action loss and update budget fixed. Tune LR separately for each architecture/teacher using the same three-value grid, then use each architecture's chosen LR for closed-loop comparison.
 
 | ID | Hidden widths | Parameters with 21 inputs | Parameters with 26 inputs | Purpose |
 | --- | --- | ---: | ---: | --- |
-| M1 | `[64, 64]` | 6,539 | 6,859 | Small capacity/latency reference |
-| M2 | `[128, 128]` | 21,259 | 21,899 | First baseline |
-| M3 | `[256, 256]` | 75,275 | 76,555 | Width increase |
-| M4 | `[128, 128, 128]` | 38,027 | 38,667 | Depth increase at moderate width |
-| M5 | `[256, 256, 256]` | 141,579 | 142,859 | Larger reference from the earlier plan |
-| M6 | `[256, 128, 64]` | 48,395 | 49,675 | Tapered representation |
+| M1 | `[64, 64]` | 6,409 | 6,729 | Small capacity/latency reference |
+| M2 | `[128, 128]` | 21,001 | 21,641 | First baseline |
+| M3 | `[256, 256]` | 74,761 | 76,041 | Width increase |
+| M4 | `[128, 128, 128]` | 37,769 | 38,409 | Depth increase at moderate width |
+| M5 | `[256, 256, 256]` | 141,065 | 142,345 | Larger reference from the earlier plan |
+| M6 | `[256, 128, 64]` | 48,265 | 49,545 | Tapered representation |
 
-Parameter counts include linear biases and affine LayerNorm parameters, and use linear seven- and four-output heads.
+Parameter counts include linear biases and affine LayerNorm parameters, and use linear seven- and two-output heads. The same architecture has identical parameter counts for BC and BC+J.
 
-Initial training recipe, subject to a throughput pilot:
+Unified training recipe, with loss and budget frozen after the pilot:
 
 | Setting | Initial value |
 | --- | --- |
 | Optimizer | AdamW |
-| Learning rate | 3e-4 |
+| Learning rate | Best of {1e-3, 3e-4, 1e-4} per architecture/teacher on the offline proxy |
 | Weight decay | 1e-4 |
 | Batch size | 1024 |
-| Training updates | 10,000 per screen run |
-| LR schedule | Cosine decay over the fixed update budget |
+| Training updates | Common budget from the M2-A constant-LR pilot plateau, approximately 1.5× plateau updates |
+| LR schedule | Short linear warm-up (e.g. 500 updates), then cosine over the frozen budget |
 | Offline validation logging | Every 500 updates |
 | Checkpoints and screening rollouts | Every 2,000 updates |
 | Screening initialization seed | 0 |
 | Finalist seeds | 0, 1 and 2 |
 
-Benchmark a short run before freezing the search budget. If 10,000 updates are not practical, choose a smaller common budget before starting the candidate matrix and document it. Do not give larger models a different update budget without reporting that as a separate experiment.
+Run the M2-A constant-LR pilot at 1e-3 and 3e-4 for 50k updates and log every 1k updates, following research §4.2; use it to choose the budget and compare the loss candidates. Freeze the common budget before the matrix, rather than retaining the old fixed 10k guess. If the pilot has not plateaued or the budget is infeasible, document and resolve that before screening. Do not give larger models a different update budget without reporting that as a separate experiment.
 
 ## 6. Closed-loop validation and selection
 
@@ -131,7 +133,7 @@ Run the student alone: no teacher actions, true `q_des`, expert phase or done fl
 At inference:
 
 - Build the same deployable features, apply the saved fitting normalizer and invert the output normalization.
-- Execute at 1 kHz with the recorded action ordering and torque/wheel limits. Do not lower the control rate or hold actions to hide slow inference.
+- Execute at 1 kHz with the source manifest's action order and execution limits: current Clean_253 A/B use ±30 N·m and ±6 rad/s. Freeze the interface in the checkpoint and reject runtime mismatches. Do not lower the control rate or hold actions to hide slow inference.
 - Use one CPU inference thread initially; measure feature construction plus network inference, including median, p95 and p99 latency. A 1 ms control interval is the target, not an unmeasured guarantee.
 - Use the collection's 40 s cap and three-second post-reach recording convention, without terminating on the known misleading stall diagnostic.
 
@@ -156,14 +158,14 @@ If all architectures fail in closed loop, inspect feature/action alignment, scal
 | --- | --- | --- |
 | 1. Make the pipeline run | Install/verify PyTorch; implement loading, policy save/load and closed-loop evaluation; freeze the internal scenario split | Correct data alignment, normalizer round trip, checkpoint round trip and finite bounded inference |
 | 2. Obtain one baseline | Train M2 on Markovian fitting data first; inspect a small fitting-scenario rollout check and validation rollouts | A saved checkpoint with actual offline and closed-loop results |
-| 3. Screen structures | Run all six candidates on each teacher, seed 0, fixed recipe | 12 architecture/teacher results, not just training-loss curves |
-| 4. Check repeatability | For each teacher, select the top two and add seeds 1 and 2 | Three seeds per finalist; 8 additional runs, 20 total including the screen |
+| 3. Screen structures | Six candidates × two teachers × three LRs, seed 0; one chosen LR per architecture/teacher goes to rollouts | 36 offline runs and 12 architecture/teacher closed-loop candidates |
+| 4. Check repeatability | For each teacher, select the top two and add seeds 1 and 2 at its frozen LR | Three seeds per finalist; 8 additional runs, 44 including the offline screen, excluding pilots and BC+J |
 | 5. Optional data-quality comparison | Train the selected architecture on `Clean_223` using 196 fitting scenarios and the same 32 validation IDs from `Clean_253` | Comparison of wider height coverage with chatter versus fewer paired chatter-free scenarios |
 | 6. Freeze and evaluate | Freeze the chosen architecture/recipe and, if time permits, refit on all 253 primary training scenarios | Fixed final checkpoints and one planned evaluation on the original 64 test scenarios |
 
-For final refitting, freeze the training-duration rule from validation results before using all 253 primary trajectories (or all 223 for a separately declared reduced-data finalist). Refit normalizers on that final training cohort; do not use test statistics. There is no validation-based checkpoint selection during that final all-training-data fit.
+For optional final refitting, freeze the architecture, objective, LR schedule, update-count rule and seed set from validation before using all 253 primary trajectories (or all 223 for a separately declared reduced-data finalist). Create a new `fit_stage=refit` run, start from the declared seeded initial weights, and refit normalizers on that final training cohort. Train to the frozen terminal update and save `final.pt`, with no validation-based selection or test statistics. Independent-validation development runs use `fit_stage=selection` and save validation-selected `best.pt`. If final refitting is skipped, freeze and evaluate the selected `best.pt`. BC+J, if selected separately, freezes λ_J before refit and recomputes standardised derivative targets with its refitted scales.
 
-If time is limited, complete stages 1–3 before optional comparisons. A verified Markovian baseline is the first deliverable. Do not sacrifice an evaluated working policy to complete a large unverified search table. Additional learning-rate or activation/LayerNorm searches belong after the fixed structure screen; they should be labelled separate optimization stages.
+If time is limited, obtain the verified M2-A baseline before expanding the search or adding optional comparisons. Do not sacrifice an evaluated working policy to complete a large unverified search table. The declared three-value per-architecture LR sweep is part of screening; any extra LR, activation or LayerNorm search is a separately labelled optimisation stage.
 
 The optional 223-versus-253 comparison changes both scene membership and the amount of data, as well as retaining/excluding chatter. Interpret it as a practical data-selection comparison, not an isolated causal measurement of chatter alone.
 
@@ -171,7 +173,7 @@ The optional 223-versus-253 comparison changes both scene membership and the amo
 
 For every run save architecture, teacher/data version, split hash, feature hash, normalizers, sampling rule, training budget, seed, source revision, optimizer settings, checkpoints, offline curves and closed-loop metrics. Use a results CSV with one row per checkpoint evaluation and retain per-scenario outcomes.
 
-Suggested run naming: `bc-<teacher>-clean253-<architecture>-s<seed>`. Keep `Clean_223` comparison runs distinguishable.
+Use the structure design's unique run ID: `<regime>-<teacher>-<objective>-<cohort>-<architecture>-lr<lr>-s<seed>-<fit_stage>[-r<round>]-<config_id>`. This distinguishes BC/BC+J, Clean_253/Clean_223, selection/refit and LR candidates. The compact shared `results/results.csv` is versioned; detailed per-run metrics, figures, datasets and checkpoints stay local.
 
 Within-teacher comparisons test architecture choices. Comparing an A-trained 21-input policy with a B-trained 26-input policy changes the teacher, information and trajectories, and is an end-to-end approach comparison rather than an isolated test of recurrence or memory.
 
