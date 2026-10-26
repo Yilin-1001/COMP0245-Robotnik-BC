@@ -27,6 +27,10 @@ final/robotnik_arm_task/models/*
 *.pkl
 final/robotnik_arm_task/data/
 final/robotnik_arm_task/checkpoints/
+final/robotnik_arm_task/results/**
+!final/robotnik_arm_task/results/figures/
+!final/robotnik_arm_task/results/.gitkeep
+!final/robotnik_arm_task/results/figures/.gitkeep
 outputs/
 runs/
 wandb/
