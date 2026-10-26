@@ -253,12 +253,15 @@ def _root(config: dict, key: str) -> Path:
     return p if p.is_absolute() else TASK_DIR / p
 
 
-def prepare_run(config: dict, fitting_ids: list[str] | None = None, workers: int = 16) -> dict:
+def prepare_run(config: dict, fitting_ids: list[str] | None = None, workers: int = 16, finalise: bool = True,
+                before_finalise: Callable | None = None) -> dict:
     """Validate clean sources, build/reuse caches, fit fitting-only scales and finalise the run identity.
 
     Selection runs fit on the cohort's fitting IDs and validate on the 32 frozen IDs read from Clean_253.
     Refit runs fit on every training ID of the cohort and have no validation set.
     fitting_ids overrides the fitting set (the separately identified one-episode sanity run).
+    before_finalise(config, normaliser) -> config runs after the scales exist (BC+J attaches its frozen calibration);
+    finalise=False returns the prepared data and provenance draft without a run identity (calibration itself).
     """
     from training.common.config import finalise_identity
     from training.common.dataset import (FeatureBuilder, build_cache, cache_id, load_episode_refs, load_manifest,
@@ -308,9 +311,14 @@ def prepare_run(config: dict, fitting_ids: list[str] | None = None, workers: int
         "normaliser_sha256": normaliser.sha256(), "code_digest": code_digest(),
         "operational": {"git_head": _git("rev-parse", "HEAD"), "git_dirty": bool(_git("status", "--porcelain")),
                         "prepared_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}}
+    if before_finalise is not None:
+        config = before_finalise(config, normaliser)
+    out = {"train": caches["fitting"], "validation": caches["validation"], "normaliser": normaliser,
+           "provenance": provenance}
+    if not finalise:
+        return dict(out, config=config)
     if config["identity"]["objective"] == "bcj":
         calib = config["loss"]["jacobian"].get("calibration_record")
         if calib:
             provenance["calibration_sha256"] = calib["sha256"]
-    final = finalise_identity(config, provenance)
-    return {"config": final, "train": caches["fitting"], "validation": caches["validation"], "normaliser": normaliser}
+    return dict(out, config=finalise_identity(config, provenance))
