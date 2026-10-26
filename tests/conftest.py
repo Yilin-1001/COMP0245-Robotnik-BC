@@ -95,3 +95,34 @@ def write_fake_dataset(root, teacher="A", train=None, test=None, seed=0, mutate=
 @pytest.fixture
 def fake_dataset(tmp_path):
     return lambda teacher="A", **kw: write_fake_dataset(tmp_path / f"{TEACHER_DIRS[teacher]}_fake", teacher, **kw)
+
+
+# ---------------------------------------------------------------- numerical fixtures
+
+FEATURES_A = ([f"q_mes_{i}" for i in range(7)] + [f"qd_mes_{i}" for i in range(7)] + ["target_bx", "target_by", "target_bz"]
+              + ["ee_err_bx", "ee_err_by", "ee_err_bz", "target_z_world"])
+LABELS = [f"torque_{i}" for i in range(7)] + ["wheel_right", "wheel_left"]
+FLOORS = {"input_scale_floor": 1e-6, "arm_scale_floor": 0.1, "wheel_scale_floor": 0.05}
+
+
+def make_normaliser(x_scale=None, y_scale=None):
+    from training.common.normalisation import Normaliser
+    return Normaliser(np.zeros(21), np.ones(21) if x_scale is None else x_scale, np.zeros(9),
+                      np.ones(9) if y_scale is None else y_scale, FEATURES_A, LABELS, FLOORS)
+
+
+@pytest.fixture
+def unit_normaliser():
+    return make_normaliser()
+
+
+@pytest.fixture
+def linear_pd_model():
+    """Standardised linear map with torque_i = -20 * qd_i (zero intercept and cross terms)."""
+    import torch
+    m = torch.nn.Linear(21, 9)
+    with torch.no_grad():
+        m.weight.zero_()
+        m.bias.zero_()
+        m.weight[:7, 7:14] = -20.0 * torch.eye(7)
+    return m
