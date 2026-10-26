@@ -11,19 +11,25 @@ robotnik_arm_task.py are only in where measurements come from:
 
 Call order per step matches robotnik_arm_task.py: base_controller first, then arm_controller with
 reach_active = base_state.done. act() returns the action and before/after snapshots of the memory.
+
+The privileged inputs (true base quaternion, all 17 motor angles) and the time can be passed to
+act() explicitly, so a stored episode can be replayed without the simulator; by default they are
+read from the environment.
 """
 import numpy as np
 import pinocchio as pin
 
 from core.interfaces import Action, Observation
 from robotnik_arm_control import (ArmControllerParams, BaseControllerParams, BaseNavState, arm_controller,
-                                  base_controller)
+                                  base_controller, quaternion2bearing)
 
 # Values from robotnik_arm_task.py
 BASE_NAV_TIMEOUT = 25.0
 ARM_REACH_LIMIT = 0.85
 STANDOFF_Z_POINTS = [0.1, 0.5, 1.1, 1.25]
 STANDOFF_POINTS = [0.80, 0.65, 0.65, 0.35]
+PHASES = ("align", "drive", "orient")   # integer codes 0, 1, 2 in stored datasets
+CONTROL_DT = 0.001                      # time_step passed to arm_controller, as sim.GetTimeStep() in the template
 
 
 def template_base_goal(target: np.ndarray) -> tuple[np.ndarray, float]:
@@ -46,34 +52,53 @@ class TemplateTeacher:
         self.base_params = BaseControllerParams(nav_timeout=BASE_NAV_TIMEOUT)
         self.arm_params = ArmControllerParams(reach_limit=ARM_REACH_LIMIT)
 
-    def reset(self) -> None:
-        """Call after env.reset(scenario): plans the base goal and initialises the memory."""
-        self.target = np.asarray(self.env.scenario.target_ee_pos, dtype=float)
+    def reset(self, target: np.ndarray | None = None, q_hold: np.ndarray | None = None) -> None:
+        """Call after env.reset(scenario): plans the base goal and initialises the memory.
+
+        q_hold is the measured initial arm configuration (robotnik_arm_task.py uses the angles read
+        after setup); it defaults to the configured initial angles, which env.reset sets exactly.
+        """
+        self.target = np.asarray(self.env.scenario.target_ee_pos if target is None else target, dtype=float).copy()
         self.goal_pos, self.goal_bearing = template_base_goal(self.target)
         self.base_state = BaseNavState()
-        self.q_hold = self.env.init_motor_angles[4:11].copy()
+        self.q_hold = (self.env.init_motor_angles[4:11] if q_hold is None else np.asarray(q_hold, dtype=float)).copy()
         self.q_des = self.q_hold.copy()
         self.qd_des = np.zeros(7)
 
-    def act(self, obs: Observation) -> tuple[Action, dict]:
+    def privileged_inputs(self) -> tuple[np.ndarray, np.ndarray]:
+        """Teacher-side measurements the Observation lacks: true base quaternion (x, y, z, w) and all 17 motor angles."""
+        return np.array(self.env.sim.GetBaseOrientation()), np.array(self.env.sim.GetMotorAngles(0))
+
+    def act(self, obs: Observation, t: float | None = None, base_quat: np.ndarray | None = None,
+            motor_angles: np.ndarray | None = None) -> tuple[Action, dict]:
         env, dm = self.env, self.env.dyn_model
-        roll, pitch, _ = pin.rpy.matrixToRpy(pin.Quaternion(*np.roll(env.sim.GetBaseOrientation(), 1)).matrix())
-        base_quat = pin.Quaternion(pin.rpy.rpyToMatrix(roll, pitch, obs.base_bearing)).coeffs()  # x, y, z, w
-        motor_angles = np.array(env.sim.GetMotorAngles(0))
+        if base_quat is None or motor_angles is None:
+            base_quat, motor_angles = self.privileged_inputs()
+        t = env.t if t is None else t
+        base_quat = np.asarray(base_quat, dtype=float)
+        if quaternion2bearing(base_quat[3], base_quat[0], base_quat[1], base_quat[2]) == obs.base_bearing:
+            # Observed yaw is the true yaw (no sensor noise): use the simulator quaternion as the template does.
+            # Rebuilding it from roll/pitch/yaw changes it by ~1e-16, which the closed loop amplifies.
+            quat = base_quat
+        else:
+            roll, pitch, _ = pin.rpy.matrixToRpy(pin.Quaternion(*np.roll(base_quat, 1)).matrix())
+            quat = pin.Quaternion(pin.rpy.rpyToMatrix(roll, pitch, obs.base_bearing)).coeffs()  # x, y, z, w
+        motor_angles = np.array(motor_angles, dtype=float)
         motor_angles[4:11] = obs.q_mes
-        q_pin = dm.ReoderJoints2PinVec(np.concatenate((obs.base_pos, base_quat, motor_angles)), "pos")
+        q_pin = dm.ReoderJoints2PinVec(np.concatenate((obs.base_pos, quat, motor_angles)), "pos")
         pin.forwardKinematics(dm.pin_model, dm.pin_data, q_pin)
         pin.updateFramePlacements(dm.pin_model, dm.pin_data)
         ee_pos = dm.pin_data.oMf[env.ee_frame_id].translation.copy()
 
         before = {"q_des": self.q_des.copy(), "phase": self.base_state.phase, "nav_done": self.base_state.done}
         wheel_cmds = base_controller(self.base_state, obs.base_pos, obs.base_bearing, self.goal_pos,
-                                     self.goal_bearing, env.t, self.base_params)
+                                     self.goal_bearing, t, self.base_params)
         reach_active = self.base_state.done
-        torque_arm, self.q_des, self.qd_des = arm_controller(
+        torque_arm, q_des, qd_des = arm_controller(
             dm, q_pin, obs.q_mes, obs.qd_mes, self.q_des, self.q_hold, self.target, ee_pos, env.ee_frame_id,
-            self.shoulder_frame_id, self.arm_lower, self.arm_upper, 0.001, self.arm_params, reach_active=reach_active)
+            self.shoulder_frame_id, self.arm_lower, self.arm_upper, CONTROL_DT, self.arm_params, reach_active=reach_active)
+        self.q_des, self.qd_des = q_des.copy(), qd_des.copy()
         state = {"before": before,
                  "after": {"q_des": self.q_des.copy(), "phase": self.base_state.phase, "nav_done": self.base_state.done},
                  "qd_des": self.qd_des.copy(), "reach_active": reach_active, "teacher_ee_pos": ee_pos}
-        return Action(torque_arm, wheel_cmds), state
+        return Action(np.array(torque_arm, dtype=float), np.array(wheel_cmds, dtype=float)), state

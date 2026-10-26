@@ -22,7 +22,11 @@ cd final/robotnik_arm_task
 python robotnik_arm_task.py                                  # original task with GUI
 ROBOENV_HEADLESS=1 python robotnik_arm_task.py               # original task, headless
 
-python -m data_collection.collect --n 512                    # expert data with DART  -> data/D0.npz
+python -m data_collection.scenarios                         # frozen Sobol scenarios  -> data/scenarios/
+python -m data_collection.scenario_coverage                 # coverage audit          -> data/scenarios/coverage/
+python -m data_collection.collect                           # clean expert data       -> data/{Markovian,Stateful}/Clean/
+python -m data_collection.qa_clean                          # QA + training manifests -> data/*/Clean/{qa/,training_manifest.csv}
+python -m data_collection.verify_template_teacher --out data/Stateful/Clean/qa   # wrapper vs original script
 python -m training.train_mlp --data data/D0.npz              # baseline MLP           -> checkpoints/mlp_r0.pt
 python -m data_collection.dagger --rounds 4                  # DAgger rounds          -> data/D_roundN.npz
 python -m evaluation.evaluate --policy expert --split val    # score a policy         -> results/results.csv
@@ -31,7 +35,7 @@ python markovian_expert_demo.py                              # Markovian expert 
 python -m evaluation.compare_controllers --n 30              # template vs Markovian time to reach -> results/controller_timing.csv
 ```
 
-Hyperparameters and paths are in `final/robotnik_arm_task/settings.yaml`.
+Hyperparameters and paths are in `final/robotnik_arm_task/settings.yaml`. The clean expert datasets, their outcome definitions and QA are described in `docs/clean_collection_report.md`.
 
 ## Layout
 
@@ -62,4 +66,5 @@ final/robotnik_arm_task/
 | `RoboEnv/`, `simulation_and_control` | COMP0245 course | Used as is |
 | `robotnik_arm_task.py`, `robotnik_arm_control.py`, `configs/`, `models/` | COMP0245 final task template | Used as is |
 | `data_collection/expert.py` | Based on `robotnik_arm_control.py` | Modified: made Markovian |
+| `data_collection/template_teacher.py` | Calls `arm_controller`/`base_controller` from `robotnik_arm_control.py` unchanged | Written for this project: wrapper reproducing `robotnik_arm_task.py`'s setup, verified bit-identical |
 | Everything else in `core/`, `data_collection/`, `training/`, `evaluation/` | Written for this project | From scratch |
