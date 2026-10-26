@@ -47,3 +47,9 @@ def test_nonempty_incompatible_csv_requires_migration(tmp_path, complete_row):
 def test_missing_key_fields_are_rejected(tmp_path, complete_row):
     with pytest.raises(ValueError):
         append_results(tmp_path / "results.csv", [dict(complete_row, evaluation_split="")])
+
+
+def test_index_uses_unix_line_endings(tmp_path, complete_row):
+    path = tmp_path / "results.csv"
+    append_results(path, [complete_row])
+    assert b"\r" not in path.read_bytes()

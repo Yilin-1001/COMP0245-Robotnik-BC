@@ -262,7 +262,7 @@ def append_results(path: Path, rows: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
     with open(tmp, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=RESULT_COLUMNS)
+        w = csv.DictWriter(f, fieldnames=RESULT_COLUMNS, lineterminator="\n")
         w.writeheader()
         w.writerows(existing + new)
     os.replace(tmp, path)
