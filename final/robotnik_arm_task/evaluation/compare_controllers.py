@@ -51,7 +51,13 @@ def _init_worker():
 
 
 def _template_controller(env, target):
-    """The template's controller and its state, as set up in robotnik_arm_task.py. Returns step(obs) -> (action, base_done)."""
+    """The template's controller and its state, as set up in robotnik_arm_task.py. Returns step(obs) -> (action, base_done).
+
+    The template plans its base goal once, from its start pose (the origin in robotnik_arm_task.py), so here it
+    plans from env.scenario's start pose. Base position, yaw and arm joints come from the observation, so sensor
+    noise reaches the template as it reaches the expert; roll and pitch, which the observation lacks, come from
+    the simulator as in the template. With no noise and a start at the origin this is the template exactly.
+    """
     from core.interfaces import Action
     from robotnik_arm_control import ArmControllerParams, BaseControllerParams, BaseNavState, arm_controller, base_controller
 
@@ -60,7 +66,8 @@ def _template_controller(env, target):
     lower, upper = env.sim.GetBotJointsLimit()
     arm_lower, arm_upper = np.array(lower[4:11]), np.array(upper[4:11])
     standoff = float(np.interp(target[2], [0.1, 0.5, 1.1, 1.25], [0.80, 0.65, 0.65, 0.35]))
-    target_bearing = np.arctan2(target[1], target[0]) if np.linalg.norm(target[:2]) > 1e-4 else 0.0
+    to_target = target[:2] - np.asarray(env.scenario.base_start_pos, dtype=float)[:2]
+    target_bearing = np.arctan2(to_target[1], to_target[0]) if np.linalg.norm(to_target) > 1e-4 else 0.0
     goal_pos = target[:2] - standoff * np.array([np.cos(target_bearing), np.sin(target_bearing)])
     base_state = BaseNavState()
     base_params = BaseControllerParams(nav_timeout=25.0)
@@ -69,8 +76,11 @@ def _template_controller(env, target):
     state = {"q_des": q_hold.copy()}
 
     def step(obs):
-        q_all = np.concatenate((env.sim.GetBasePosition(), env.sim.GetBaseOrientation(), env.sim.GetMotorAngles(0)))
-        q_pin = dm.ReoderJoints2PinVec(q_all, "pos")
+        roll, pitch, _ = pin.rpy.matrixToRpy(pin.Quaternion(*np.roll(env.sim.GetBaseOrientation(), 1)).matrix())
+        base_quat = pin.Quaternion(pin.rpy.rpyToMatrix(roll, pitch, obs.base_bearing)).coeffs()  # x, y, z, w
+        motor_angles = np.array(env.sim.GetMotorAngles(0))
+        motor_angles[4:11] = obs.q_mes
+        q_pin = dm.ReoderJoints2PinVec(np.concatenate((obs.base_pos, base_quat, motor_angles)), "pos")
         pin.forwardKinematics(dm.pin_model, dm.pin_data, q_pin)
         pin.updateFramePlacements(dm.pin_model, dm.pin_data)
         ee_pos = dm.pin_data.oMf[env.ee_frame_id].translation.copy()
