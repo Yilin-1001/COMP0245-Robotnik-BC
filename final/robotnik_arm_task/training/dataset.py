@@ -1,16 +1,4 @@
-"""Load .npz datasets, split by scenario seed (never by timestep), normalise.
-
-Normalisation statistics come from the training split only.
-"""
-
-
-def load_datasets(paths: list[str]):
-    raise NotImplementedError
-
-
-def split_by_seed(data, val_fraction: float, seed: int):
-    raise NotImplementedError
-
-
-def fit_normaliser(train_data):
-    raise NotImplementedError
+"""Deprecated location: the MLP data pipeline lives in training.common.dataset and training.common.normalisation."""
+from training.common.dataset import (EpisodeCache, EpisodeRef, build_cache, build_split, load_episode_refs,  # noqa: F401
+                                     sample_indices)
+from training.common.normalisation import Normaliser, fit_normaliser  # noqa: F401

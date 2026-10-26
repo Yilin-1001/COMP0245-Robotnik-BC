@@ -36,9 +36,26 @@ python markovian_expert_demo.py                              # Markovian expert 
 python -m evaluation.compare_controllers --n 30              # template vs Markovian time to reach -> results/controller_timing.csv
 ```
 
-Simulator and clean-collection settings are in `final/robotnik_arm_task/settings.yaml`. Its legacy MLP/DAgger defaults are not the current training recipe. The target template/override rules and future commands are in the [training structure design](docs/superpowers/specs/2026-10-26-mlp-training-structure-design.md); the numerical recipe is in [training research](docs/mlp_training_research.md), and exact clean splits/evaluation are in the [baseline plan](docs/mlp_baseline_training_plan.md). New training templates and entry points are documentation targets, not runnable files yet. The existing clean datasets, outcome definitions and QA are described in `docs/clean_collection_report.md`.
+Simulator and clean-collection settings are in `final/robotnik_arm_task/settings.yaml`. Its `mlp`, `train_stride` and `dagger` keys are legacy placeholders: the training code never reads them, and the file is left byte-identical because the clean-data QA recomputes a code digest over it. Training settings live in `experiments/configs/` (`common.yaml` → `baseline.yaml`/`jacobian.yaml` → `objectives/` → `teachers/` → `--set key=value`), as defined in the [training structure design](docs/superpowers/specs/2026-10-26-mlp-training-structure-design.md). The numerical recipe is in [training research](docs/mlp_training_research.md), and the exact clean split and evaluation predicate are in the [baseline plan](docs/mlp_baseline_training_plan.md). The clean datasets, outcome definitions and QA are described in `docs/clean_collection_report.md`.
 
-The existing `training.train_mlp`, `data_collection.dagger`, `evaluation.evaluate` and `evaluation.plots` entry points raise `NotImplementedError`; their old command examples are not completed workflows.
+### MLP training and evaluation
+
+```bash
+cd final/robotnik_arm_task
+python -m training.common.dataset --write-split              # experiments/splits/clean253.json (already versioned)
+
+# Clean plain BC (action loss only). Budget, LR and loss come from the pilot protocol; --dry-run validates
+# the sources, builds the feature caches and prints the run identity without training.
+python -m training.baseline.train --teacher A --set training.lr=3.0e-4 --set training.updates=N --set loss.action=huber
+python -m training.baseline.train --teacher A ... --resume                 # continue the identical run from latest.pt
+python -m training.baseline.train --teacher A ... --sanity-episode train-0001   # one-episode overfit diagnostic
+
+# Closed-loop validation (8 screening or 32 validation scenarios; test scenarios are sealed)
+python -m evaluation.evaluate --policy mlp --artifact checkpoints/clean/A/bc/<run_id>/step_<k>.npz --split screening --record
+python -m evaluation.evaluate --policy expert --teacher A --split validation --record    # teacher reference
+```
+
+Runs are written to `checkpoints/<regime>/<teacher>/<objective>/<run_id>/` (`config.yaml`, `provenance.json`, `normaliser.npz`, `metrics.csv`, `step_<k>.pt` + `step_<k>.npz` exports, resumable `latest.pt`; `best.pt` + `inference.npz` once selected). `training.train_mlp` is a deprecated wrapper that forwards to `training.baseline.train` and rejects its old `--data/--out` arguments. `data_collection.dagger` and `evaluation.plots` remain placeholders for later stages.
 
 ## Layout
 

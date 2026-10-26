@@ -74,7 +74,7 @@ def configure_runtime(device: str, rollout: bool = False) -> dict:
     import torch
     if rollout:
         torch.set_num_threads(1)
-    report = {"python": platform.python_version(), "torch": torch.__version__, "cuda_build": torch.version.cuda,
+    report = {"python": platform.python_version(), "torch": str(torch.__version__), "cuda_build": str(torch.version.cuda),
               "cuda_arch_list": [], "gpu": None, "dtype": "float32", "amp": False, "fallback_reason": None,
               "rollout": rollout, "torch_threads": torch.get_num_threads(),
               "thread_env": {v: os.environ.get(v) for v in ROLLOUT_THREAD_VARS}}

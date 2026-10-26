@@ -1,20 +1,10 @@
 """Learned policies wrapped in the Policy interface.
 
-MLP: 3x256 with LayerNorm, separate arm-torque and wheel heads.
-ACT (optional): action chunks with temporal ensembling.
+MLP: implemented in training.common.policies (re-exported here for existing imports).
+ACT (optional, deferred): action chunks with temporal ensembling; outside the current MLP work.
 """
 from core.interfaces import Action, Observation, Policy
-
-
-class MLPPolicy(Policy):
-    name = "mlp"
-
-    @classmethod
-    def load(cls, ckpt_path: str) -> "MLPPolicy":
-        raise NotImplementedError
-
-    def act(self, obs: Observation) -> Action:
-        raise NotImplementedError
+from training.common.policies import MLPPolicy  # noqa: F401
 
 
 class ACTPolicy(Policy):

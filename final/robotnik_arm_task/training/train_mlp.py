@@ -1,21 +1,23 @@
-"""Train the BC-MLP: Huber loss, AdamW, cosine schedule.
+"""Deprecated: use `python -m training.baseline.train` (clean BC) or `python -m training.jacobian.train` (BC+J).
 
-Checkpoints are chosen by closed-loop validation success, not validation loss.
-Output: checkpoints/mlp_*.pt
-
-Usage: python -m training.train_mlp --data data/D0.npz --out checkpoints/mlp_r0.pt
+The old --data/--out arguments referred to a single pre-strided D0.npz and a fixed checkpoint path; they are not
+reinterpreted. This wrapper forwards new-style arguments to the baseline entry point unchanged.
 """
-import argparse
+import sys
+
+MESSAGE = ("training.train_mlp is deprecated: run `python -m training.baseline.train --teacher A|B "
+           "[--set key=value ...]` (see README). The old --data/--out arguments are not supported.")
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--data", nargs="+", default=["data/D0.npz"])
-    parser.add_argument("--out", default="checkpoints/mlp_r0.pt")
-    parser.add_argument("--seed", type=int, default=0)
-    args = parser.parse_args()
-    raise NotImplementedError
+def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if not argv or any(a.split("=")[0] in ("--data", "--out", "--seed") for a in argv):
+        print(MESSAGE, file=sys.stderr)
+        raise SystemExit(2)
+    print(MESSAGE, file=sys.stderr)
+    from training.baseline.train import main as baseline_main
+    return baseline_main(argv)
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
