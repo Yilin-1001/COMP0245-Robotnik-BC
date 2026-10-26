@@ -82,3 +82,21 @@ def features_b(base_pos, base_yaw, q_mes, qd_mes, t, target_w, goal_pos_w, goal_
     goal_b = to_base_yaw(goal - base_pos[:, :2], base_yaw)
     err = goal_bearing - base_yaw
     return np.concatenate((a, goal_b, np.sin(err)[:, None], np.cos(err)[:, None], (np.asarray(t) / time_scale_s)[:, None]), axis=1)
+
+
+# Fixed navigation-goal geometry of robotnik_arm_task.py, used by dataset B's task context. This is the
+# template's goal *rule*, a function of the target alone; it runs no teacher feedback or memory.
+STANDOFF_Z_POINTS = [0.1, 0.5, 1.1, 1.25]
+STANDOFF_POINTS = [0.80, 0.65, 0.65, 0.35]
+GOAL_RULES = ("template-origin-standoff",)
+
+
+def stateful_goal(target: np.ndarray, rule: dict) -> tuple[np.ndarray, float]:
+    """Base goal (x, y) and bearing: the standoff point on the line from the world origin to the target."""
+    if rule.get("goal_rule") not in GOAL_RULES:
+        raise ValueError(f"unknown goal rule {rule.get('goal_rule')!r}; known: {GOAL_RULES}")
+    target = np.asarray(target, dtype=float)
+    standoff = float(np.interp(target[2], STANDOFF_Z_POINTS, STANDOFF_POINTS))
+    target_xy = target[:2]
+    bearing = np.arctan2(target_xy[1], target_xy[0]) if np.linalg.norm(target_xy) > 1e-4 else 0.0
+    return target_xy - standoff * np.array([np.cos(bearing), np.sin(bearing)]), float(bearing)
