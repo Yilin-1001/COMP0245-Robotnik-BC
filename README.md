@@ -9,8 +9,13 @@ Python 3.10. RoboEnv provides `simulation_and_control`, `pinocchio` and `pybulle
 ```bash
 uv venv --python 3.10 ../.venv && source ../.venv/bin/activate
 uv pip install -e RoboEnv
-uv pip install -r requirements.txt
+uv pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128   # torch 2.11.0+cu128, before the requirements
+uv pip install -r requirements-dev.txt                                          # requirements.txt + pytest
 ```
+
+Training uses PyTorch 2.11.0 built for CUDA 12.8, which includes the `sm_120` kernels the RTX 50-series laptop GPU needs. Check it with `python -c "from training.common.config import configure_runtime; print(configure_runtime('auto'))"` from `final/robotnik_arm_task/`: `device: cuda` means a kernel actually ran; otherwise `fallback_reason` explains why training will use the CPU. Without a usable GPU, install the CPU wheel from `https://download.pytorch.org/whl/cpu` instead. Installing torch 2.11.0 downgrades `setuptools` to 78.1.0 (a torch constraint); the simulator packages are unchanged.
+
+Tests run from the repository root: `python -m pytest tests -m 'not sim and not realdata'` for the fast suite, and `-m realdata` / `-m sim` for checks that read the recorded datasets or start PyBullet.
 
 ## Running
 
