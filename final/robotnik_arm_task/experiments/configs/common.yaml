@@ -1,0 +1,59 @@
+# Shared MLP training defaults (docs/mlp_training_research.md §4.1, docs/mlp_baseline_training_plan.md §5).
+# Resolution order: common -> workflow -> objective -> teacher -> permitted CLI overrides.
+identity:
+  cohort: clean253          # clean253 (221 fit / 32 val) or clean223 (196 fit / same 32 val)
+  architecture: m2
+  seed: 0                   # paired-experiment seed: model init and action batches derive from it
+  fit_stage: selection      # selection (validation available, best.pt) or refit (final.pt)
+  replicate: 0              # separate rerun of an identical configuration
+model:
+  architectures:            # hidden widths; Linear -> LayerNorm -> SiLU per layer, heads 7 torque + 2 wheel
+    m1: [64, 64]
+    m2: [128, 128]
+    m3: [256, 256]
+    m4: [128, 128, 128]
+    m5: [256, 256, 256]
+    m6: [256, 128, 64]
+  layernorm_eps: 1.0e-5
+training:
+  optimizer: adamw
+  lr: null                  # chosen per architecture/teacher from lr_grid on the offline proxy
+  lr_grid: [1.0e-3, 3.0e-4, 1.0e-4]
+  weight_decay: 1.0e-4
+  batch_size: 1024
+  warmup_updates: 500
+  schedule: cosine          # cosine (screen/selection) or constant (budget pilot)
+  updates: null             # common budget, set from the constant-LR pilot plateau
+  log_every: 500            # offline validation logging (pilot uses 1000)
+  checkpoint_every: 2000
+  device: auto              # operational: cuda when a kernel runs, else cpu
+loss:
+  action: null              # huber or mse, frozen after the matched M2-A pilot pair
+  action_candidates: [huber, mse]
+  huber_delta: 1.0          # standardised units
+  epsilon_tau: 1.0e-4       # N*m, torque-boundary tolerance for valid derivative rows
+data:
+  split_manifest: experiments/splits/clean253.json
+  cache_root: data/cache
+  input_scale_floor: 1.0e-6
+  arm_scale_floor: 0.1      # N*m
+  wheel_scale_floor: 0.05   # rad/s
+evaluation:
+  workers: 16               # operational
+  episode_cap_s: 40.0
+  min_reach_time_s: 8.0
+  post_reach_s: 3.0
+  hold_window_s: 1.0
+  reach_tolerance_m: 0.01
+  hold_bias_gate_nm: 0.5
+  jacobian_samples: 4096    # hold rows sampled per offline damping diagnostic
+outputs:
+  checkpoint_root: checkpoints
+  results_root: results
+  results_index: results/results.csv
+interface:                  # expected execution interface; must equal the source manifests (never overridden)
+  action_order: "a = [torque_arm (7), wheel_cmds FR, FL, BL, BR (4)]"
+  torque_limit: 30.0        # N*m, collection_configuration.exec_torque_limit
+  wheel_limit: 6.0          # rad/s, collection_configuration.exec_wheel_limit
+  control_hz: 1000
+provenance: {}              # filled when identity is finalised

@@ -1,0 +1,14 @@
+# Teacher B: original stateful template controller, 26 deployable inputs (known fixed goal and elapsed time).
+identity:
+  teacher: B
+model:
+  input_dim: 26
+data:
+  teacher_dir: Stateful
+  teacher_version: template-origin-goal-v1
+  feature_definition: features-v1
+  primary_root: data/Stateful/Clean_253
+  reduced_root: data/Stateful/Clean_223
+  task_context:
+    goal_rule: template-origin-standoff   # robotnik_arm_task.py rule, computed from the target only
+    time_scale_s: 25.0                    # template navigation timeout

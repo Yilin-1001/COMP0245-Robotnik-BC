@@ -1,0 +1,4 @@
+# Clean-data plain BC: action loss only (python -m training.baseline.train).
+identity:
+  regime: clean
+  objective: bc

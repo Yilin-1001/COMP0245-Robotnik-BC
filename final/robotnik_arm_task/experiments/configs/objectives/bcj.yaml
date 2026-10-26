@@ -1,0 +1,8 @@
+# Action loss plus the 7x7 standardised torque-versus-velocity Jacobian loss (research §4.4).
+loss:
+  jacobian:
+    lambda_j: null          # frozen fitting-only calibration: 0.1 * action_loss / jacobian_loss at seed-0 init
+    calibration: null       # path to the frozen calibration record
+    calibration_ratio: 0.1
+    subbatch_size: 256
+    kd: 30.0                # teacher joint damping gain, N*m*s/rad

@@ -1,0 +1,3 @@
+# Action loss only: 0.5 * arm + 0.5 * wheel.
+loss:
+  jacobian: null

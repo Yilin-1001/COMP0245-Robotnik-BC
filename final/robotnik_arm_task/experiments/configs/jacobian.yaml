@@ -1,0 +1,4 @@
+# Clean-data BC+J: action loss plus damping-Jacobian loss (python -m training.jacobian.train).
+identity:
+  regime: clean
+  objective: bcj

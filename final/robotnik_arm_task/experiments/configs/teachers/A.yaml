@@ -1,0 +1,12 @@
+# Teacher A: Markovian expert, 21 deployable inputs.
+identity:
+  teacher: A
+model:
+  input_dim: 21
+data:
+  teacher_dir: Markovian
+  teacher_version: markovian-lt0.50-v1
+  feature_definition: features-v1
+  primary_root: data/Markovian/Clean_253
+  reduced_root: data/Markovian/Clean_223
+  task_context: null
