@@ -1,0 +1,243 @@
+protocol_id: p-e26487f2a548
+decisions:
+  budget:
+    pilot_lr: 0.0003
+    plateau_update: 28000
+    rule:
+      ? pilot LR by rank_offline on the 50k terminal rows (both fail the 0.5 N*m gate;
+        max hold bias 2.84 vs 3.61 N*m); plateau = first logged update after which
+        validation arm RMSE and wheel RMSE both stay within 10% of their best (3e-4
+      : arm 16k, wheel 28k); the max hold-bias curve is dominated by one episode (train-0023)
+        and never plateaus, so it is excluded; budget = 1.5 x 28k
+    updates: 42000
+  calibration:
+    A: checkpoints/calibration/A/m6/calibration-8e9338d79e0b.json
+    B: checkpoints/calibration/B/m1/calibration-c8d9379278f4.json
+  finalists:
+    A:
+    - m3
+    - m6
+    B:
+    - m5
+    - m1
+  loss:
+    action: huber
+    rule:
+      matched M2-A Huber/MSE (42k cosine, lr 3e-4, seed 0): both 0/8 screening hold
+        and reach at every checkpoint, so the rollouts do not separate them; by rank_offline
+        on the selected checkpoints Huber leads (both fail the gate; max hold bias
+        3.03 vs 6.33 N*m at 42k; arm RMSE 0.58 vs 0.70, wheel 0.059 vs 0.10, hold-arm
+        0.37 vs 0.63); MSE is marginally better only on saturated (1.89 vs 1.97) and
+        |qd|>1 rows (2.46 vs 2.62)
+  lr:
+    A:
+      m1: 0.0003
+      m2: 0.0003
+      m3: 0.0001
+      m4: 0.001
+      m5: 0.001
+      m6: 0.001
+    B:
+      m1: 0.0003
+      m2: 0.0003
+      m3: 0.001
+      m4: 0.0003
+      m5: 0.001
+      m6: 0.0003
+  selected:
+    A: m6
+    B: m1
+  final:
+    artifacts:
+    - label: A-bc-s0
+      teacher: A
+      objective: bc
+      architecture: m6
+      lr: 0.001
+      updates: 42000
+      loss: huber
+      seed: 0
+      fit_stage: selection
+      run_id: clean-A-bc-clean253-m6-lr1e-3-s0-selection-1f7ce5b7a590
+      checkpoint: checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s0-selection-1f7ce5b7a590/best.pt
+      checkpoint_sha256: a76a9443a00f58998b83a449c697232342e67223467dfdadf8b34e602c82e92f
+      inference: checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s0-selection-1f7ce5b7a590/inference.npz
+      inference_sha256: 1a6519a6ec71432b8bd78311529ebc8dee4b9312b76b884fdba5f69870a866bb
+    - label: A-bc-s1
+      teacher: A
+      objective: bc
+      architecture: m6
+      lr: 0.001
+      updates: 42000
+      loss: huber
+      seed: 1
+      fit_stage: selection
+      run_id: clean-A-bc-clean253-m6-lr1e-3-s1-selection-c4567d590a98
+      checkpoint: checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s1-selection-c4567d590a98/best.pt
+      checkpoint_sha256: 21881deb9dff41d17e33d600377bbcb3e90d324bcfbf8f44c8ac3a199a213ae6
+      inference: checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s1-selection-c4567d590a98/inference.npz
+      inference_sha256: 5b2493149cb3c8d0f998ac161398f4ca512246b1ab4c7ef1e56d2ad88a0dd60c
+    - label: A-bc-s2
+      teacher: A
+      objective: bc
+      architecture: m6
+      lr: 0.001
+      updates: 42000
+      loss: huber
+      seed: 2
+      fit_stage: selection
+      run_id: clean-A-bc-clean253-m6-lr1e-3-s2-selection-9d587b0fdaa9
+      checkpoint: checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s2-selection-9d587b0fdaa9/best.pt
+      checkpoint_sha256: b2d8632cd9830ec968598b658e4a74123347f9406db7d7c3f3da53ac22e6ed14
+      inference: checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s2-selection-9d587b0fdaa9/inference.npz
+      inference_sha256: 5d25001b85a890238bae916e6d0cea8826c09037c5f1c61317e53bd1e2c3bda4
+    - label: A-bcj-s0
+      teacher: A
+      objective: bcj
+      architecture: m6
+      lr: 0.001
+      updates: 42000
+      loss: huber
+      seed: 0
+      fit_stage: selection
+      run_id: clean-A-bcj-clean253-m6-lr1e-3-s0-selection-d45d831c8c61
+      checkpoint: checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s0-selection-d45d831c8c61/best.pt
+      checkpoint_sha256: d406f7f5464e35ad4aae2ce4af8cab0594f78a7221d67a038c076e2953b6540e
+      inference: checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s0-selection-d45d831c8c61/inference.npz
+      inference_sha256: 5bf067f55bb61cbe6829f8d0eeb5a6fbdbea018d8c1a9e8cd651e305a09ec518
+    - label: A-bcj-s1
+      teacher: A
+      objective: bcj
+      architecture: m6
+      lr: 0.001
+      updates: 42000
+      loss: huber
+      seed: 1
+      fit_stage: selection
+      run_id: clean-A-bcj-clean253-m6-lr1e-3-s1-selection-aaaf7d342ebe
+      checkpoint: checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s1-selection-aaaf7d342ebe/best.pt
+      checkpoint_sha256: e14185a306a5b52947d37cffd678e1c344c145f9b595c5f0f4fd11f60149682b
+      inference: checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s1-selection-aaaf7d342ebe/inference.npz
+      inference_sha256: 1df74f3e2dfee9c3dd42499c5314d9705053a994ba30fc155ae126049e5ee2a7
+    - label: A-bcj-s2
+      teacher: A
+      objective: bcj
+      architecture: m6
+      lr: 0.001
+      updates: 42000
+      loss: huber
+      seed: 2
+      fit_stage: selection
+      run_id: clean-A-bcj-clean253-m6-lr1e-3-s2-selection-e5fd042dd3a8
+      checkpoint: checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s2-selection-e5fd042dd3a8/best.pt
+      checkpoint_sha256: 7c9aa599a716bea1315e590392ccfdd8b6167e35413a977680782d2264e82c4f
+      inference: checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s2-selection-e5fd042dd3a8/inference.npz
+      inference_sha256: b9beff13b5e3b5c7b81ca0a0a258d86fdf0363010650d9c0b9ce85f350b497f4
+    - label: B-bc-s0
+      teacher: B
+      objective: bc
+      architecture: m1
+      lr: 0.0003
+      updates: 42000
+      loss: huber
+      seed: 0
+      fit_stage: selection
+      run_id: clean-B-bc-clean253-m1-lr3e-4-s0-selection-b712a5675710
+      checkpoint: checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s0-selection-b712a5675710/best.pt
+      checkpoint_sha256: a99d44789718f4cbcb8fadc1313a25ffe6ee77430770c003444a260dbe075fc8
+      inference: checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s0-selection-b712a5675710/inference.npz
+      inference_sha256: 4d627686df0f18c0b30c6b83c3c4e99d991a2c2fe6e74503a44f8d526f7858c6
+    - label: B-bc-s1
+      teacher: B
+      objective: bc
+      architecture: m1
+      lr: 0.0003
+      updates: 42000
+      loss: huber
+      seed: 1
+      fit_stage: selection
+      run_id: clean-B-bc-clean253-m1-lr3e-4-s1-selection-edb4903259d0
+      checkpoint: checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s1-selection-edb4903259d0/best.pt
+      checkpoint_sha256: 239945bd795ee30d675bde66558492dcef39a12fc5628a245eb118365dae20fa
+      inference: checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s1-selection-edb4903259d0/inference.npz
+      inference_sha256: 115f5f82ed4135c04707d2a0429a9c8e191f0b53eaea7fa73ac1c7ce43d1bd15
+    - label: B-bc-s2
+      teacher: B
+      objective: bc
+      architecture: m1
+      lr: 0.0003
+      updates: 42000
+      loss: huber
+      seed: 2
+      fit_stage: selection
+      run_id: clean-B-bc-clean253-m1-lr3e-4-s2-selection-4ef63d8e9e62
+      checkpoint: checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s2-selection-4ef63d8e9e62/best.pt
+      checkpoint_sha256: 94996507ab1511f278a57deb23b79d3835dfabd8ca188a299702761d97f27bb9
+      inference: checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s2-selection-4ef63d8e9e62/inference.npz
+      inference_sha256: fe9fd4d6c41601cf71bc43c2615f4e0237cd78eaef6ad4598d4c8aea741d310b
+    - label: B-bcj-s0
+      teacher: B
+      objective: bcj
+      architecture: m1
+      lr: 0.0003
+      updates: 42000
+      loss: huber
+      seed: 0
+      fit_stage: selection
+      run_id: clean-B-bcj-clean253-m1-lr3e-4-s0-selection-6bdb9cf90274
+      checkpoint: checkpoints/clean/B/bcj/clean-B-bcj-clean253-m1-lr3e-4-s0-selection-6bdb9cf90274/best.pt
+      checkpoint_sha256: 562129f04291ca4194b881998d98239d5ade4f962b1bf2dbf2bcbf0d743b2204
+      inference: checkpoints/clean/B/bcj/clean-B-bcj-clean253-m1-lr3e-4-s0-selection-6bdb9cf90274/inference.npz
+      inference_sha256: 2bead4e5d8c17911dd55eb8be1ee244227af27e5e84fbb38561a9fbf2dd07072
+    - label: B-bcj-s1
+      teacher: B
+      objective: bcj
+      architecture: m1
+      lr: 0.0003
+      updates: 42000
+      loss: huber
+      seed: 1
+      fit_stage: selection
+      run_id: clean-B-bcj-clean253-m1-lr3e-4-s1-selection-01220d21c482
+      checkpoint: checkpoints/clean/B/bcj/clean-B-bcj-clean253-m1-lr3e-4-s1-selection-01220d21c482/best.pt
+      checkpoint_sha256: 8dcc177ed37f4b9e6feb68226f79e35912a76d9f922b86af25222bca5c4265f0
+      inference: checkpoints/clean/B/bcj/clean-B-bcj-clean253-m1-lr3e-4-s1-selection-01220d21c482/inference.npz
+      inference_sha256: ecfcf90fa9f4792a2a840e86c310f5a979fb937e5423e42181604bca53db9b01
+    - label: B-bcj-s2
+      teacher: B
+      objective: bcj
+      architecture: m1
+      lr: 0.0003
+      updates: 42000
+      loss: huber
+      seed: 2
+      fit_stage: selection
+      run_id: clean-B-bcj-clean253-m1-lr3e-4-s2-selection-193ca455ec67
+      checkpoint: checkpoints/clean/B/bcj/clean-B-bcj-clean253-m1-lr3e-4-s2-selection-193ca455ec67/best.pt
+      checkpoint_sha256: 66d847c0ae7efd223078f4bb0cef471b2b5d958b4b1306397ccd9a49b1d6516a
+      inference: checkpoints/clean/B/bcj/clean-B-bcj-clean253-m1-lr3e-4-s2-selection-193ca455ec67/inference.npz
+      inference_sha256: a71fea36c5b5a9bfb5474369e0f7962e4b16e8309830ddaa70c66e926d972b53
+    seeds:
+    - 0
+    - 1
+    - 2
+    evaluation_id: rollout-v1
+    refit: skipped
+    rule: selected architecture per teacher (A m6, B m1), paired BC and BC+J, seeds
+      0-2, validation-selected best.pt; refit skipped because every selection run
+      holds 0/32 on validation, so a fixed-duration all-data final.pt carries no selection
+      evidence; experts are not declared test artifacts
+evidence:
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s0-selection-1f7ce5b7a590/selection.json: da0ea891467aee5f60372bfc7eab57e1513147acdede14e57dc06c1281384928
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s1-selection-c4567d590a98/selection.json: ae034b3bebc40fe0a5d73821b74f19864a3ea617e3f39e299636dc6241cd7720
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s2-selection-9d587b0fdaa9/selection.json: 80e0caf8e74c2c9f7546551ea92287d8bc5a55bf71687095b323ab18ff1f4bf1
+  checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s0-selection-d45d831c8c61/selection.json: 96a6a8c17c751f9cb7d2672c2c06d264c9fe492e43ac04d4f3b806f7ee3fc721
+  checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s1-selection-aaaf7d342ebe/selection.json: efea15482ba19326a581fc9e4fe3908cd7bf16770f5bfa7302577d6e4379734e
+  checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s2-selection-e5fd042dd3a8/selection.json: 1cc182e6caf3c0369c8b7d436c8ca6a9a5b61e71a3a8a23f19495d33927d1005
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s0-selection-b712a5675710/selection.json: 517b51cff73ea3854b068d28eacc401318a333e54e5554a3ab0c8c4397be03cb
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s1-selection-edb4903259d0/selection.json: 379cdc45acb9e2a833261e60cfcaab000d68f36b907692ea4b492edb39b2565c
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s2-selection-4ef63d8e9e62/selection.json: 902c49bc7847e1b201c0416304d3eeb3c0abed68bf15ea86156bdbe440ac778a
+  checkpoints/clean/B/bcj/clean-B-bcj-clean253-m1-lr3e-4-s0-selection-6bdb9cf90274/selection.json: af58169ddc41e6de8d86da508984dbf5b8fef6a02e125c2c4bc114e19f5dfa82
+  checkpoints/clean/B/bcj/clean-B-bcj-clean253-m1-lr3e-4-s1-selection-01220d21c482/selection.json: 05e6bce6e1d40540b285e36920d463f2acb48db36c035ea1b11b051d025dd3dc
+  checkpoints/clean/B/bcj/clean-B-bcj-clean253-m1-lr3e-4-s2-selection-193ca455ec67/selection.json: c86a59fb7fe9a093cb307f685c5c8fdcc8f5673190dee7a1059395348fb2f8d0
+parent: p-13adaf7f1178
