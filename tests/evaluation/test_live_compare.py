@@ -6,13 +6,24 @@ import sys
 
 import numpy as np
 import pytest
+import yaml
 
 from conftest import TASK_DIR
+
+
+def require_demo_artifact(teacher):
+    """Skip when the frozen BC seed-0 checkpoint the demo loads is absent (checkpoints are git-ignored)."""
+    protocol = yaml.safe_load((TASK_DIR / "experiments/protocols/p-e26487f2a548.yaml").read_text())
+    artifact = next(a for a in protocol["decisions"]["final"]["artifacts"]
+                    if (a["teacher"], a["objective"], a["seed"]) == (teacher, "bc", 0))
+    if not (TASK_DIR / artifact["inference"]).exists():
+        pytest.skip(f"trained checkpoint not present locally: {artifact['inference']}")
 
 
 @pytest.mark.sim
 @pytest.mark.parametrize("teacher", ["A", "B"])
 def test_live_comparison_uses_two_independent_simulators_at_the_same_time(tmp_path, teacher):
+    require_demo_artifact(teacher)
     output = tmp_path / "comparison.json"
     result = subprocess.run(
         [sys.executable, "-m", "evaluation.live_compare", "--headless", "--teacher", teacher,
@@ -33,6 +44,7 @@ def test_live_comparison_uses_two_independent_simulators_at_the_same_time(tmp_pa
 
 @pytest.mark.sim
 def test_custom_target_is_used_by_both_simulators(tmp_path):
+    require_demo_artifact("A")
     output = tmp_path / "custom.json"
     result = subprocess.run(
         [sys.executable, "-m", "evaluation.live_compare", "--headless", "--seconds", "0.02",
