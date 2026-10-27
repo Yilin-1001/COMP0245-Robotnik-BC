@@ -122,3 +122,15 @@ def test_tampered_or_unknown_protocols_are_rejected(tmp_path):
     bad = write_frozen_protocol(tmp_path, {"budgett": {"updates": 1}}, [ev])
     with pytest.raises(ValueError, match="unknown decision"):
         load_protocol(bad)
+
+
+def test_refit_jobs_follow_frozen_decisions(frozen_protocol):
+    with pytest.raises(BlockedError, match="refit"):
+        build_jobs("refit", frozen_protocol)
+    p = {"protocol_id": "x", "decisions": dict(frozen_protocol["decisions"], refit={"objectives": ["bc", "bcj"],
+                                                                                  "seeds": [0]})}
+    jobs = build_jobs("refit", p)
+    assert len(jobs) == 4 and all(j["identity"]["fit_stage"] == "refit" for j in jobs)
+    assert all(j["overrides"]["identity.fit_stage"] == "refit" and j["overrides"]["training.updates"] == 30000
+               for j in jobs)
+    assert {j["launcher"] for j in jobs if j["identity"]["objective"] == "bcj"} == {"jacobian"}

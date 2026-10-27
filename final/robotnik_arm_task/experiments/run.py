@@ -145,7 +145,28 @@ def build_jobs(stage: str, protocol: dict) -> list[dict]:
     if stage == "compare223":
         return [_job(stage, t, _need(d, "selected", t), 0, {**base, "training.lr": lr(t, _need(d, "selected", t))},
                      cohort="clean223") for t in TEACHERS]
-    raise BlockedError(f"stage {stage} requires a frozen final protocol (see validate_final_protocol)")
+    if stage == "refit":
+        refit = _need(d, "refit")
+        jobs = []
+        for t in TEACHERS:
+            arch = _need(d, "selected", t)
+            over = {**base, "training.lr": lr(t, arch), "identity.fit_stage": "refit"}
+            for objective in _need(d, "refit", "objectives"):
+                for seed in _need(d, "refit", "seeds"):
+                    extra = {"loss.jacobian.calibration": _need(d, "calibration", t)} if objective == "bcj" else {}
+                    job = _job(stage, t, arch, seed, {**over, **extra}, launcher="jacobian" if objective == "bcj"
+                               else "baseline", objective=objective)
+                    job["identity"]["fit_stage"] = "refit"
+                    jobs.append(job)
+        return jobs
+    if not d.get("final"):
+        raise BlockedError(f"stage {stage} requires a frozen final protocol (decisions.final)")
+    from evaluation.evaluate import validate_final_protocol
+    validate_final_protocol(protocol, index_path=TASK_DIR / "results" / "results.csv")
+    return [{"stage": "test", "launcher": "evaluate", "teacher": a["teacher"], "artifact": a, "overrides": {},
+             "identity": {"regime": "clean", "objective": a["objective"], "teacher": a["teacher"],
+                          "architecture": a["architecture"], "seed": a["seed"], "fit_stage": a["fit_stage"]}}
+            for a in d["final"]["artifacts"]]
 
 
 def reuse_allowed(existing: dict, new: dict) -> bool:
@@ -338,9 +359,15 @@ def main(argv=None) -> int:
     if not args.stage:
         p.error("--stage or --freeze is required")
     jobs = build_jobs(args.stage, protocol)
+    if args.stage == "test" and not args.dry_run:
+        from evaluation.evaluate import evaluate_final
+        for row in evaluate_final(protocol, args.workers):
+            print(json.dumps({k: row[k] for k in ("run_id", "teacher", "objective", "sustained_hold_success",
+                                                   "reach_success", "median_final_err_mm", "failures")}))
+        return 0
     if args.dry_run:
         for j in jobs:
-            print(json.dumps({k: j[k] for k in ("launcher", "teacher", "identity", "overrides")}))
+            print(json.dumps({k: j[k] for k in ("launcher", "teacher", "identity", "overrides")}, default=str))
         print(f"{len(jobs)} jobs; outputs under checkpoints/clean/<teacher>/<objective>/<run_id>/")
         return 0
     runs = run_stage(args.stage, protocol, args.workers, args.teachers)

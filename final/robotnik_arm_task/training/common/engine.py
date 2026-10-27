@@ -107,11 +107,16 @@ def fit(config: dict, train, validation, model, normaliser, objective, on_checkp
         resume: Path | None = None) -> FitResult:
     """Run config['training']['updates'] optimiser updates of objective on the fitting cache.
 
-    Checkpoints step_<u>.pt (+ step_<u>.npz export) every checkpoint_every updates and at the terminal update;
-    latest.pt is always resumable. Selection runs never write best.pt here: the closed-loop selection does.
+    Selection runs: step_<u>.pt (+ step_<u>.npz export) every checkpoint_every updates and at the terminal update;
+    best.pt is written later by the closed-loop selection, never here.
+    Refit runs: no validation and no candidate checkpoints; final.pt (+ inference.npz) at the fixed terminal update.
+    latest.pt is always resumable.
     """
     from training.common.config import configure_runtime, create_run_dir, validate_config
     validate_config(config, ready_to_train=True)
+    refit = config["identity"]["fit_stage"] == "refit"
+    if refit and validation is not None:
+        raise ValueError("a refit run has no independent validation set (former validation episodes are fitting data)")
     tr = config["training"]
     runtime = configure_runtime(tr["device"])
     device = torch.device(runtime["device"])
@@ -141,7 +146,7 @@ def fit(config: dict, train, validation, model, normaliser, objective, on_checkp
         sched.load_state_dict(state["scheduler_state"])
         _restore_rng(state["rng"], gens)
         start, elapsed0 = state["step"], state.get("elapsed_s", 0.0)
-        checkpoints = {int(k): Path(v) for k, v in state.get("checkpoints", {}).items()}
+        checkpoints = {(k if k == "final" else int(k)): Path(v) for k, v in state.get("checkpoints", {}).items()}
         with open(run_dir / "continuations.jsonl", "a") as f:
             f.write(json.dumps({"resumed_at": start, "runtime": runtime}, default=str) + "\n")
     metrics_path = run_dir / "metrics.csv"
@@ -170,17 +175,20 @@ def fit(config: dict, train, validation, model, normaliser, objective, on_checkp
                 csv.writer(f, lineterminator="\n").writerow(row)
             acc, n_acc = {}, 0
         if update % tr["checkpoint_every"] == 0 or update == U:
-            ckpt, export = run_dir / f"step_{update}.pt", run_dir / f"step_{update}.npz"
-            payload = model_payload(model, normaliser, meta, update, config=config, provenance=config["provenance"],
-                                    environment=runtime)
-            save_checkpoint(ckpt, payload)
-            export_numpy(export, model, normaliser, {**meta, "source_checkpoint": str(ckpt), "source_step": update})
-            checkpoints[update] = ckpt
+            ckpt = export = None
+            if not refit or update == U:
+                ckpt = run_dir / ("final.pt" if refit else f"step_{update}.pt")
+                export = run_dir / ("inference.npz" if refit else f"step_{update}.npz")
+                payload = model_payload(model, normaliser, meta, update, config=config, provenance=config["provenance"],
+                                        environment=runtime)
+                save_checkpoint(ckpt, payload)
+                export_numpy(export, model, normaliser, {**meta, "source_checkpoint": str(ckpt), "source_step": update})
+                checkpoints["final" if refit else update] = ckpt
             save_checkpoint(run_dir / "latest.pt", model_payload(
                 model, normaliser, meta, update, config=config, provenance=config["provenance"], environment=runtime,
                 optimizer_state=opt.state_dict(), scheduler_state=sched.state_dict(), rng=_rng_state(gens),
                 elapsed_s=elapsed0 + time.time() - t0, checkpoints={str(k): str(v) for k, v in checkpoints.items()}))
-            if on_checkpoint is not None:
+            if on_checkpoint is not None and ckpt is not None:
                 with torch.random.fork_rng(devices=[]):
                     on_checkpoint(update, ckpt, export, model)
                 model.train()
@@ -207,11 +215,12 @@ def read_metrics(run_dir: Path) -> list[dict]:
 def select_checkpoint(run_dir: Path, step: int, evidence: dict) -> dict:
     """Validation-selected artifact of a selection run: best.pt plus its matching inference.npz."""
     import shutil
+    import yaml
     run_dir = Path(run_dir)
+    if yaml.safe_load((run_dir / "config.yaml").read_text())["identity"]["fit_stage"] != "selection":
+        raise ValueError("best.pt exists only for selection runs; refit runs save final.pt")
     src = run_dir / f"step_{step}.pt"
     payload = load_checkpoint(src)
-    if payload["config"]["identity"]["fit_stage"] != "selection":
-        raise ValueError("best.pt exists only for selection runs; refit runs save final.pt")
     for name in ("best.pt", "inference.npz", "selection.json"):
         if (run_dir / name).exists():
             raise FileExistsError(f"{run_dir / name} exists; selection is frozen")

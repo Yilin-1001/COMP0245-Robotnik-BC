@@ -69,6 +69,10 @@ python -m training.jacobian.train --teacher A --set identity.architecture=<selec
 
 A stage whose decisions are missing stops with `BlockedError` instead of choosing a default. The test stage needs the frozen final protocol.
 
+Final stages: `--stage refit` trains declared finalists afresh on all 253 training episodes (new fitting-only scales, frozen λ_J and update count) and saves `final.pt` + `inference.npz` with no validation selection; selection runs keep `best.pt`. `--stage test` evaluates only the artifacts listed in a frozen `decisions.final` protocol (architecture, LR, budget, loss, seed and checkpoint hashes are checked against the earlier decisions) on the 64 sealed test scenarios, once each. `python -m evaluation.plots` writes summaries and figures from `results/results.csv` to the local `results/figures/`.
+
+Checks: `python -m pytest tests -m "not sim and not realdata"` (fast), `-m realdata` (reads the Clean_253/223 inventories and builds caches), `-m sim` (expert preflight through the student action path in PyBullet).
+
 Runs are written to `checkpoints/<regime>/<teacher>/<objective>/<run_id>/` (`config.yaml`, `provenance.json`, `normaliser.npz`, `metrics.csv`, `step_<k>.pt` + `step_<k>.npz` exports, resumable `latest.pt`; `best.pt` + `inference.npz` once selected). `training.train_mlp` is a deprecated wrapper that forwards to `training.baseline.train` and rejects its old `--data/--out` arguments. `data_collection.dagger` and `evaluation.plots` remain placeholders for later stages.
 
 ## Layout

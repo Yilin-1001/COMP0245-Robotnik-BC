@@ -330,7 +330,7 @@ def create_run_dir(config: dict, resume: bool = False) -> Path:
 
 # ---------------------------------------------------------------- frozen protocols
 
-PROTOCOL_DECISIONS = {"budget", "loss", "lr", "finalists", "selected", "calibration", "final", "notes"}
+PROTOCOL_DECISIONS = {"budget", "loss", "lr", "finalists", "selected", "calibration", "refit", "final", "notes"}
 
 
 def protocol_id_for(body: dict) -> str:
