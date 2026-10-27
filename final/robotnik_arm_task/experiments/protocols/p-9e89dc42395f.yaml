@@ -1,0 +1,93 @@
+protocol_id: p-9e89dc42395f
+decisions:
+  budget:
+    pilot_lr: 0.0003
+    plateau_update: 28000
+    rule:
+      ? pilot LR by rank_offline on the 50k terminal rows (both fail the 0.5 N*m gate;
+        max hold bias 2.84 vs 3.61 N*m); plateau = first logged update after which
+        validation arm RMSE and wheel RMSE both stay within 10% of their best (3e-4
+      : arm 16k, wheel 28k); the max hold-bias curve is dominated by one episode (train-0023)
+        and never plateaus, so it is excluded; budget = 1.5 x 28k
+    updates: 42000
+  loss:
+    action: huber
+    rule:
+      matched M2-A Huber/MSE (42k cosine, lr 3e-4, seed 0): both 0/8 screening hold
+        and reach at every checkpoint, so the rollouts do not separate them; by rank_offline
+        on the selected checkpoints Huber leads (both fail the gate; max hold bias
+        3.03 vs 6.33 N*m at 42k; arm RMSE 0.58 vs 0.70, wheel 0.059 vs 0.10, hold-arm
+        0.37 vs 0.63); MSE is marginally better only on saturated (1.89 vs 1.97) and
+        |qd|>1 rows (2.46 vs 2.62)
+  lr:
+    A:
+      m1: 0.0003
+      m2: 0.0003
+      m3: 0.0001
+      m4: 0.001
+      m5: 0.001
+      m6: 0.001
+    B:
+      m1: 0.0003
+      m2: 0.0003
+      m3: 0.001
+      m4: 0.0003
+      m5: 0.001
+      m6: 0.0003
+  finalists:
+    A:
+    - m3
+    - m6
+    B:
+    - m5
+    - m1
+evidence:
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m1-lr1e-3-s0-selection-b6e7a7231719/metrics.csv: 28dd5c2bc0748cf9542488c069f55dccd64dcb3c15ccd539f9378bc0b154a552
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m1-lr3e-4-s0-selection-6a8f905e71f2/metrics.csv: 8506418a0e42a0864f7b479091874a6070c78a6c62f51ef580187ccc534557d9
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m1-lr1e-4-s0-selection-608a50004f11/metrics.csv: 868989bb26ad1e7595960577fbb1b2d8645c61ea1ec36fffba48813700e425ac
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr1e-3-s0-selection-758f39237580/metrics.csv: e103b6d8f10dfd243143a71711b98e223095ed06fa99c767ddfcb474ca9f78a4
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr3e-4-s0-selection-b294b3f5a414/metrics.csv: 1291b75423812892b806a8a7c292bdc05afd7e7756ec0a9fb5d3709423dd86b5
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr1e-4-s0-selection-361ea5c7e00f/metrics.csv: 78919483a301a8353116b24b9c4763fdb25c93511544ee35ef52619ec7131116
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m3-lr1e-3-s0-selection-a8ba496e51d7/metrics.csv: 69a06178befa23e331a7a76be449320090a63a0960848f6a8e0537558119cece
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m3-lr3e-4-s0-selection-c3997db646f3/metrics.csv: a90e7f370e9ce215336bfb9528ca22b7e8acc48771a550c6c78a86d390727f6f
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m3-lr1e-4-s0-selection-2cd5219f2d71/metrics.csv: eadfb6bbe41b2059e8d8bf2ee71152f0db56e4b4c4136f43b8e90dafb27d443b
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m4-lr1e-3-s0-selection-ef58b2442cd8/metrics.csv: dab1081967f507a72bd5091932ecf9d27134d5581b63bc119c07f5074319e13e
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m4-lr3e-4-s0-selection-eae4656823ea/metrics.csv: 9730e3da235abbea926afdde7d38200c76d05fac3aac0e016ad69fdca2204255
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m4-lr1e-4-s0-selection-f4d23810806a/metrics.csv: c7ea32edbdeebb3b9b9afb60242c08c795b88a60de82d1e4ac58a883372a9b0c
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m5-lr1e-3-s0-selection-e8c42428dd08/metrics.csv: 3456653bdd16c6f2e1af24386bfb69ebeb65ac5a26eb03cc3780c8fd2365867a
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m5-lr3e-4-s0-selection-99b5bb19fe17/metrics.csv: 3e4864f3a9ff4ec09288af3573956f7d0388cc2f6016a3c80a9913271e584c59
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m5-lr1e-4-s0-selection-93dc02fe36da/metrics.csv: e1ec9d4d83e556b1c9b48eb17a70b86e4fb477f37ad3dbc913c991cec9dde2c2
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s0-selection-1f7ce5b7a590/metrics.csv: 6ae6e5c445129525d1b2a56be19576fec66ee45da4587e6c12ab39584db874bb
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr3e-4-s0-selection-b9037c438bfc/metrics.csv: 03ff50f3e98b1b1a23490fc927748ecffada5a770a5fc5c35710f1d418ad7673
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-4-s0-selection-722bc5d257be/metrics.csv: b72062f9ea93e744017b0a95e635767e5abdb1c4fbde5f4cfc0cd8ae5943e9c6
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr1e-3-s0-selection-b19720493c5d/metrics.csv: b2fecfe9a7a16b0139c15378fb83769b79dffe71a817e0cf225b01f1a182c961
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s0-selection-b712a5675710/metrics.csv: 9f97e39a86d7187b946550808b3ce41bdb302a20397c2d4e884bb775f39cde2f
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr1e-4-s0-selection-a50e219c17f0/metrics.csv: ef1c819198e4dac6be2b9221c25af5c7f560457047cc30a35e6da08a9da5ad67
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m2-lr1e-3-s0-selection-540ee4337a83/metrics.csv: 2cf91a6b975bc7968b223a26686bbb4b022ef1cfe54662ab16245a0153bc3747
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m2-lr3e-4-s0-selection-007370b82601/metrics.csv: 0d39c777e9cd9ae938e36df0b686ae960bd56d7bf89c80d0942cf3c9f64ba3e8
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m2-lr1e-4-s0-selection-3283f2efb0ec/metrics.csv: 55280c597d5cbb8d4e9a70058d42c4b6e06bdf89729b0a00a9b746a5e16601a9
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m3-lr1e-3-s0-selection-aafeab49ea9c/metrics.csv: 71d03a811a4f7943e5cc1b9e6dbcf94f71df079da489727644a9d9c41eedf262
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m3-lr3e-4-s0-selection-9585b818dd60/metrics.csv: 6f72b99b29f762ae0970c5af64dd1149984e45a8352fcaefa096e6d355714189
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m3-lr1e-4-s0-selection-5b95fe505cc7/metrics.csv: e3687b85093ef921cf7a756932d8b08f425ef5354a6b6e5f9ecb0ffe2e07cf62
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m4-lr1e-3-s0-selection-ff3570280ff4/metrics.csv: 1933eae2dc7a4f100a2ec6855fff592b1e31066257742ef3d6824943a5fd227f
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m4-lr3e-4-s0-selection-5fede8a953e9/metrics.csv: 17cced4df73f60b755f778d9c27ec5a4d2c7ce03647e94032f3c84d77b95d6d1
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m4-lr1e-4-s0-selection-beb0c82d8d37/metrics.csv: 36dd4f583b429fa7c664d290bbbde4f7c2ac4b3e0e4cf171c1f58c73bd37ba3c
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m5-lr1e-3-s0-selection-ffd0c7e39259/metrics.csv: cf5054edab30b3d4fc0a42c0cf4ed3ff7ce2235ce574c9a6320e2096a2462e53
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m5-lr3e-4-s0-selection-6d1a2c214a83/metrics.csv: d23ae32627ef468db3e2abf3a7e1fa1b4e957c50037bf38fd0550550041cb3c6
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m5-lr1e-4-s0-selection-2ebcbe0a2a5f/metrics.csv: f7b945882ba2f74f8c580fc2aae655221d983ec9e04f22b695bb6c6727744692
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m6-lr1e-3-s0-selection-40d4eea03a9f/metrics.csv: 193c08a560fdcc46988cd87cb2738037a5adffcec6db55eb9a27e2f00551b908
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m6-lr3e-4-s0-selection-f640e76380fa/metrics.csv: e59eb92f4483b677c89ec1d98d9b4c4cd8d1098abf2261233e82cc5e83ac1107
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m6-lr1e-4-s0-selection-12b99f4485a1/metrics.csv: 117d9e4b0c83f20a56d48ad99304a4bbee3f3190dddcf740a51a4ad4d807ab59
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m1-lr3e-4-s0-selection-6a8f905e71f2/selection.json: 09649f0bf4de699883098df67199bc402a105ff2b6328dc2cadd9d9c1ae254a2
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr3e-4-s0-selection-b294b3f5a414/selection.json: 1d5d5c5a75ff1e532c04e1b8ceb58cebf3f2a105d838d4370173e5e98bdb2be8
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m3-lr1e-4-s0-selection-2cd5219f2d71/selection.json: fa053dcca5924c25472587cb0e2128c5ba02b9f0a3e771e5c5e381fea4278f52
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m4-lr1e-3-s0-selection-ef58b2442cd8/selection.json: e43a1ce52954ccda7e0113e0df97a0fead09cbffd8a0f21fbf8c773c9a044535
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m5-lr1e-3-s0-selection-e8c42428dd08/selection.json: d0125c7c9588ebfc3badb02e581a5540ee11d58457054dcbffd7dc0f4d30e5b3
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s0-selection-1f7ce5b7a590/selection.json: da0ea891467aee5f60372bfc7eab57e1513147acdede14e57dc06c1281384928
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s0-selection-b712a5675710/selection.json: 517b51cff73ea3854b068d28eacc401318a333e54e5554a3ab0c8c4397be03cb
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m2-lr3e-4-s0-selection-007370b82601/selection.json: 455f94302a5d17634263eacfa47b230ed6b8cd39acd224226d8310b4cb9c9a80
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m3-lr1e-3-s0-selection-aafeab49ea9c/selection.json: 20c1d936ff052c1ae6ecf0a8085001b81098d722d9e92097a8ef426a0b909396
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m4-lr3e-4-s0-selection-5fede8a953e9/selection.json: 4361944e83776f6aacf1aa337b3106f03dad9e210cfa78c8c541491f160da8c8
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m5-lr1e-3-s0-selection-ffd0c7e39259/selection.json: f7ab3e7334c359199c496ac6fd8cd6cf6a3d14942b96a3e587e13f2a63d5efe6
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m6-lr3e-4-s0-selection-f640e76380fa/selection.json: 733218467be30c5a8542ce346fee1104bd7d1bcfd29789cf7c35a293f2461d14
+parent: p-2a37f68e30af
