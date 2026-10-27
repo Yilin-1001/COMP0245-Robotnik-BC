@@ -6,18 +6,53 @@ A learned policy maps base pose (`base_pos`, `base_bearing`), arm state (`q_mes`
 
 ## Setup
 
-Python 3.10. RoboEnv provides `simulation_and_control`, `pinocchio` and `pybullet`.
+Supported: Linux and Windows through WSL2 (Ubuntu). The code uses `fcntl` file locks, so native Windows Python is not supported. Python 3.10 and [uv](https://docs.astral.sh/uv/getting-started/installation/) (`curl -LsSf https://astral.sh/uv/install.sh | sh`). Run everything below from the repository root.
 
 ```bash
-uv venv --python 3.10 ../.venv && source ../.venv/bin/activate
-uv pip install -e RoboEnv
-uv pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128   # torch 2.11.0+cu128, before the requirements
-uv pip install -r requirements-dev.txt                                          # requirements.txt + pytest
+# 1. RoboEnv (course simulator: simulation_and_control), pinned to the commit the data was collected with.
+#    RoboEnv/ is git-ignored; clone it inside the repository root.
+git clone https://github.com/VModugno/RoboEnv.git
+git -C RoboEnv checkout 7bb49439677c2ac111347b40e997025ce87bff50
+
+# 2. Environment (.venv/ is git-ignored)
+uv venv --python 3.10 .venv && source .venv/bin/activate
+
+# 3. PyTorch 2.11.0 before the requirements: pick ONE line
+uv pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128   # NVIDIA GPU (driver with CUDA >= 12.8)
+uv pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu     # no NVIDIA GPU
+
+# 4. RoboEnv and the pinned requirements (requirements.txt + pytest), resolved together
+uv pip install -e RoboEnv -r requirements-dev.txt
 ```
 
-Training uses PyTorch 2.11.0 built for CUDA 12.8, which includes the `sm_120` kernels the RTX 50-series laptop GPU needs. Check it with `python -c "from training.common.config import configure_runtime; print(configure_runtime('auto'))"` from `final/robotnik_arm_task/`: `device: cuda` means a kernel actually ran; otherwise `fallback_reason` explains why training will use the CPU. Without a usable GPU, install the CPU wheel from `https://download.pytorch.org/whl/cpu` instead. Installing torch 2.11.0 downgrades `setuptools` to 78.1.0 (a torch constraint); the simulator packages are unchanged.
+Every new terminal needs `source .venv/bin/activate` from the repository root.
 
-Tests run from the repository root: `python -m pytest tests -m 'not sim and not realdata'` for the fast suite, and `-m realdata` / `-m sim` for checks that read the recorded datasets or start PyBullet.
+Check the install from the repository root:
+
+```bash
+python -m pytest tests -m "not sim and not realdata"   # fast suite, no data or simulator needed
+python -m pytest tests -m sim                          # starts PyBullet headless
+cd final/robotnik_arm_task && ROBOENV_HEADLESS=1 timeout 20 python robotnik_arm_task.py; cd ../..   # original task runs (stopped after 20 s)
+cd final/robotnik_arm_task && python -c "from training.common.config import configure_runtime; print(configure_runtime('auto'))"; cd ../..
+```
+
+The last command reports the training device: `device: cuda` means a CUDA kernel actually ran; otherwise `fallback_reason` explains why training uses the CPU. The cu128 build includes the `sm_120` kernels that RTX 50-series GPUs need; small MLPs also train on the CPU. Installing torch 2.11.0 downgrades `setuptools` to 78.1.0 (a torch constraint); the simulator packages are unchanged. `-m realdata` tests need the datasets from [Data](#data).
+
+**WSL2 notes.** Clone the repository into the Linux file system (`~/...`), not under `/mnt/c/`: the datasets are thousands of files and Windows-mounted drives are much slower. GPU training needs only the normal Windows NVIDIA driver (do not install a Linux driver inside WSL); `nvidia-smi` inside WSL should list the GPU. PyBullet GUI windows (`robotnik_arm_task.py`, `markovian_expert_demo.py`, `evaluation.live_compare`) need WSLg (Windows 11, or Windows 10 build 19044+ with `wsl --update`); without it, use `ROBOENV_HEADLESS=1` or `--headless`.
+
+## Data
+
+Datasets, feature caches and checkpoints are git-ignored (several GB). Rebuild them locally; simulation is deterministic, and the frozen split in `experiments/splits/clean253.json` is versioned. From `final/robotnik_arm_task/`:
+
+```bash
+python -m data_collection.scenarios                         # frozen Sobol scenarios   -> data/scenarios/
+python -m data_collection.collect --workers N               # clean expert data (both teachers) -> data/{Markovian,Stateful}/Clean/
+python -m data_collection.qa_clean --workers N              # QA + training manifests  -> data/*/Clean/{qa/,training_manifest.csv}
+python -m data_collection.build_clean_subsets               # paired subsets           -> data/*/Clean_253/, data/*/Clean_223/
+python -m pytest ../../tests -m realdata                    # optional: loads both subsets and builds the feature caches
+```
+
+Set `N` to your CPU core count (default 22). Collection took about 4 minutes on 22 workers. Expect about 15 GB of disk in total: the subset folders are byte-identical copies of episodes in `Clean/`, and the feature caches add about 3 GB. `build_clean_subsets` asserts the expected inventory (253 paired successes, 223 without hold chatter, excluded `train-0064`, `train-0131`, `train-0183`). If it fails on another machine, the simulation there did not reproduce the recorded episodes; report it rather than editing the assertions.
 
 ## Running
 
@@ -29,10 +64,7 @@ cd final/robotnik_arm_task
 python robotnik_arm_task.py                                  # original task with GUI
 ROBOENV_HEADLESS=1 python robotnik_arm_task.py               # original task, headless
 
-python -m data_collection.scenarios                         # frozen Sobol scenarios  -> data/scenarios/
 python -m data_collection.scenario_coverage                 # coverage audit          -> data/scenarios/coverage/
-python -m data_collection.collect                           # clean expert data       -> data/{Markovian,Stateful}/Clean/
-python -m data_collection.qa_clean                          # QA + training manifests -> data/*/Clean/{qa/,training_manifest.csv}
 python -m data_collection.verify_template_teacher --out data/Stateful/Clean/qa   # wrapper vs original script
 python markovian_expert_demo.py                              # Markovian expert with GUI (--target X Y Z, --start X Y, --bearing B)
 python -m evaluation.compare_controllers --n 30              # template vs Markovian time to reach -> results/controller_timing.csv
