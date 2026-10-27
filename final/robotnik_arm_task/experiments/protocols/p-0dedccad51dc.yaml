@@ -1,0 +1,16 @@
+protocol_id: p-0dedccad51dc
+decisions:
+  budget:
+    updates: 42000
+    pilot_lr: 0.0003
+    plateau_update: 28000
+    rule:
+      ? pilot LR by rank_offline on the 50k terminal rows (both fail the 0.5 N*m gate;
+        max hold bias 2.84 vs 3.61 N*m); plateau = first logged update after which
+        validation arm RMSE and wheel RMSE both stay within 10% of their best (3e-4
+      : arm 16k, wheel 28k); the max hold-bias curve is dominated by one episode (train-0023)
+        and never plateaus, so it is excluded; budget = 1.5 x 28k
+evidence:
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr1e-3-s0-selection-dc4da61e8487/metrics.csv: f041781c6f295e43f36b39708e6a091a3e2ca51783470b02723b269d5e52a255
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr3e-4-s0-selection-e19b5a7cc11e/metrics.csv: f113caa34c8a110bf548b8d65b5d4a9f2957b6279b193eabdff439eefc08cc80
+parent: null

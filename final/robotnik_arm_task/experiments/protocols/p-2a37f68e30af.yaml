@@ -1,0 +1,27 @@
+protocol_id: p-2a37f68e30af
+decisions:
+  budget:
+    pilot_lr: 0.0003
+    plateau_update: 28000
+    rule:
+      ? pilot LR by rank_offline on the 50k terminal rows (both fail the 0.5 N*m gate;
+        max hold bias 2.84 vs 3.61 N*m); plateau = first logged update after which
+        validation arm RMSE and wheel RMSE both stay within 10% of their best (3e-4
+      : arm 16k, wheel 28k); the max hold-bias curve is dominated by one episode (train-0023)
+        and never plateaus, so it is excluded; budget = 1.5 x 28k
+    updates: 42000
+  loss:
+    action: huber
+    rule:
+      matched M2-A Huber/MSE (42k cosine, lr 3e-4, seed 0): both 0/8 screening hold
+        and reach at every checkpoint, so the rollouts do not separate them; by rank_offline
+        on the selected checkpoints Huber leads (both fail the gate; max hold bias
+        3.03 vs 6.33 N*m at 42k; arm RMSE 0.58 vs 0.70, wheel 0.059 vs 0.10, hold-arm
+        0.37 vs 0.63); MSE is marginally better only on saturated (1.89 vs 1.97) and
+        |qd|>1 rows (2.46 vs 2.62)
+evidence:
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr3e-4-s0-selection-b294b3f5a414/metrics.csv: 1291b75423812892b806a8a7c292bdc05afd7e7756ec0a9fb5d3709423dd86b5
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr3e-4-s0-selection-64ac0bd8a428/metrics.csv: 7f4c30396676dffe7a0749dc7b710c75e4f68f0b4f5eff03dda5fc7932538e15
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr3e-4-s0-selection-b294b3f5a414/selection.json: 1d5d5c5a75ff1e532c04e1b8ceb58cebf3f2a105d838d4370173e5e98bdb2be8
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr3e-4-s0-selection-64ac0bd8a428/selection.json: ee1380eac409fdc4d7ea70a788537f657bc38ac77531f3e8496848d3b4e97903
+parent: p-0dedccad51dc
