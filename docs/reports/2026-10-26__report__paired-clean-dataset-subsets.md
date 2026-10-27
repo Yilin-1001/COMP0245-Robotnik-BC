@@ -66,7 +66,7 @@ Both selected training cohorts occupy all 32 coarse parameter cells defined by *
 
 **Important finer-scale gap:** `Clean_223` has no training targets below **0.22753 m**. All 27 successful `Clean_253` scenarios below that height were removed by the paired chatter filter. The unchanged test cohort contains seven targets below this new training minimum. Coarse height bins hid this missing interval. Keep `Clean_253` as the full-range reference, and interpret `Clean_223` as a label-quality/coverage tradeoff rather than an equally broad clean replacement.
 
-Summary and the rebuild helper are stored in `data/clean_subsets/summary.json` and `data/clean_subsets/build_clean_subsets.py`. The helper refuses to overwrite an existing subset folder.
+Summary and the rebuild helper are stored in `data/clean_subsets/summary.json` and `data/clean_subsets/build_clean_subsets.py`. The helper refuses to overwrite an existing subset folder. The versioned copy is `final/robotnik_arm_task/data_collection/build_clean_subsets.py` (`python -m data_collection.build_clean_subsets`); it differs only in resolving the data folder from `settings.yaml` instead of an absolute path.
 
 ## 5. Using the subsets for comparisons
 
