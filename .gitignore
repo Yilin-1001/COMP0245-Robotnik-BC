@@ -41,3 +41,7 @@ wandb/
 .idea/
 *.swp
 .DS_Store
+
+# Course brief (UCL course material): kept locally, not published
+docs/COMP0245-Assignment-2026-2.pdf
+docs/references/2026-10-24__assignment__comp0245-final-project.pdf

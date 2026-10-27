@@ -49,7 +49,7 @@ ML_Final/
 | 2026-10-26 | plan | [ablation-strategy](../plans/2026-10-26__plan__ablation-strategy.md) |
 | 2026-10-26 | plan | [mlp-baseline-training](../plans/2026-10-26__plan__mlp-baseline-training.md) |
 | 2026-10-26 | plan | [project-overview](../plans/2026-10-26__plan__project-overview.md) |
-| 2026-10-24 | assignment | [comp0245-final-project](../references/2026-10-24__assignment__comp0245-final-project.pdf) |
+| 2026-10-24 | assignment | [comp0245-final-project](../references/2026-10-24__assignment__comp0245-final-project.pdf) (local only, not in Git: course material from Moodle) |
 | 2026-10-26 | reference | [research-bibliography](../references/2026-10-26__reference__research-bibliography.md) |
 | 2026-10-24 | report | [markovian-expert-model-accuracy](../reports/2026-10-24__report__markovian-expert-model-accuracy.md) |
 | 2026-10-26 | report | [clean-expert-data-collection](../reports/2026-10-26__report__clean-expert-data-collection.md) |
