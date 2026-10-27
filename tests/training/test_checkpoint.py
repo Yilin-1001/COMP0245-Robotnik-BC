@@ -12,7 +12,8 @@ INTERFACE = {"action_order": "a = [torque_arm (7), wheel_cmds FR, FL, BL, BR (4)
 
 def normaliser(dim=21, seed=0):
     rng = np.random.default_rng(seed)
-    names = [f"f{i}" for i in range(dim)]
+    from core.features import FEATURE_NAMES_A, FEATURE_NAMES_B
+    names = FEATURE_NAMES_A if dim == 21 else FEATURE_NAMES_B
     return Normaliser(rng.normal(size=dim), rng.uniform(0.5, 2, dim), rng.normal(size=9), rng.uniform(1, 5, 9),
                       names, [f"torque_{i}" for i in range(7)] + ["wheel_right", "wheel_left"],
                       {"input_scale_floor": 1e-6, "arm_scale_floor": 0.1, "wheel_scale_floor": 0.05})

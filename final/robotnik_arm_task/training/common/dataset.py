@@ -265,8 +265,9 @@ class FeatureBuilder:
         self._fk = None
         from core.features import FEATURE_DEFINITION_VERSION, FEATURE_NAMES_A, FEATURE_NAMES_B, FK_CONFIG
         self.feature_names = FEATURE_NAMES_A if teacher == "A" else FEATURE_NAMES_B
+        code = hashlib.sha256((TASK_DIR / "core" / "features.py").read_bytes()).hexdigest()
         self.builder_id = json.dumps({"teacher": teacher, "features": FEATURE_DEFINITION_VERSION, "fk": FK_CONFIG,
-                                      "task_context": task_context}, sort_keys=True)
+                                      "task_context": task_context, "features_py_sha256": code}, sort_keys=True)
 
     def __call__(self, obs: dict, meta: dict) -> np.ndarray:
         from core.features import DeployableFK, features_a, features_b

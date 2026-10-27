@@ -63,7 +63,8 @@ class MLPPolicy(Policy):
         self.reset()
 
     @classmethod
-    def load(cls, ckpt_path: str, backend: str = "numpy", expected: dict | None = None) -> "MLPPolicy":
+    def load(cls, ckpt_path: str, backend: str = "numpy", expected: dict | None = None,
+             strict_features: bool = True) -> "MLPPolicy":
         path = Path(ckpt_path)
         if backend == "numpy":
             if path.suffix != ".npz":
@@ -82,6 +83,12 @@ class MLPPolicy(Policy):
             net = _TorchNet(payload)
         else:
             raise ValueError(f"backend must be numpy or torch, got {backend!r}")
+        if strict_features:
+            from core.features import FEATURE_NAMES_A, FEATURE_NAMES_B
+            names = FEATURE_NAMES_A if meta["teacher"] == "A" else FEATURE_NAMES_B
+            if list(meta.get("feature_names") or []) != names:
+                raise ValueError(f"{path}: saved feature order differs from the deployable features of teacher "
+                                 f"{meta['teacher']}")
         for field, value in (expected or {}).items():
             if meta.get(field) != value:
                 raise ValueError(f"policy {field} mismatch: stored {meta.get(field)!r}, expected {value!r}")

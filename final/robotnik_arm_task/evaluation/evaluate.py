@@ -59,6 +59,11 @@ def rollout(policy: Policy, scenario, config: dict, env_factory) -> dict:
     env = None
     t_now = 0.0
     try:
+        policy_itf = (getattr(policy, "meta", None) or {}).get("interface")
+        if policy_itf is not None:
+            for key in ("torque_limit", "wheel_limit", "control_hz"):
+                if float(policy_itf[key]) != float(itf[key]):
+                    raise ValueError(f"policy interface {key} {policy_itf[key]} != evaluation interface {itf[key]}")
         env = env_factory()
         obs = env.reset(scenario)
         if hasattr(policy, "bind_env"):
@@ -239,7 +244,15 @@ def append_results(path: Path, rows: list[dict]) -> None:
     A header-only legacy index is upgraded to the current schema; a non-empty index with another schema needs an
     explicit migration and is never rewritten here.
     """
+    import fcntl
     path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(str(path) + ".lock", "w") as lock:  # serialises concurrent parent-process writers
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        _append_locked(path, rows)
+
+
+def _append_locked(path: Path, rows: list[dict]) -> None:
     header, existing = _read_index(path)
     if header != RESULT_COLUMNS:
         if existing:
@@ -259,7 +272,6 @@ def append_results(path: Path, rows: list[dict]) -> None:
             raise ValueError(f"duplicate evaluation {key}; refusing to overwrite")
         keys.add(key)
         new.append({c: row.get(c, "") for c in RESULT_COLUMNS})
-    path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
     with open(tmp, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=RESULT_COLUMNS, lineterminator="\n")

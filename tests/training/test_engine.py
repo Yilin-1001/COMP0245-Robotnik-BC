@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 import torch
 
-from conftest import TASK_DIR
+from conftest import FEATURES_A, TASK_DIR
 from training.baseline.loss import ActionObjective
 from training.common.config import finalise_identity, resolve_config
 from training.common.dataset import EpisodeCache
@@ -28,7 +28,7 @@ def tiny_cache(lengths, seed):
         phase[hi - min(5, hi - lo):hi] = 2
     return EpisodeCache(x, y, offsets, [f"e{i}" for i in range(len(lengths))],
                         {"phase": phase, "t": np.zeros(n, np.float32)},
-                        {"feature_names": [f"f{i}" for i in range(21)]})
+                        {"feature_names": list(FEATURES_A)})
 
 
 @pytest.fixture

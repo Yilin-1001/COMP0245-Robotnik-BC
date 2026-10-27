@@ -11,6 +11,7 @@ import numpy as np
 import torch
 
 PHASE_NAMES = {0: "navigation", 1: "approach", 2: "hold"}
+QD_FEATURES = [f"qd_mes_{i}" for i in range(7)]  # velocity_jacobian differentiates these input columns
 DIAGNOSTIC_SEED = 0  # fixed draw of hold rows for the damping diagnostic, identical for every model
 
 
@@ -24,6 +25,8 @@ def torque_derivative_targets(raw_torque: torch.Tensor, normaliser, epsilon_tau:
     """
     if epsilon_tau <= 0:
         raise ValueError("epsilon_tau must be positive")
+    if list(normaliser.feature_names[7:14]) != QD_FEATURES:
+        raise ValueError(f"feature columns 7:14 must be {QD_FEATURES}, got {normaliser.feature_names[7:14]}")
     raw = torch.as_tensor(raw_torque)
     dtype, device = (raw.dtype if raw.is_floating_point() else torch.float32), raw.device
     if preclip_torque is None:
