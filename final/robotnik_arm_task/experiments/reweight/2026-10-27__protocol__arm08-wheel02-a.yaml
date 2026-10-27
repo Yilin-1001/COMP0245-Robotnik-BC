@@ -1,0 +1,201 @@
+kind: matched-action-weight-retraining
+date: '2026-10-27'
+status: authorized
+training_implementation_commit: ab1c885
+teacher: A
+arm_weight: 0.8
+wheel_weight: 0.2
+updates: 42000
+seed: 0
+fitting_episodes: 221
+validation_episodes: 32
+normaliser_content_sha256: 1ba73a11d1bb7d581a034d86600e8f92d78a76760118e3c76130d3718ea31ef4
+code_digest: 9691da66507d8ea477a5eb236720a1f6aeb0f779267cd615ae1e1998a8d9412d
+calibration:
+  path: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/calibration/A/m6/calibration-41e5467b659a.json
+  sha256: 41e5467b659a4adea0e0fecdf2569f554552773b852c3cd45848394cb91c3a96
+  lambda_j: 0.06036798253479663
+  rule: recalibrated with the original 0.1 * weighted action loss / Jacobian loss
+    rule
+evaluation:
+  primary: full validation at each original selected step (fixed-step weight comparison)
+  secondary: screening at terminal update 42000
+  checkpoint_reselection: false
+  test_access: false
+runs:
+- architecture: m1
+  objective: bc
+  launcher: baseline
+  teacher: A
+  overrides:
+    identity.seed: 0
+    identity.cohort: clean253
+    training.updates: 42000
+    loss.action: huber
+    loss.arm_weight: 0.8
+    loss.wheel_weight: 0.2
+    training.device: cuda
+    outputs.checkpoint_root: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_root: results/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_index: results/reweighted/2026-10-27__experiment__arm08-wheel02/results.csv
+    identity.architecture: m1
+    training.lr: 0.0003
+  run_id: clean-A-bc-clean253-m1-lr3e-4-s0-selection-51fce906cf67
+  run_dir: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bc/clean-A-bc-clean253-m1-lr3e-4-s0-selection-51fce906cf67
+  config_hash: 51fce906cf671bfd1b6dc18c556ca74aad96e88d0184fd0e91ed87418babb2c7
+  paired_step: 2000
+  old_run_dir: checkpoints/clean/A/bc/clean-A-bc-clean253-m1-lr3e-4-s0-selection-6a8f905e71f2
+  old_config_sha256: 3f830c5165fe9c3aaaf966a193f74c3e606187646fb8fb8b19af9030c14ea164
+  old_checkpoint_sha256: 9a74a3a86c221a09ef54f777a1db83911b68a46f26ae31b720e6c268711fd21d
+  old_selection_sha256: 09649f0bf4de699883098df67199bc402a105ff2b6328dc2cadd9d9c1ae254a2
+- architecture: m2
+  objective: bc
+  launcher: baseline
+  teacher: A
+  overrides:
+    identity.seed: 0
+    identity.cohort: clean253
+    training.updates: 42000
+    loss.action: huber
+    loss.arm_weight: 0.8
+    loss.wheel_weight: 0.2
+    training.device: cuda
+    outputs.checkpoint_root: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_root: results/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_index: results/reweighted/2026-10-27__experiment__arm08-wheel02/results.csv
+    identity.architecture: m2
+    training.lr: 0.0003
+  run_id: clean-A-bc-clean253-m2-lr3e-4-s0-selection-9d578d9632a8
+  run_dir: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bc/clean-A-bc-clean253-m2-lr3e-4-s0-selection-9d578d9632a8
+  config_hash: 9d578d9632a8b78aa965c1089c1fccc13cff92bea4ce13a50947859c163bb947
+  paired_step: 4000
+  old_run_dir: checkpoints/clean/A/bc/clean-A-bc-clean253-m2-lr3e-4-s0-selection-b294b3f5a414
+  old_config_sha256: 0099ee07f71b1e7f68d846aff8f9dfbb32b4ae8c883993d30aa22e65fda3342a
+  old_checkpoint_sha256: 00eb9236fa95c4e94faab37775ee9fc893a7679c2c552db4a9582cfdad5ebcda
+  old_selection_sha256: 1d5d5c5a75ff1e532c04e1b8ceb58cebf3f2a105d838d4370173e5e98bdb2be8
+- architecture: m3
+  objective: bc
+  launcher: baseline
+  teacher: A
+  overrides:
+    identity.seed: 0
+    identity.cohort: clean253
+    training.updates: 42000
+    loss.action: huber
+    loss.arm_weight: 0.8
+    loss.wheel_weight: 0.2
+    training.device: cuda
+    outputs.checkpoint_root: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_root: results/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_index: results/reweighted/2026-10-27__experiment__arm08-wheel02/results.csv
+    identity.architecture: m3
+    training.lr: 0.0001
+  run_id: clean-A-bc-clean253-m3-lr1e-4-s0-selection-b8af09d86893
+  run_dir: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bc/clean-A-bc-clean253-m3-lr1e-4-s0-selection-b8af09d86893
+  config_hash: b8af09d86893ce493e9f9f874ff204d127ca338da115a24db19f6ba59f2a85ae
+  paired_step: 30000
+  old_run_dir: checkpoints/clean/A/bc/clean-A-bc-clean253-m3-lr1e-4-s0-selection-2cd5219f2d71
+  old_config_sha256: b18f9c4953994abfe9637fa4ad29afaf311ace56b8873ba97973a12044878e8f
+  old_checkpoint_sha256: bb0d6fa2d44dbdde63bb5375c59509f4b0c365d8f222a9d7d73da65f10067a01
+  old_selection_sha256: fa053dcca5924c25472587cb0e2128c5ba02b9f0a3e771e5c5e381fea4278f52
+- architecture: m4
+  objective: bc
+  launcher: baseline
+  teacher: A
+  overrides:
+    identity.seed: 0
+    identity.cohort: clean253
+    training.updates: 42000
+    loss.action: huber
+    loss.arm_weight: 0.8
+    loss.wheel_weight: 0.2
+    training.device: cuda
+    outputs.checkpoint_root: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_root: results/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_index: results/reweighted/2026-10-27__experiment__arm08-wheel02/results.csv
+    identity.architecture: m4
+    training.lr: 0.001
+  run_id: clean-A-bc-clean253-m4-lr1e-3-s0-selection-e848d5b338e5
+  run_dir: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bc/clean-A-bc-clean253-m4-lr1e-3-s0-selection-e848d5b338e5
+  config_hash: e848d5b338e53eb379ae83df450318181929303dd6e7c2d7b1f460733d609249
+  paired_step: 40000
+  old_run_dir: checkpoints/clean/A/bc/clean-A-bc-clean253-m4-lr1e-3-s0-selection-ef58b2442cd8
+  old_config_sha256: fd127f954f6763f5dcc4049954e4e3e4d26732f6c2c99206079038b4024fe789
+  old_checkpoint_sha256: 437de26fe1be4cf3d41e99739f156a85ff458f7c8cdec70ad3cf153296c28a83
+  old_selection_sha256: e43a1ce52954ccda7e0113e0df97a0fead09cbffd8a0f21fbf8c773c9a044535
+- architecture: m5
+  objective: bc
+  launcher: baseline
+  teacher: A
+  overrides:
+    identity.seed: 0
+    identity.cohort: clean253
+    training.updates: 42000
+    loss.action: huber
+    loss.arm_weight: 0.8
+    loss.wheel_weight: 0.2
+    training.device: cuda
+    outputs.checkpoint_root: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_root: results/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_index: results/reweighted/2026-10-27__experiment__arm08-wheel02/results.csv
+    identity.architecture: m5
+    training.lr: 0.001
+  run_id: clean-A-bc-clean253-m5-lr1e-3-s0-selection-586d9755a265
+  run_dir: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bc/clean-A-bc-clean253-m5-lr1e-3-s0-selection-586d9755a265
+  config_hash: 586d9755a265e0f329d420ae9790dd8266bdae6e67a44423176e6c1fcfa6f7ae
+  paired_step: 6000
+  old_run_dir: checkpoints/clean/A/bc/clean-A-bc-clean253-m5-lr1e-3-s0-selection-e8c42428dd08
+  old_config_sha256: 6adc02b6a88afc16b1160d2788799fbf6e04078f754f48a35ad26afc50d4f7f8
+  old_checkpoint_sha256: dcf9bf09f8ef94d53e666b1dd93555b778867feab2eca159f17efc2029d4a49c
+  old_selection_sha256: d0125c7c9588ebfc3badb02e581a5540ee11d58457054dcbffd7dc0f4d30e5b3
+- architecture: m6
+  objective: bc
+  launcher: baseline
+  teacher: A
+  overrides:
+    identity.seed: 0
+    identity.cohort: clean253
+    training.updates: 42000
+    loss.action: huber
+    loss.arm_weight: 0.8
+    loss.wheel_weight: 0.2
+    training.device: cuda
+    outputs.checkpoint_root: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_root: results/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_index: results/reweighted/2026-10-27__experiment__arm08-wheel02/results.csv
+    identity.architecture: m6
+    training.lr: 0.001
+  run_id: clean-A-bc-clean253-m6-lr1e-3-s0-selection-6c6fd5abd61e
+  run_dir: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s0-selection-6c6fd5abd61e
+  config_hash: 6c6fd5abd61e5bb195926c6ebe8a592352987595efef31bd92f6255c6bade6d7
+  paired_step: 6000
+  old_run_dir: checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s0-selection-1f7ce5b7a590
+  old_config_sha256: 6375ad7747b9f38fff7b50ac014dc59b0e2e3fa88a98b20b29ab810cf7f95fdf
+  old_checkpoint_sha256: a76a9443a00f58998b83a449c697232342e67223467dfdadf8b34e602c82e92f
+  old_selection_sha256: da0ea891467aee5f60372bfc7eab57e1513147acdede14e57dc06c1281384928
+- architecture: m6
+  objective: bcj
+  launcher: jacobian
+  teacher: A
+  overrides:
+    identity.seed: 0
+    identity.cohort: clean253
+    training.updates: 42000
+    loss.action: huber
+    loss.arm_weight: 0.8
+    loss.wheel_weight: 0.2
+    training.device: cuda
+    outputs.checkpoint_root: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_root: results/reweighted/2026-10-27__experiment__arm08-wheel02
+    outputs.results_index: results/reweighted/2026-10-27__experiment__arm08-wheel02/results.csv
+    identity.architecture: m6
+    training.lr: 0.001
+    loss.jacobian.calibration: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/calibration/A/m6/calibration-41e5467b659a.json
+  run_id: clean-A-bcj-clean253-m6-lr1e-3-s0-selection-6bfbbf3a0714
+  run_dir: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s0-selection-6bfbbf3a0714
+  config_hash: 6bfbbf3a07148df13f3805535a5057077711585d30f974c99576e9bf43356d4b
+  paired_step: 30000
+  old_run_dir: checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s0-selection-d45d831c8c61
+  old_config_sha256: 68fec76377fe09f5ddf88ba1ccde8bc962f3bb67b87227025bbb0bde490af216
+  old_checkpoint_sha256: d406f7f5464e35ad4aae2ce4af8cab0594f78a7221d67a038c076e2953b6540e
+  old_selection_sha256: 96a6a8c17c751f9cb7d2672c2c06d264c9fe492e43ac04d4f3b806f7ee3fc721

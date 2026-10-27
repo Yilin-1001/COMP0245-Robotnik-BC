@@ -48,6 +48,7 @@ ML_Final/
 | 2026-10-26 | implementation-plan | [mlp-baseline-and-jacobian](../plans/2026-10-26__implementation-plan__mlp-baseline-and-jacobian.md) |
 | 2026-10-26 | plan | [ablation-strategy](../plans/2026-10-26__plan__ablation-strategy.md) |
 | 2026-10-26 | plan | [mlp-baseline-training](../plans/2026-10-26__plan__mlp-baseline-training.md) |
+| 2026-10-27 | plan | [arm08-wheel02-retraining-a：A 已有网络配对重训](../plans/2026-10-27__plan__arm08-wheel02-retraining-a.md) |
 | 2026-10-26 | plan | [project-overview](../plans/2026-10-26__plan__project-overview.md) |
 | 2026-10-24 | assignment | [comp0245-final-project](../references/2026-10-24__assignment__comp0245-final-project.pdf) (local only, not in Git: course material from Moodle) |
 | 2026-10-26 | reference | [research-bibliography](../references/2026-10-26__reference__research-bibliography.md) |
