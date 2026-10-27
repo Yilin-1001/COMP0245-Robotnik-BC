@@ -1,0 +1,60 @@
+protocol_id: p-a67f676c83f0
+decisions:
+  budget:
+    pilot_lr: 0.0003
+    plateau_update: 28000
+    rule:
+      ? pilot LR by rank_offline on the 50k terminal rows (both fail the 0.5 N*m gate;
+        max hold bias 2.84 vs 3.61 N*m); plateau = first logged update after which
+        validation arm RMSE and wheel RMSE both stay within 10% of their best (3e-4
+      : arm 16k, wheel 28k); the max hold-bias curve is dominated by one episode (train-0023)
+        and never plateaus, so it is excluded; budget = 1.5 x 28k
+    updates: 42000
+  finalists:
+    A:
+    - m3
+    - m6
+    B:
+    - m5
+    - m1
+  loss:
+    action: huber
+    rule:
+      matched M2-A Huber/MSE (42k cosine, lr 3e-4, seed 0): both 0/8 screening hold
+        and reach at every checkpoint, so the rollouts do not separate them; by rank_offline
+        on the selected checkpoints Huber leads (both fail the gate; max hold bias
+        3.03 vs 6.33 N*m at 42k; arm RMSE 0.58 vs 0.70, wheel 0.059 vs 0.10, hold-arm
+        0.37 vs 0.63); MSE is marginally better only on saturated (1.89 vs 1.97) and
+        |qd|>1 rows (2.46 vs 2.62)
+  lr:
+    A:
+      m1: 0.0003
+      m2: 0.0003
+      m3: 0.0001
+      m4: 0.001
+      m5: 0.001
+      m6: 0.001
+    B:
+      m1: 0.0003
+      m2: 0.0003
+      m3: 0.001
+      m4: 0.0003
+      m5: 0.001
+      m6: 0.0003
+  selected:
+    A: m6
+    B: m1
+evidence:
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m3-lr1e-4-s1-selection-7741a4ecbb92/selection.json: 78244dcbc552f88cbaf80a565921803effe55e32c03ddf19a5993d357ec94beb
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m3-lr1e-4-s2-selection-e2f19ee3f159/selection.json: 8fc96ea5b47340ec2edd629147af20ea49805e29274cfa2ed836f045691effd0
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s1-selection-c4567d590a98/selection.json: ae034b3bebc40fe0a5d73821b74f19864a3ea617e3f39e299636dc6241cd7720
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s2-selection-9d587b0fdaa9/selection.json: 80e0caf8e74c2c9f7546551ea92287d8bc5a55bf71687095b323ab18ff1f4bf1
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m5-lr1e-3-s1-selection-3c90fb0783c7/selection.json: 7854df15a187bd5df4a9754d888913069fed40795e983124edb4b2284cc1ee35
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m5-lr1e-3-s2-selection-b136a6c39565/selection.json: 14dd82dd726586901f5a6c4c20820351f12219aaf62241c8474b9320f7200d64
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s1-selection-edb4903259d0/selection.json: 379cdc45acb9e2a833261e60cfcaab000d68f36b907692ea4b492edb39b2565c
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s2-selection-4ef63d8e9e62/selection.json: 902c49bc7847e1b201c0416304d3eeb3c0abed68bf15ea86156bdbe440ac778a
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m3-lr1e-4-s0-selection-2cd5219f2d71/selection.json: fa053dcca5924c25472587cb0e2128c5ba02b9f0a3e771e5c5e381fea4278f52
+  checkpoints/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s0-selection-1f7ce5b7a590/selection.json: da0ea891467aee5f60372bfc7eab57e1513147acdede14e57dc06c1281384928
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m5-lr1e-3-s0-selection-ffd0c7e39259/selection.json: f7ab3e7334c359199c496ac6fd8cd6cf6a3d14942b96a3e587e13f2a63d5efe6
+  checkpoints/clean/B/bc/clean-B-bc-clean253-m1-lr3e-4-s0-selection-b712a5675710/selection.json: 517b51cff73ea3854b068d28eacc401318a333e54e5554a3ab0c8c4397be03cb
+parent: p-9e89dc42395f
