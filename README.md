@@ -55,6 +55,20 @@ python -m evaluation.evaluate --policy mlp --artifact checkpoints/clean/A/bc/<ru
 python -m evaluation.evaluate --policy expert --teacher A --split validation --record    # teacher reference
 ```
 
+Experiment stages run through `experiments.run`, which calls the same launchers and evaluator and records decisions in immutable `experiments/protocols/p-<hash>.yaml` files:
+
+```bash
+python -m experiments.run --stage pilot --dry-run                     # 2 constant-LR M2-A Huber pilots, 50k updates
+python -m experiments.run --stage pilot                               # train them (offline curves every 1k)
+python -m experiments.run --freeze budget.updates=N --freeze budget.pilot_lr=3.0e-4 --evidence <pilot metrics.csv> ...
+python -m experiments.run --stage loss --protocol experiments/protocols/<id>.yaml --select   # Huber vs MSE
+python -m experiments.run --stage screen --protocol ... [--select]   # 36 fits; LR chosen offline per architecture
+python -m experiments.run --stage seeds|jacobian|compare223 --protocol ... --select
+python -m training.jacobian.train --teacher A --set identity.architecture=<selected> --set loss.action=<frozen> --calibrate
+```
+
+A stage whose decisions are missing stops with `BlockedError` instead of choosing a default. The test stage needs the frozen final protocol.
+
 Runs are written to `checkpoints/<regime>/<teacher>/<objective>/<run_id>/` (`config.yaml`, `provenance.json`, `normaliser.npz`, `metrics.csv`, `step_<k>.pt` + `step_<k>.npz` exports, resumable `latest.pt`; `best.pt` + `inference.npz` once selected). `training.train_mlp` is a deprecated wrapper that forwards to `training.baseline.train` and rejects its old `--data/--out` arguments. `data_collection.dagger` and `evaluation.plots` remain placeholders for later stages.
 
 ## Layout

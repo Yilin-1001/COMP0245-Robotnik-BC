@@ -95,6 +95,20 @@ def calibrate(args) -> dict:
     return {"calibration": str(path.relative_to(TASK_DIR) if path.is_relative_to(TASK_DIR) else path), **record}
 
 
+def prepare_from_args(args) -> dict:
+    """Resolve, require the frozen calibration, prepare data and finalise the BC+J identity."""
+    from training.common.engine import prepare_run
+    if Path(args.config).name != "jacobian.yaml":
+        raise ValueError(f"this entry point runs jacobian.yaml only; got {args.config}")
+    config = resolve_config(Path(args.config), args.teacher, parse_overrides(args.set))
+    if not config["loss"]["jacobian"].get("calibration"):
+        apply_calibration(config, "")  # raises the explanatory calibration error
+    probe = copy.deepcopy(config)
+    probe["loss"]["jacobian"]["lambda_j"] = probe["loss"]["jacobian"].get("lambda_j") or 0.0
+    validate_config(probe, ready_to_train=True)
+    return prepare_run(config, workers=args.workers, before_finalise=lambda c, n: apply_calibration(c, n.sha256()))
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser("Clean-data MLP BC+J: action loss plus the damping-Jacobian loss (objective bcj).",
                           DEFAULT_CONFIG)
@@ -107,14 +121,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.calibrate:
         print(json.dumps(calibrate(args), indent=1))
         return 0
-    from training.common.engine import prepare_run
-    config = resolve_config(Path(args.config), args.teacher, parse_overrides(args.set))
-    if not config["loss"]["jacobian"].get("calibration"):
-        apply_calibration(config, "")  # raises the explanatory calibration error
-    probe = copy.deepcopy(config)
-    probe["loss"]["jacobian"]["lambda_j"] = probe["loss"]["jacobian"].get("lambda_j") or 0.0
-    validate_config(probe, ready_to_train=True)
-    prep = prepare_run(config, workers=args.workers, before_finalise=lambda c, n: apply_calibration(c, n.sha256()))
+    prep = prepare_from_args(args)
     if args.dry_run:
         print(json.dumps(dict(summary(prep), lambda_j=prep["config"]["loss"]["jacobian"]["lambda_j"]), indent=1))
         return 0
