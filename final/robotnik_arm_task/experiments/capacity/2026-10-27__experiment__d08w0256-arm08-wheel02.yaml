@@ -1,0 +1,28 @@
+kind: single-capacity-training
+date: '2026-10-27'
+teacher: A
+architecture: d08w0256
+hidden: [256, 256, 256, 256, 256, 256, 256, 256]
+overrides:
+  identity.cohort: clean253
+  identity.seed: 0
+  training.lr: 0.0003
+  training.updates: 84000
+  training.warmup_updates: 500
+  training.schedule: cosine
+  training.log_every: 2000
+  training.checkpoint_every: 7000
+  training.device: cuda
+  loss.action: huber
+  loss.arm_weight: 0.8
+  loss.wheel_weight: 0.2
+  outputs.checkpoint_root: checkpoints/capacity/2026-10-27__experiment__arm08-wheel02-d08w0256
+  outputs.results_root: results/capacity/2026-10-27__experiment__arm08-wheel02-d08w0256
+  outputs.results_index: results/capacity/2026-10-27__experiment__arm08-wheel02-d08w0256/results.csv
+evaluation:
+  screening_steps: [42000, 84000]
+  selection: existing rank_rollout on screening, then earlier checkpoint
+  validation: 32 frozen scenarios at the screening-selected checkpoint
+  fitting: all 221 fitting scenarios at the screening-selected checkpoint
+  fitting_diagnostic_subset: fixed 2-distance x 4-height x 4-azimuth lexicographic subset
+  test_access: false
