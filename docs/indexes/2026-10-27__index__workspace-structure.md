@@ -57,6 +57,7 @@ ML_Final/
 | 2026-10-26 | report | [expert-operating-limits](../reports/2026-10-26__report__expert-operating-limits.md) |
 | 2026-10-26 | report | [paired-clean-dataset-subsets](../reports/2026-10-26__report__paired-clean-dataset-subsets.md) |
 | 2026-10-27 | report | [reaching-failure-and-training-rollouts](../reports/2026-10-27__report__reaching-failure-and-training-rollouts.md) |
+| 2026-10-27 | report | [arm08-wheel02-retraining-a：7组A模型配对重训结果](../reports/2026-10-27__report__arm08-wheel02-retraining-a.md) |
 | 2026-10-26 | research | [mlp-training-recipe](../research/2026-10-26__research__mlp-training-recipe.md) |
 | 2026-10-26 | design | [mlp-training-structure](../specs/2026-10-26__design__mlp-training-structure.md) |
 | 2026-10-27 | design | [dagger-a：首轮训练设计与执行阶段（待审阅）](../specs/2026-10-27__design__dagger-a.md) |
@@ -68,6 +69,7 @@ mlp-training-recipe、mlp-baseline-training、mlp-training-structure 描述当�
 
 ## 实验与图表入口
 
+- [Arm0.8/Wheel0.2 重训：结果、曲线与新模型索引](../reports/2026-10-27__report__arm08-wheel02-retraining-a.md)
 - [训练集／测试集学习曲线](../../final/robotnik_arm_task/results/figures/2026-10-27/train-test-learning-curves/2026-10-27__figure__train-vs-test-loss-detail.png)
 - [学习率与训练 loss](../../final/robotnik_arm_task/results/figures/2026-10-27/training-diagnostics/2026-10-27__figure__baseline-learning-rate-and-loss.png)
 - [网络结构对比](../../final/robotnik_arm_task/results/figures/2026-10-27/training-diagnostics/2026-10-27__figure__baseline-architecture-learning-curves.png)

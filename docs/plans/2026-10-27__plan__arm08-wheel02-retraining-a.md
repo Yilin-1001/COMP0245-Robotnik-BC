@@ -2,6 +2,8 @@
 
 日期：2026-10-27。用户已确认以下 A 范围；本轮不启动尚未批准的大网络容量矩阵或 DAgger。
 
+执行状态：7组GPU训练与配对闭环验证已全部完成，见[结果报告](../reports/2026-10-27__report__arm08-wheel02-retraining-a.md)。
+
 训练协议：[冻结任务清单](../../final/robotnik_arm_task/experiments/reweight/2026-10-27__protocol__arm08-wheel02-a.yaml)。实现提交：`ab1c885`。182 项完整测试已通过。
 
 | 网络 | 隐藏层 | 目标 | 原选定 LR | 新训练预算 | 固定配对评估步数 |
