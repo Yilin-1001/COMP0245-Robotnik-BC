@@ -55,6 +55,22 @@ python -m evaluation.evaluate --policy mlp --artifact checkpoints/clean/A/bc/<ru
 python -m evaluation.evaluate --policy expert --teacher A --split validation --record    # teacher reference
 ```
 
+For a live physical comparison, open two independent PyBullet windows on the same validation scenario:
+
+```bash
+python -m evaluation.live_compare                         # A expert vs frozen A BC, seed 0
+python -m evaluation.live_compare --teacher B              # B expert vs frozen B BC
+python -m evaluation.live_compare --objective bcj --seed 1 # compare a BC+J finalist
+```
+
+Both simulations keep the original 1 kHz control/physics interface and synchronize every 20 steps.
+Each window shows its controller, simulation time, true end-effector error, torque magnitude and wheel commands;
+the red sphere is the target and the red line joins it to the end effector. SPACE pauses/resumes both, R resets
+both to the identical start, Q closes both, and F toggles camera following in the focused window (mouse orbit/zoom
+remains available). After 40 simulated seconds the scene freezes until R or Q. Use `--speed 0.5` for slow motion,
+`--scenario train-0143` to select a frozen validation scene, or `--headless --seconds 0.1` for a two-simulator smoke
+check. The run summary is saved to `results/live_compare/comparison.json`; demo runs do not enter the evaluation index.
+
 Experiment stages run through `experiments.run`, which calls the same launchers and evaluator and records decisions in immutable `experiments/protocols/p-<hash>.yaml` files:
 
 ```bash
