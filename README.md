@@ -13,6 +13,7 @@ Supported: Linux and Windows through WSL2 (Ubuntu). The code uses `fcntl` file l
 #    RoboEnv/ is git-ignored; clone it inside the repository root.
 git clone https://github.com/VModugno/RoboEnv.git
 git -C RoboEnv checkout 7bb49439677c2ac111347b40e997025ce87bff50
+git -C RoboEnv submodule update --init        # simulation_and_control is a submodule (pinned at df58505)
 
 # 2. Environment (.venv/ is git-ignored)
 uv venv --python 3.10 .venv && source .venv/bin/activate
