@@ -17,6 +17,7 @@ import time
 
 TASK_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_PROTOCOL = TASK_DIR / "experiments/protocols/p-e26487f2a548.yaml"
+REWEIGHTED_PROTOCOL = TASK_DIR / "experiments/demo_models/2026-10-27__demo__arm08-wheel02-a.yaml"
 
 
 def resolve_demo(args):
@@ -24,7 +25,9 @@ def resolve_demo(args):
     import numpy as np
     import yaml
     from evaluation.test_sets import get_split
-    protocol = yaml.safe_load(args.protocol.read_text())
+    protocol_path = args.protocol or (REWEIGHTED_PROTOCOL if (args.teacher, args.seed) == ("A", 0)
+                                      else DEFAULT_PROTOCOL)
+    protocol = yaml.safe_load(protocol_path.read_text())
     artifact = next(a for a in protocol["decisions"]["final"]["artifacts"]
                     if (a["teacher"], a["objective"], a["seed"]) ==
                     (args.teacher, args.objective, args.seed))
@@ -166,7 +169,8 @@ def main(argv=None):
                    help="override world-frame EE target in meters; retain the scenario's starting pose")
     p.add_argument("--seconds", type=float, default=40.0, help="simulation duration before freezing")
     p.add_argument("--speed", type=float, default=1.0, help="wall-clock playback speed, physics stays at 1 kHz")
-    p.add_argument("--protocol", type=Path, default=DEFAULT_PROTOCOL)
+    p.add_argument("--protocol", type=Path,
+                   help="model manifest; default A seed0 uses arm0.8/wheel0.2 M6 at 42000 updates; others use the original protocol")
     p.add_argument("--headless", action="store_true", help="run both simulators without windows, then exit")
     p.add_argument("--output", type=Path, default=TASK_DIR / "results/live_compare/comparison.json")
     args = p.parse_args(argv)

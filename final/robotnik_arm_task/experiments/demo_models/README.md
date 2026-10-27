@@ -1,5 +1,11 @@
 # Demo model recommendations — 2026-10-27
 
+The current default for **A seed0** is the newly retrained M6 at **42,000 updates, arm/wheel=0.8/0.2**.
+Its BC and BC+J inference paths and hashes are in `2026-10-27__demo__arm08-wheel02-a.yaml`.
+Run `python -m evaluation.live_compare` for BC or add `--objective bcj` for BC+J.
+These are terminal checkpoints, not newly selected best models. B and A seeds1/2 still default to the original
+frozen protocol. An explicit `--protocol` selects the requested historical manifest instead.
+
 `2026-10-27__selection__best-validated.yaml` records recommendations from the 29 existing full-validation
 evaluations (32 scenarios each). It is a demo manifest accepted by `evaluation.live_compare --protocol`;
 it is **not** a frozen final-test protocol. Original protocols, checkpoints and evaluation rows are unchanged.
@@ -42,5 +48,5 @@ python -m evaluation.live_compare --protocol experiments/demo_models/2026-10-27_
 ```
 
 Append `--target X Y Z` for a custom target. These commands load the exact `step_<k>.npz` export used in the
-recorded full-validation evaluation, whose hash is included in the manifest. Without `--protocol`, the demo's
-original default remains the frozen final protocol and its BC seed-0 models.
+recorded full-validation evaluation, whose hash is included in the manifest. Without `--protocol`, A seed0
+loads the new 0.8/0.2 terminal model described above; other teacher/seed combinations use the original protocol.

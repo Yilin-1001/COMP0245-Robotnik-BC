@@ -102,11 +102,17 @@ For model recommendations across all recorded full-validation candidates, see th
 [demo selection manifest and commands](final/robotnik_arm_task/experiments/demo_models/README.md).
 
 ```bash
-python -m evaluation.live_compare                         # A expert vs frozen A BC, seed 0
+python -m evaluation.live_compare                         # A expert vs NEW M6 BC, arm0.8/wheel0.2, seed0, step42000
+python -m evaluation.live_compare --objective bcj         # A expert vs NEW M6 BC+J, same weights/seed/step
 python -m evaluation.live_compare --teacher B              # B expert vs frozen B BC
 python -m evaluation.live_compare --objective bcj --seed 1 # compare a BC+J finalist
 python -m evaluation.live_compare --target 0.2 1.1 0.5      # custom world-frame target (meters)
 ```
+
+The new A seed-0 demo paths are in
+[`2026-10-27__demo__arm08-wheel02-a.yaml`](final/robotnik_arm_task/experiments/demo_models/2026-10-27__demo__arm08-wheel02-a.yaml).
+They load the terminal 42,000-update models from the latest retraining, rather than a newly selected best checkpoint.
+An explicit `--protocol` overrides this default; B and A seeds 1/2 retain the original protocol.
 
 Both simulations keep the original 1 kHz control/physics interface and synchronize every 20 steps.
 Each window shows its controller, simulation time, true end-effector error, torque magnitude and wheel commands;

@@ -1,0 +1,33 @@
+kind: demo-artifacts
+date: '2026-10-27'
+description: Terminal checkpoints from the authorized A retraining; fixed 42000 updates,
+  not newly selected best checkpoints.
+decisions:
+  final:
+    artifacts:
+    - label: A-M6-bc-arm08-wheel02-step42000
+      teacher: A
+      objective: bc
+      architecture: m6
+      seed: 0
+      checkpoint_step: 42000
+      arm_weight: 0.8
+      wheel_weight: 0.2
+      run_id: clean-A-bc-clean253-m6-lr1e-3-s0-selection-6c6fd5abd61e
+      checkpoint: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s0-selection-6c6fd5abd61e/step_42000.pt
+      checkpoint_sha256: 75207d729b344ccde2a43dfeb3e8248e0d017d04195b3afff702456bd1a7ac27
+      inference: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bc/clean-A-bc-clean253-m6-lr1e-3-s0-selection-6c6fd5abd61e/step_42000.npz
+      inference_sha256: 7e569b55a454748b047239918e1adc6ef1f06426fc944f455e56e4e2bc8d1277
+    - label: A-M6-bcj-arm08-wheel02-step42000
+      teacher: A
+      objective: bcj
+      architecture: m6
+      seed: 0
+      checkpoint_step: 42000
+      arm_weight: 0.8
+      wheel_weight: 0.2
+      run_id: clean-A-bcj-clean253-m6-lr1e-3-s0-selection-6bfbbf3a0714
+      checkpoint: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s0-selection-6bfbbf3a0714/step_42000.pt
+      checkpoint_sha256: c4b59680ba3d62df4492100c4b1d14978b82ee3b950d26092a40d4927c0ae704
+      inference: checkpoints/reweighted/2026-10-27__experiment__arm08-wheel02/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s0-selection-6bfbbf3a0714/step_42000.npz
+      inference_sha256: 4c7592ceaa9e12c83a46bd3db4878c99d82d24500e9478bab73aa30cf405e093
