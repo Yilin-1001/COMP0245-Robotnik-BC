@@ -55,6 +55,7 @@ ML_Final/
 | 2026-10-26 | report | [clean-expert-data-collection](../reports/2026-10-26__report__clean-expert-data-collection.md) |
 | 2026-10-26 | report | [expert-operating-limits](../reports/2026-10-26__report__expert-operating-limits.md) |
 | 2026-10-26 | report | [paired-clean-dataset-subsets](../reports/2026-10-26__report__paired-clean-dataset-subsets.md) |
+| 2026-10-27 | report | [reaching-failure-and-training-rollouts](../reports/2026-10-27__report__reaching-failure-and-training-rollouts.md) |
 | 2026-10-26 | research | [mlp-training-recipe](../research/2026-10-26__research__mlp-training-recipe.md) |
 | 2026-10-26 | design | [mlp-training-structure](../specs/2026-10-26__design__mlp-training-structure.md) |
 | 2026-10-27 | design | [dagger-a：首轮训练设计与执行阶段（待审阅）](../specs/2026-10-27__design__dagger-a.md) |
