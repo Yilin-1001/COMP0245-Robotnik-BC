@@ -23,6 +23,9 @@ from data_collection.dagger_scenarios import freeze_json
 from training.dagger.config import finalise, validate
 
 R0_RESULTS = ROOT / "results/capacity/2026-10-27__experiment__arm08-wheel02-d08w0256"
+# evaluation/evaluate.py at the R0 training commit a9053a6; the legacy JSON's
+# evaluation_script_sha256 names its local evaluate_run.py report driver instead.
+R0_EVALUATOR_SHA256 = "df2904270ab7286ac9bbdd4cb7dd1b9f6646713b4d9ae6c05b32635e8944a537"
 
 
 def score(summary):
@@ -209,6 +212,12 @@ def train(output, workers, resume=False):
     return cfg
 
 
+def check_baseline_evidence(record, artifact_sha, driver, evaluator, frozen_evaluator_sha):
+    if (record["inference_sha256"] != artifact_sha or record["evaluation_script_sha256"] != sha(driver) or
+            sha(evaluator) != frozen_evaluator_sha):
+        raise ValueError("R0 evaluation evidence mismatch")
+
+
 def baseline(output):
     from evaluation.evaluate import summarise
     # The original step export and promoted export carry different provenance metadata but identical numerical arrays.
@@ -218,11 +227,12 @@ def baseline(output):
     ids = set(json.loads((output/"probe_indices.json").read_text())["fitting_diagnostic_ids"])
     records = {split:json.loads((R0_RESULTS/f"rollouts__{split}__step84000.json").read_text()) for split in ("fitting","validation")}
     for record in records.values():
-        if record["inference_sha256"] != sha(ROOT/PARENT/"step_84000.npz") or record["evaluation_script_sha256"] != sha(ROOT/"evaluation/evaluate.py"):
-            raise ValueError("R0 evaluation evidence mismatch")
+        check_baseline_evidence(record,sha(ROOT/PARENT/"step_84000.npz"),R0_RESULTS/"evaluate_run.py",
+                                ROOT/"evaluation/evaluate.py",R0_EVALUATOR_SHA256)
     return {"validation":records["validation"]["summary"],
             "fitting_diagnostic":summarise([o for o in records["fitting"]["outcomes"] if o["scenario_id"] in ids]),
-            "reuse_evidence":{str(p.relative_to(ROOT)):sha(p) for p in [R0_RESULTS/"rollouts__fitting__step84000.json",R0_RESULTS/"rollouts__validation__step84000.json"]}}
+            "reuse_evidence":{str(p.relative_to(ROOT)):sha(p) for p in [R0_RESULTS/"rollouts__fitting__step84000.json",R0_RESULTS/"rollouts__validation__step84000.json",
+                                R0_RESULTS/"evaluate_run.py",ROOT/"evaluation/evaluate.py"]}}
 
 
 def evaluate(output, workers):
@@ -252,7 +262,7 @@ def evaluate(output, workers):
               "candidate_inference_sha256":sha(directory/"inference.npz"),
               "collection_parent_next":str((directory/"inference.npz" if promoted else ROOT/PARENT/"inference.npz").relative_to(ROOT)),
               "screening":[{"step":r["step"],"summary":r["summary"]} for r in screened],
-              "new_test_evaluated":False,"controls_completed":False}
+              "new_test_evaluated":False,"controls_completed":False,"post_training_driver_sha256":sha(__file__)}
     freeze_json(output/"evaluation_complete.json",report)
     print(json.dumps({"evaluation_complete":report}),flush=True)
     return report
