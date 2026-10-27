@@ -59,6 +59,7 @@ ML_Final/
 | 2026-10-26 | research | [mlp-training-recipe](../research/2026-10-26__research__mlp-training-recipe.md) |
 | 2026-10-26 | design | [mlp-training-structure](../specs/2026-10-26__design__mlp-training-structure.md) |
 | 2026-10-27 | design | [dagger-a：首轮训练设计与执行阶段（待审阅）](../specs/2026-10-27__design__dagger-a.md) |
+| 2026-10-27 | design | [network-capacity-a：A 模型深度与宽度容量实验（待审阅）](../specs/2026-10-27__design__network-capacity-a.md) |
 | 2026-10-26 | spec | [expert-datasets](../specs/2026-10-26__spec__expert-datasets.md) |
 
 project-overview、ablation-strategy 保留早期方案及后续修订；文中标记为 archived 的表格不是当前训练默认值。
