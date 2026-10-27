@@ -2,6 +2,8 @@
 
 2026-10-27。用户已授权先单独训练D8-W256并进行测试；30组容量矩阵暂不启动。
 
+执行状态：84k训练及完整32 validation、221 fitting闭环评估均已完成，见[结果报告](../reports/2026-10-27__report__d08w0256-single-run.md)。
+
 - A教师，Clean_253，原221 fitting / 32 validation；归一化仅用fitting。
 - 隐藏层`[256,256,256,256,256,256,256,256]`，472,585参数，LayerNorm+SiLU，21输入及7+2输出头。
 - 纯BC，标准化Huber δ1；arm/wheel=0.8/0.2。

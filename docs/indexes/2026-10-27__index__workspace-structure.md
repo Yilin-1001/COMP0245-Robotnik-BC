@@ -49,6 +49,7 @@ ML_Final/
 | 2026-10-26 | plan | [ablation-strategy](../plans/2026-10-26__plan__ablation-strategy.md) |
 | 2026-10-26 | plan | [mlp-baseline-training](../plans/2026-10-26__plan__mlp-baseline-training.md) |
 | 2026-10-27 | plan | [arm08-wheel02-retraining-a：A 已有网络配对重训](../plans/2026-10-27__plan__arm08-wheel02-retraining-a.md) |
+| 2026-10-27 | plan | [d08w0256-single-run：D8-W256 单模型训练与验证](../plans/2026-10-27__plan__d08w0256-single-run.md) |
 | 2026-10-26 | plan | [project-overview](../plans/2026-10-26__plan__project-overview.md) |
 | 2026-10-24 | assignment | [comp0245-final-project](../references/2026-10-24__assignment__comp0245-final-project.pdf) (local only, not in Git: course material from Moodle) |
 | 2026-10-26 | reference | [research-bibliography](../references/2026-10-26__reference__research-bibliography.md) |
@@ -58,6 +59,7 @@ ML_Final/
 | 2026-10-26 | report | [paired-clean-dataset-subsets](../reports/2026-10-26__report__paired-clean-dataset-subsets.md) |
 | 2026-10-27 | report | [reaching-failure-and-training-rollouts](../reports/2026-10-27__report__reaching-failure-and-training-rollouts.md) |
 | 2026-10-27 | report | [arm08-wheel02-retraining-a：7组A模型配对重训结果](../reports/2026-10-27__report__arm08-wheel02-retraining-a.md) |
+| 2026-10-27 | report | [d08w0256-single-run：D8-W256 训练与完整训练场景闭环结果](../reports/2026-10-27__report__d08w0256-single-run.md) |
 | 2026-10-26 | research | [mlp-training-recipe](../research/2026-10-26__research__mlp-training-recipe.md) |
 | 2026-10-26 | design | [mlp-training-structure](../specs/2026-10-26__design__mlp-training-structure.md) |
 | 2026-10-27 | design | [dagger-a：首轮训练设计与执行阶段（待审阅）](../specs/2026-10-27__design__dagger-a.md) |
