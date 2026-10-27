@@ -1,5 +1,7 @@
 # COMP0245 Final Project: Behaviour Cloning for the Robotnik Mobile Manipulator
 
+文件导航：[按时间和类型查看工作区结构](docs/indexes/2026-10-27__index__workspace-structure.md) · [文档目录](docs/README.md)。
+
 A learned policy maps base pose (`base_pos`, `base_bearing`), arm state (`q_mes`, `qd_mes`) and `TARGET_EE_POS` to arm torques (`torque_arm`, 7) and wheel speeds (`wheel_cmds`, 4). The current training target is clean-data MLP behaviour cloning, followed by a separately reported damping-Jacobian loss experiment. DART and DAgger are later, separate workflows. Training and generic evaluation entry points remain placeholders; no learned policy is claimed here.
 
 ## Setup
@@ -36,7 +38,7 @@ python markovian_expert_demo.py                              # Markovian expert 
 python -m evaluation.compare_controllers --n 30              # template vs Markovian time to reach -> results/controller_timing.csv
 ```
 
-Simulator and clean-collection settings are in `final/robotnik_arm_task/settings.yaml`. Its `mlp`, `train_stride` and `dagger` keys are legacy placeholders: the training code never reads them, and the file is left byte-identical because the clean-data QA recomputes a code digest over it. Training settings live in `experiments/configs/` (`common.yaml` → `baseline.yaml`/`jacobian.yaml` → `objectives/` → `teachers/` → `--set key=value`), as defined in the [training structure design](docs/superpowers/specs/2026-10-26-mlp-training-structure-design.md). The numerical recipe is in [training research](docs/mlp_training_research.md), and the exact clean split and evaluation predicate are in the [baseline plan](docs/mlp_baseline_training_plan.md). The clean datasets, outcome definitions and QA are described in `docs/clean_collection_report.md`.
+Simulator and clean-collection settings are in `final/robotnik_arm_task/settings.yaml`. Its `mlp`, `train_stride` and `dagger` keys are legacy placeholders: the training code never reads them, and the file is left byte-identical because the clean-data QA recomputes a code digest over it. Training settings live in `experiments/configs/` (`common.yaml` → `baseline.yaml`/`jacobian.yaml` → `objectives/` → `teachers/` → `--set key=value`), as defined in the [training structure design](docs/specs/2026-10-26__design__mlp-training-structure.md). The numerical recipe is in [training research](docs/research/2026-10-26__research__mlp-training-recipe.md), and the exact clean split and evaluation predicate are in the [baseline plan](docs/plans/2026-10-26__plan__mlp-baseline-training.md). The clean datasets, outcome definitions and QA are described in `docs/reports/2026-10-26__report__clean-expert-data-collection.md`.
 
 ### MLP training and evaluation
 
