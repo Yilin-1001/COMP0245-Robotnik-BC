@@ -1,12 +1,14 @@
 # A 模型深度与宽度容量实验
 
-日期：2026-10-27。状态：待审阅；尚未创建训练任务或启动新模型训练。
+日期：2026-10-27。状态：按用户要求将 arm/wheel 更新为0.8/0.2，等待本轮具体计划确认；尚未创建容量训练任务或启动容量模型训练。
 
 用户目标：先训练多种深度和神经元数量的网络，检验当前网络容量是否限制了复杂控制的学习。用户已确定先做 A，验证后再考虑 B。下列架构矩阵、预算和评估规则由本次方案提出，尚未冻结为实验协议。DAgger 暂列在本轮容量实验之后。
 
 ## 要回答的问题
 
 在相同 A 专家数据、特征、优化与评价条件下，更深或更宽的 MLP 是否改善 reaching 拟合，以及学生自己执行训练场景时的 reaching/保持成功率。上一轮 A M6 BC+J 在 fitting 场景上仅 1/221 持续保持成功，因此本轮不能只报告训练 loss；也不预先把容量不足认定为唯一根因。
+
+最新的[已有网络0.8/0.2重训](../reports/2026-10-27__report__arm08-wheel02-retraining-a.md)已完成：六组BC配对验证均0/32 reach，M6 BC+J为1/32 reach，所有模型0/32持续保持。本轮在相同0.8/0.2权重下比较容量，主对照仍从头训练M6，以统一学习率搜索和84k日程。
 
 ## 方法选择
 
@@ -38,7 +40,7 @@
 - 教师 A：`markovian-lt0.50-v1`；Clean_253 的原 221 个 fitting 轨迹、32 个 validation 和 8 个 screening，均沿用 `experiments/splits/clean253.json`，验证/测试数据不进入拟合。
 - 保持 21 维特征、物理参数、1000 Hz 接口、±30 N·m 和 ±6 rad/s 执行限制。归一化仅由同一 fitting 数据和原尺度下限确定，核对所有架构得到同一归一化内容哈希。
 - 所有模型从头初始化，采用现有 PyTorch Linear 默认初始化、LayerNorm 初始化与独立 init RNG stream。首阶段 seed0；不同结构的相同 seed 不等于权重逐元素相同。
-- 主比较使用纯 BC：标准化 Huber，delta=1，总损失 `0.5 × mean_arm + 0.5 × mean_wheel`。Jacobian 损失组合不混入本次容量主结论；旧 A BC+J 仅作历史结果参照。
+- 主比较使用纯 BC：标准化 Huber，delta=1，总损失 `0.8 × mean_arm + 0.2 × mean_wheel`，每组分别先取均值。所有架构及M6对照统一使用这组权重，并将其写入配置与任务身份。Jacobian 损失组合不混入本次容量主结论；已有 A BC+J 仅作历史结果参照。
 - AdamW，weight decay `1e-4`，batch 1024，原“均匀抽轨迹、再均匀抽该轨迹时间点”的采样方式。
 - 所有架构各跑 LR `{1e-3, 3e-4, 1e-4}`，warmup 500 updates，随后 cosine 至 **84,000 updates**。每个模型约 32.36 个等效采样 epoch；主横轴仍为 update。
 - 首阶段合计 **10 架构 × 3 LR × seed0 = 30 次完整训练，252 万 optimizer updates**。这包含重新训练 M6 对照，不以旧 42k 训练代替 84k 对照。
@@ -65,11 +67,11 @@
 
 跨模型提供参数量、隐藏层列表、优化节点、LR 与模型文件哈希；在固定 42k/84k 节点比较离线指标和 screening，再提供选中 artifact 的 fitting/validation reach、hold 和误差。若容量增加只降低演示轨迹上的 loss、未改善学生任务成功，应明确报告这种分离。
 
-新增输出归入独立容量实验目录：`checkpoints/capacity/clean/A/bc/<run_id>/`、`results/capacity/clean/A/bc/<run_id>/`，汇总写容量实验自己的索引。原模型、数据、协议和 demo 推荐均保留。人读文档与结果图表使用日期与类型命名；实验 run_id 继续包含架构、LR、seed、配置哈希。
+新增输出归入独立容量实验目录：`checkpoints/capacity/2026-10-27__experiment__arm08-wheel02/clean/A/bc/<run_id>/`、`results/capacity/2026-10-27__experiment__arm08-wheel02/clean/A/bc/<run_id>/`，汇总写容量实验自己的索引。原模型、数据、协议和 demo 推荐均保留。人读文档与结果图表使用日期与类型命名；实验 run_id 继续包含架构、LR、seed、配置哈希。
 
 ## 计算预检和实现边界
 
-当前隔离环境无法访问 CUDA；隔离外的只读检查确认 RTX 5070 Ti Laptop GPU、约 12 GB 显存可见。本轮必须用 `training.device=cuda`，正式启动前在实际执行环境运行现有 CUDA kernel 检查，并对最大模型做显存/吞吐预检。不得静默退回 CPU；预检失败时记录原因，处理后再启动正式矩阵。
+刚完成的0.8/0.2重训已确认 RTX 5070 Ti Laptop GPU、约12 GB显存可用；CUDA执行需要在允许GPU访问的环境中运行。本轮必须用 `training.device=cuda`，正式启动前在实际执行环境运行现有 CUDA kernel 检查，并对最大模型做显存/吞吐预检。不得静默退回 CPU；预检失败时记录原因，处理后再启动正式矩阵。
 
 先测各架构的训练 updates/s、最大模型 batch1024 的峰值显存和磁盘占用，再给出墙钟时间估算。现有工作盘约 92 GB 空闲。发生 OOM 时不在原配置下偷偷减 batch；应诊断或明确产生新协议。测量部署 NumPy 后端单步推理延迟 p50/p95/p99，大网络能以 1 ms 仿真步长执行，不等于能在真实机器上达到 1 kHz；两种能力分开报告。
 
