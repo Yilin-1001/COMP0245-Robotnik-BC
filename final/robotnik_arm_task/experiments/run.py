@@ -222,6 +222,37 @@ def param_count(arch: str, input_dim: int) -> int:
     return sum(p.numel() for p in MLP(input_dim, hidden).parameters())
 
 
+def choose_lrs(offline: dict) -> dict:
+    """{(teacher, arch, lr): offline proxy} -> {teacher: {arch: lr}} by rank_offline (ties: the listed LR order)."""
+    out = {}
+    for (t, a, lr), m in sorted(offline.items(), key=lambda kv: (kv[0][0], kv[0][1], LR_GRID.index(kv[0][2]))):
+        best = out.setdefault(t, {}).get(a)
+        if best is None or rank_offline(m) < rank_offline(offline[(t, a, best)]):
+            out[t][a] = lr
+    return out
+
+
+def choose_finalists(validation: dict, k: int = 2) -> dict:
+    """{(teacher, arch): 32-scenario summary} -> top k architectures per teacher by rank_rollout."""
+    out = {}
+    for t in sorted({t for t, _ in validation}):
+        ranked = sorted((a for tt, a in validation if tt == t), key=lambda a: rank_rollout(validation[(t, a)]))
+        out[t] = ranked[:k]
+    return out
+
+
+def choose_selected(seed_holds: dict, params: dict, tie: float = 1 / 32) -> dict:
+    """{(teacher, arch): [sustained hold per seed]} -> {teacher: arch}: best mean; within one validation scenario
+    (1/32) of the best is effectively tied and the smaller model wins."""
+    out = {}
+    for t in sorted({t for t, _ in seed_holds}):
+        means = {a: sum(v) / len(v) for (tt, a), v in seed_holds.items() if tt == t}
+        best = max(means.values())
+        tied = [a for a, m in means.items() if best - m < tie - 1e-12]
+        out[t] = min(tied, key=lambda a: params[a])
+    return out
+
+
 # ---------------------------------------------------------------- execution
 
 def _launcher(job):
@@ -338,6 +369,43 @@ def run_stage(stage: str, protocol: dict, workers: int, teachers=None) -> list[d
     return runs
 
 
+def screen_decisions(runs: list[dict], workers: int) -> tuple[dict, list[Path]]:
+    """Offline LR choice per architecture/teacher, closed-loop selection of those runs, then the finalists."""
+    key = lambda r: (r["job"]["teacher"], r["job"]["identity"]["architecture"], r["job"]["overrides"]["training.lr"])
+    by_key = {key(r): r for r in runs}
+    lrs = choose_lrs({k: offline_proxy_from_metrics(r["run_dir"]) for k, r in by_key.items()})
+    validation, evidence = {}, [Path(r["run_dir"]) / "metrics.csv" for r in runs]
+    for t, archs in lrs.items():
+        for a, lr in archs.items():
+            sel = select_run(by_key[(t, a, lr)], workers)
+            validation[(t, a)] = dict(sel["validation"], checkpoint_step=sel["step"])
+            evidence.append(Path(sel["run_dir"]) / "selection.json")
+            print(json.dumps({"teacher": t, "arch": a, "lr": lr, "step": sel["step"],
+                              "validation_hold": sel["validation"]["sustained_hold_success"]}), flush=True)
+    return {"lr": lrs, "finalists": choose_finalists(validation)}, evidence
+
+
+def seed_decisions(runs: list[dict], protocol: dict, workers: int) -> tuple[dict, list[Path]]:
+    """Closed-loop selection of every finalist seed, then the selected architecture per teacher."""
+    d = protocol["decisions"]
+    holds, evidence = {}, []
+    for r in runs:
+        sel = select_run(r, workers)
+        t, a = r["job"]["teacher"], r["job"]["identity"]["architecture"]
+        holds.setdefault((t, a), []).append(float(sel["validation"]["sustained_hold_success"]))
+        evidence.append(Path(sel["run_dir"]) / "selection.json")
+    for (t, a) in list(holds):  # seed 0 comes from the screen's selected-LR run
+        seed0 = run_job(_job("screen", t, a, 0, {"training.updates": d["budget"]["updates"],
+                                                  "training.schedule": "cosine", "loss.action": d["loss"]["action"],
+                                                  "training.lr": d["lr"][t][a]}), workers)
+        sel = select_run(seed0, workers)
+        holds[(t, a)].insert(0, float(sel["validation"]["sustained_hold_success"]))
+        evidence.append(Path(sel["run_dir"]) / "selection.json")
+    params = {a: param_count(a, 21 if t == "A" else 26) for t, a in holds}
+    print(json.dumps({f"{t}/{a}": v for (t, a), v in holds.items()}), flush=True)
+    return {"selected": choose_selected(holds, params)}, evidence
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description="clean-data MLP experiment stages (no test access, no DART/DAgger)")
     p.add_argument("--stage", choices=STAGES)
@@ -371,6 +439,12 @@ def main(argv=None) -> int:
         print(f"{len(jobs)} jobs; outputs under checkpoints/clean/<teacher>/<objective>/<run_id>/")
         return 0
     runs = run_stage(args.stage, protocol, args.workers, args.teachers)
+    if args.select and args.stage == "screen":
+        print(extend_protocol(protocol, *screen_decisions(runs, args.workers)))
+        return 0
+    if args.select and args.stage == "seeds":
+        print(extend_protocol(protocol, *seed_decisions(runs, protocol, args.workers)))
+        return 0
     if args.select:
         for r in runs:
             s = select_run(r, args.workers)

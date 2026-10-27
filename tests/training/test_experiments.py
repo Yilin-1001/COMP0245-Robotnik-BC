@@ -134,3 +134,22 @@ def test_refit_jobs_follow_frozen_decisions(frozen_protocol):
     assert all(j["overrides"]["identity.fit_stage"] == "refit" and j["overrides"]["training.updates"] == 30000
                for j in jobs)
     assert {j["launcher"] for j in jobs if j["identity"]["objective"] == "bcj"} == {"jacobian"}
+
+
+def test_screen_lr_choice_and_finalists_follow_declared_rules():
+    from experiments.run import choose_finalists, choose_lrs, choose_selected
+    offline = {("A", "m1", 1e-3): {"hold_bias": {"gate_pass": False, "max_abs_nm": 2.0}, "arm_rmse_nm": 0.5, "wheel_rmse_rad_s": 0.1},
+               ("A", "m1", 3e-4): {"hold_bias": {"gate_pass": False, "max_abs_nm": 1.0}, "arm_rmse_nm": 0.9, "wheel_rmse_rad_s": 0.1},
+               ("A", "m2", 1e-3): {"hold_bias": {"gate_pass": True, "max_abs_nm": 0.4}, "arm_rmse_nm": 0.9, "wheel_rmse_rad_s": 0.1}}
+    assert choose_lrs(offline) == {"A": {"m1": 3e-4, "m2": 1e-3}}
+    val = {("A", "m1"): {"sustained_hold_success": 0.5, "reach_success": 0.5, "median_final_err_mm": 9.0,
+                         "mean_saturation_frac": 0, "mean_torque_variation_nm": 0, "checkpoint_step": 0},
+           ("A", "m2"): {"sustained_hold_success": 0.75, "reach_success": 0.75, "median_final_err_mm": 9.0,
+                         "mean_saturation_frac": 0, "mean_torque_variation_nm": 0, "checkpoint_step": 0},
+           ("A", "m3"): {"sustained_hold_success": 0.0, "reach_success": 0.0, "median_final_err_mm": 9.0,
+                         "mean_saturation_frac": 0, "mean_torque_variation_nm": 0, "checkpoint_step": 0}}
+    assert choose_finalists(val) == {"A": ["m2", "m1"]}
+    seeds = {("A", "m2"): [0.5, 0.5, 0.5], ("A", "m4"): [0.5, 0.53, 0.5]}  # within one scenario: tie -> smaller model
+    assert choose_selected(seeds, {"m2": 21001, "m4": 37769}) == {"A": "m2"}
+    seeds = {("A", "m2"): [0.25, 0.25, 0.25], ("A", "m4"): [0.5, 0.5, 0.5]}
+    assert choose_selected(seeds, {"m2": 21001, "m4": 37769}) == {"A": "m4"}
