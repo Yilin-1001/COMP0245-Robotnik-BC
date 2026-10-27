@@ -43,7 +43,9 @@ def _write(path: Path, rows: list[dict]) -> None:
         w.writerows(rows)
 
 
-def _bar_figure(summary: list[dict], path: Path, title: str) -> None:
+def _bar_figure(summary: list[dict], path: Path, title: str) -> dict:
+    """Grouped bars; every slot is labelled with its value or "n/a" (no recorded run), so an absent group never
+    reads as 0%. Returns {(teacher, objective, architecture): label}."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -54,13 +56,19 @@ def _bar_figure(summary: list[dict], path: Path, title: str) -> None:
     fig, ax = plt.subplots(figsize=(max(3.5, 0.55 * len(labels) + 1.5), 2.6), dpi=200)
     fig.patch.set_facecolor(SURFACE)
     ax.set_facecolor(SURFACE)
+    annotations = {}
     for k, t in enumerate(teachers):
         xs, ys = [], []
         for i, lab in enumerate(labels):
             s = value.get((t, *lab))
+            x = i + (k - (len(teachers) - 1) / 2) * width
+            y = 100 * s["mean_sustained_hold"] if s is not None else 0.0
+            annotations[(t, *lab)] = f"{y:.1f}%" if s is not None else "n/a"
+            ax.text(x, y + 1.5, annotations[(t, *lab)], ha="center", va="bottom", fontsize=5,
+                    color=INK if s is not None else MUTED)
             if s is not None:
-                xs.append(i + (k - (len(teachers) - 1) / 2) * width)
-                ys.append(100 * s["mean_sustained_hold"])
+                xs.append(x)
+                ys.append(y)
         ax.bar(xs, ys, width=width * 0.92, color=SERIES[t], label=f"teacher {t}", edgecolor=SURFACE, linewidth=1)
     ax.set_xticks(range(len(labels)), [f"{a.upper()}{'+J' if o == 'bcj' else ''}" for o, a in labels],
                   color=INK, fontsize=7)
@@ -79,6 +87,7 @@ def _bar_figure(summary: list[dict], path: Path, title: str) -> None:
     fig.tight_layout()
     fig.savefig(path, facecolor=SURFACE)
     plt.close(fig)
+    return annotations
 
 
 def main(argv=None) -> int:

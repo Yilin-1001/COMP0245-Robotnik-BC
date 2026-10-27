@@ -73,7 +73,20 @@ Final stages: `--stage refit` trains declared finalists afresh on all 253 traini
 
 Checks: `python -m pytest tests -m "not sim and not realdata"` (fast), `-m realdata` (reads the Clean_253/223 inventories and builds caches), `-m sim` (expert preflight through the student action path in PyBullet).
 
-Runs are written to `checkpoints/<regime>/<teacher>/<objective>/<run_id>/` (`config.yaml`, `provenance.json`, `normaliser.npz`, `metrics.csv`, `step_<k>.pt` + `step_<k>.npz` exports, resumable `latest.pt`; `best.pt` + `inference.npz` once selected). `training.train_mlp` is a deprecated wrapper that forwards to `training.baseline.train` and rejects its old `--data/--out` arguments. `data_collection.dagger` and `evaluation.plots` remain placeholders for later stages.
+Runs are written to `checkpoints/<regime>/<teacher>/<objective>/<run_id>/` (`config.yaml`, `provenance.json`, `normaliser.npz`, `metrics.csv`, `step_<k>.pt` + `step_<k>.npz` exports, resumable `latest.pt`; `best.pt` + `inference.npz` once selected). `training.train_mlp` is a deprecated wrapper that forwards to `training.baseline.train` and rejects its old `--data/--out` arguments. `data_collection.dagger` remains a placeholder for a later stage.
+
+### Clean MLP results (final protocol `p-e26487f2a548`)
+
+Protocol chain: pilot/budget `p-0dedccad51dc` (LR 3e-4, 42,000 updates), loss `p-2a37f68e30af` (Huber), screen `p-9e89dc42395f`, seeds `p-a67f676c83f0` (selected A M6, B M1), calibration `p-13adaf7f1178` (λ_J 0.0703 A, 0.0671 B), final `p-e26487f2a548`. Refit was skipped; the declared artifacts are the validation-selected `best.pt` of each selected architecture, BC and BC+J, seeds 0–2.
+
+| Teacher | Objective | Test sustained hold (64, seeds 0/1/2) | Test reach | Validation hold (32) |
+|---|---|---|---|---|
+| A (M6) | BC | 0 / 0 / 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| A (M6) | BC+J | 0 / 1 / 1 | 2 / 3 / 8 | 0 / 0 / 0 |
+| B (M1) | BC | 0 / 0 / 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| B (M1) | BC+J | 0 / 0 / 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+
+Both experts hold 32/32 validation scenarios through the same evaluation path. No clean-data MLP controls the robot: all 12 screened architecture/teacher selections, the finalist seeds and the Clean_223 comparison hold 0/32 on validation. Offline errors are small (validation arm RMSE about 0.4–0.7 N·m) and expert rollouts with residual-matched i.i.d. noise still hold (A 32/32, B 29/32), so the failure comes from state-dependent errors, not their size. BC+J does its job offline: the learned damping median diagonal moves from about −8 to −29.9 (A) and −27.3 (B) N·m·s/rad, against the teachers' −30. The position stiffness ∂τ/∂q at the hold pose stays indefinite (largest symmetric eigenvalue +16.8 for A BC+J and +69.5 for A BC; teacher about −100 to −116), so the hold remains statically unstable. Remedies that act on this (state-perturbation data such as DART/DAgger, or ∂τ/∂q supervision) lie outside this stage.
 
 ## Layout
 
@@ -93,9 +106,9 @@ final/robotnik_arm_task/
 
 ## Outputs
 
-- `results/results.csv`: the compact shared evaluation index, permitted in Git. The target schema includes global run identity, config/split hashes, checkpoint step/path and evaluation split/ID; a training run may have multiple checkpoint evaluations. The future shared evaluator will write this schema.
+- `results/results.csv`: the compact shared evaluation index, permitted in Git. The target schema includes global run identity, config/split hashes, checkpoint step/path and evaluation split/ID; a training run may have multiple checkpoint evaluations. `evaluation.evaluate` and `experiments.run` append to it under a file lock and refuse duplicate (run, step, split, evaluation ID) keys.
 - Per-run details and figures stay local under `results/<regime>/<teacher>/<objective>/<run_id>/`; current expert diagnostics may retain their existing result paths.
-- Raw data, checkpoints, detailed results and figures are not committed. Their future training/collection commands and provenance rules are defined in the structure design; the training placeholders cannot recreate model artifacts yet.
+- Raw data, checkpoints, detailed results and figures are not committed. Model artifacts are recreated from the committed protocols with the `experiments.run` stages above; every run records its config, data, split and code hashes in `provenance.json`.
 
 ## External code
 

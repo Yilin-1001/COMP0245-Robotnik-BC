@@ -53,7 +53,7 @@ def test_unknown_keys_are_rejected():
 
 def test_baseline_cannot_be_changed_to_bcj():
     with pytest.raises(ValueError):
-        resolve_config(Path("final/robotnik_arm_task/experiments/configs/baseline.yaml"),
+        resolve_config(BASELINE,
                        "A", {"identity.objective": "bcj"})
 
 
