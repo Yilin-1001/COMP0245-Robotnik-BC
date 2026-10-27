@@ -1,0 +1,101 @@
+kind: post-hoc-demo-selection
+selection_date: '2026-10-27'
+description: Demo recommendations from existing full validation only; not a frozen
+  final-test protocol.
+ranking:
+- sustained hold descending
+- reach success descending
+- median final error ascending
+- existing saturation/variation tie break
+- earlier checkpoint
+candidate_count: 29
+limitations:
+- All 29 full-validation candidates hold 0/32; none is a successful task policy.
+- Most of the 1211 checkpoint files have screening or offline metrics only; this is
+  not an exhaustive full-validation ranking of every checkpoint.
+- B task-ranked winner reaches only 1/32; this is weak evidence. B-lowest-final-error
+  is recommended for the physical demo but also fails sustained hold.
+- Test results did not enter this selection.
+source_results:
+  path: results/results.csv
+  sha256: 16c2dc5b7b7662727a940134812ec7d62a7094ca605ba355b9727656a9129a80
+decisions:
+  final:
+    artifacts:
+    - label: A-best-validation
+      teacher: A
+      objective: bcj
+      architecture: m6
+      cohort: clean253
+      seed: 0
+      lr: 0.001
+      updates: 42000
+      checkpoint_step: 30000
+      run_id: clean-A-bcj-clean253-m6-lr1e-3-s0-selection-d45d831c8c61
+      checkpoint: checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s0-selection-d45d831c8c61/step_30000.pt
+      checkpoint_sha256: d406f7f5464e35ad4aae2ce4af8cab0594f78a7221d67a038c076e2953b6540e
+      inference: checkpoints/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s0-selection-d45d831c8c61/step_30000.npz
+      inference_sha256: eb06327586e1e6704e4a50b33e99278f07f7eaa8744543499a3523f7f871e6e1
+      selection_basis: existing rank_rollout on full validation
+      validation:
+        n: 32
+        hold_count: 0
+        reach_count: 4
+        median_final_error_mm: 767.9630624371019
+        detail_path: results/clean/A/bcj/clean-A-bcj-clean253-m6-lr1e-3-s0-selection-d45d831c8c61/rollouts_validation_step30000_rollout-v1.csv
+    - label: B-best-validation
+      teacher: B
+      objective: bc
+      architecture: m1
+      cohort: clean223
+      seed: 0
+      lr: 0.0003
+      updates: 42000
+      checkpoint_step: 2000
+      run_id: clean-B-bc-clean223-m1-lr3e-4-s0-selection-94fe30acc05b
+      checkpoint: checkpoints/clean/B/bc/clean-B-bc-clean223-m1-lr3e-4-s0-selection-94fe30acc05b/step_2000.pt
+      checkpoint_sha256: ff64475226b399299a61e0e656df8c903f908eb0001271b16a5c884557ae24a0
+      inference: checkpoints/clean/B/bc/clean-B-bc-clean223-m1-lr3e-4-s0-selection-94fe30acc05b/step_2000.npz
+      inference_sha256: 91b44581387adb628e5e09f213a201cc4a9bc2de23904c11dcb44b76a9a9f047
+      selection_basis: existing rank_rollout on full validation
+      validation:
+        n: 32
+        hold_count: 0
+        reach_count: 1
+        median_final_error_mm: 1699.3854019860519
+        detail_path: results/clean/B/bc/clean-B-bc-clean223-m1-lr3e-4-s0-selection-94fe30acc05b/rollouts_validation_step2000_rollout-v1.csv
+    - label: B-lowest-final-error
+      teacher: B
+      objective: bc
+      architecture: m5
+      cohort: clean253
+      seed: 1
+      lr: 0.001
+      updates: 42000
+      checkpoint_step: 16000
+      run_id: clean-B-bc-clean253-m5-lr1e-3-s1-selection-3c90fb0783c7
+      checkpoint: checkpoints/clean/B/bc/clean-B-bc-clean253-m5-lr1e-3-s1-selection-3c90fb0783c7/step_16000.pt
+      checkpoint_sha256: 5154fb7f9a31f1344f141a66069166a3ff38ded2de4dbb7487632b6cee8f29e0
+      inference: checkpoints/clean/B/bc/clean-B-bc-clean253-m5-lr1e-3-s1-selection-3c90fb0783c7/step_16000.npz
+      inference_sha256: ce1c19df380229d79fc341754b3dd67ebcebf72dcec034ff550e94985b3b3391
+      selection_basis: minimum median final error on validation
+      validation:
+        n: 32
+        hold_count: 0
+        reach_count: 0
+        median_final_error_mm: 813.2131067989666
+        detail_path: results/clean/B/bc/clean-B-bc-clean253-m5-lr1e-3-s1-selection-3c90fb0783c7/rollouts_validation_step16000_rollout-v1.csv
+recommended_demo:
+  A:
+    label: A-best-validation
+    teacher: A
+    objective: bcj
+    seed: 0
+  B:
+    label: B-lowest-final-error
+    teacher: B
+    objective: bc
+    seed: 1
+recommendation_reason: All candidates fail sustained hold. For physical demo B M5 has smaller median
+  final error consistently across seeds; the task-ranked B M1 Clean_223 has only
+  one transient reach and is retained as an alternate.

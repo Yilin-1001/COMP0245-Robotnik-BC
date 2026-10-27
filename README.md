@@ -59,6 +59,9 @@ python -m evaluation.evaluate --policy expert --teacher A --split validation --r
 
 For a live physical comparison, open two independent PyBullet windows on the same validation scenario:
 
+For model recommendations across all recorded full-validation candidates, see the
+[demo selection manifest and commands](final/robotnik_arm_task/experiments/demo_models/README.md).
+
 ```bash
 python -m evaluation.live_compare                         # A expert vs frozen A BC, seed 0
 python -m evaluation.live_compare --teacher B              # B expert vs frozen B BC
