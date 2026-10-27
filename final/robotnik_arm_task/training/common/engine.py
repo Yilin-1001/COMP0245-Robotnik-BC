@@ -104,7 +104,7 @@ def offline_validation(model, validation, normaliser, config: dict) -> dict:
 
 
 def fit(config: dict, train, validation, model, normaliser, objective, on_checkpoint: Callable | None = None,
-        resume: Path | None = None) -> FitResult:
+        resume: Path | None = None, validator: Callable | None = None) -> FitResult:
     """Run config['training']['updates'] optimiser updates of objective on the fitting cache.
 
     Selection runs: step_<u>.pt (+ step_<u>.npz export) every checkpoint_every updates and at the terminal update;
@@ -113,7 +113,7 @@ def fit(config: dict, train, validation, model, normaliser, objective, on_checkp
     latest.pt is always resumable.
     """
     from training.common.config import configure_runtime, create_run_dir, validate_config
-    validate_config(config, ready_to_train=True)
+    (validator or validate_config)(config, ready_to_train=True)
     refit = config["identity"]["fit_stage"] == "refit"
     if refit and validation is not None:
         raise ValueError("a refit run has no independent validation set (former validation episodes are fitting data)")
