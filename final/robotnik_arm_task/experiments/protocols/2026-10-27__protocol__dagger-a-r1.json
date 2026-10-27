@@ -1,0 +1,105 @@
+{
+  "beta": 0.75,
+  "block_steps": 10,
+  "controls": "C0/C1 deferred; no causal attribution before matched controls",
+  "evaluation": {
+    "episode_cap_s": 40.0,
+    "hold_bias_gate_nm": 0.5,
+    "hold_window_s": 1.0,
+    "jacobian_samples": 4096,
+    "min_reach_time_s": 8.0,
+    "post_reach_s": 3.0,
+    "reach_tolerance_m": 0.01,
+    "workers": 16
+  },
+  "fitting_diagnostic": "same fixed balanced32 as R0; no selection",
+  "interface": {
+    "action_order": "a = [torque_arm (7), wheel_cmds FR, FL, BL, BR (4)]",
+    "control_hz": 1000,
+    "torque_limit": 30.0,
+    "wheel_limit": 6.0
+  },
+  "loss": {
+    "action": "huber",
+    "arm_weight": 0.8,
+    "huber_delta": 1.0,
+    "wheel_weight": 0.2
+  },
+  "mixture_seed": 2026102702,
+  "normaliser_content_sha256": "1ba73a11d1bb7d581a034d86600e8f92d78a76760118e3c76130d3718ea31ef4",
+  "parent": "checkpoints/capacity/2026-10-27__experiment__arm08-wheel02-d08w0256/clean/A/bc/clean-A-bc-clean253-d08w0256-lr3e-4-s0-selection-ca837b8fa585",
+  "parent_config_sha256": "32229f760efe6c7933ad5882c02fa8d51e16e0932dfc0cc0b3537b8e99732f76",
+  "parent_hashes": {
+    "best.pt": "a439ce195692874c6a712c05d2d0de6a13c22e8061ac5af2783805e5034dcd35",
+    "inference.npz": "2300123d9cd98e74f1db7db554789226f72e91fa8b8b377ff1166abd4e5520ad",
+    "normaliser.npz": "d69994cf4ac00b84213113aabc6ab51560df3ec6bcd430795c7cfc8357f1ea53"
+  },
+  "preflight_summary_sha256": "96a6b22b78804771dfd5c7963f4c7907bfd0552d5b7c27fc09f65bb3624d240c",
+  "recovery_gate": {
+    "checks": {
+      "expert": {
+        "held": 8,
+        "passed": true,
+        "required": 8
+      },
+      "reach_0.25s": {
+        "held": 8,
+        "passed": true,
+        "required": 6
+      },
+      "reach_1s": {
+        "held": 8,
+        "passed": true,
+        "required": 6
+      }
+    },
+    "passed": true,
+    "rule": "Expert 8/8, reaching perturbations .25s and 1s each >=6/8; others diagnostic only."
+  },
+  "round": 1,
+  "sampling": "uniform episode then uniform valid row; D0=221 + D1=64; exclude reference data",
+  "scenes_sha256": "6e72f8f2e4b6151057fe78d3283d807ba6ab2fcc3663f5607c001451abb83b64",
+  "screening_steps": [
+    5000,
+    10000,
+    15000,
+    20000
+  ],
+  "sealed_test_evaluation": false,
+  "selection": "screening winner gets validation32; compare parent by hold/reach/median-error; ties retain parent",
+  "source_code": {
+    "configs/robotnik_arm.json": "ee65349b469a95257f8e94fc06c22d76629f2b3b6f45ac74521c0e059de9bdf2",
+    "core/__init__.py": "c7e8a05faf5a6feb2dbb108142bb4189754b2e49834271c0aa3b8d4a73e6399a",
+    "core/env.py": "9aab94018236fbb2f2f86d432fada45d384e395aacba118b5fb5ab44cb6789d2",
+    "core/features.py": "e826665938d536a27afc3ee0b5bb43d71cdee93a68988603f4ff6c20ee59df58",
+    "core/interfaces.py": "0ef0b76a6a7e1b893acd6fff2370f8d267e7d372a615574297d22ddcdde3c582",
+    "data_collection/dagger.py": "82bdaeaeaa03392e8e9f718038365927d3c6cf4434600873888325fca2703145",
+    "data_collection/dagger_preflight.py": "4d101c68ebbf3c14330afa22c9ab524002812cbf7e80d6654a0c666623b9b86d",
+    "data_collection/dagger_rollout.py": "74211e67313ce6ac3c2bb424d6faa8872bf0d78ae098db1249e521eb47f850b7",
+    "data_collection/dagger_scenarios.py": "e121ae2d4ba21c58f6e2edadcbe91b1ace2ba27674db29df79cb3364d6013355",
+    "data_collection/expert.py": "48b5ec45d7ec294b8d7914e09daaeca5a55b1259a05cce02ed36d11be6c46b52",
+    "settings.yaml": "b5efd38c5d6f8f0788825ea759635ca9915a61d0ce0a6f2238df73f0142176c7",
+    "training/common/policies.py": "4342e2d03d9fa4e9801e066c1741ce3e0817fa8aa5d0905b9cce7cf49e0d1ad6"
+  },
+  "teacher_lead_time": 0.5,
+  "teacher_version": "markovian-lt0.50-v1",
+  "training": {
+    "adam_betas": [
+      0.9,
+      0.999
+    ],
+    "adam_eps": 1e-08,
+    "batch_size": 1024,
+    "checkpoint_every": 5000,
+    "device": "cuda",
+    "log_every": 2000,
+    "lr": 0.0001,
+    "optimizer": "adamw",
+    "schedule": "cosine",
+    "updates": 20000,
+    "warmup_updates": 500,
+    "weight_decay": 0.0001
+  },
+  "user_approved_date": "2026-10-27",
+  "version": "dagger-a-r1-v1"
+}

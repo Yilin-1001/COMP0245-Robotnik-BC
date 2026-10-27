@@ -1,0 +1,20 @@
+kind: demo-artifacts
+date: '2026-10-27'
+description: R1 screening-selected candidate; validation and fitting32 both zero reaching/hold.
+  Use explicitly to inspect current failure behavior.
+decisions:
+  final:
+    artifacts:
+    - label: A-D8-W256-DAgger-R1-selected-step5000
+      teacher: A
+      objective: bc
+      architecture: d08w0256
+      seed: 0
+      checkpoint_step: 5000
+      arm_weight: 0.8
+      wheel_weight: 0.2
+      run_id: dagger-A-bc-r1-d08w0256-s0-1175a0015097
+      checkpoint: checkpoints/dagger/A/bc/dagger-A-bc-r1-d08w0256-s0-1175a0015097/best.pt
+      checkpoint_sha256: 049993cfa92c5d1a3c2eb36472d023c709fabd8bf5a6c80fdb82e493ba83b7fd
+      inference: checkpoints/dagger/A/bc/dagger-A-bc-r1-d08w0256-s0-1175a0015097/inference.npz
+      inference_sha256: fb4fc4c9095de1e208d25ecffa82db643160658f79d5e0a52b64a36798e52f95

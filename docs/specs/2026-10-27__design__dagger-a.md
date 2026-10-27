@@ -1,14 +1,14 @@
 # DAgger A：首轮训练设计与执行阶段
 
-日期：2026-10-27。状态：结合最新D8-W256结果重新审查后的建议方案；本次仅审查，不代表用户已批准新的初始化/预算，也不代表DAgger代码已实现或训练已启动。变更与检查依据见[复查报告](../reports/2026-10-27__review__dagger-a-plan.md)。
+日期：2026-10-27。状态：用户已确认首阶段预检与R1，现已实现并执行；R2–R4、额外seed与B仍需后续审阅。审批前复查依据见[复查报告](../reports/2026-10-27__review__dagger-a-plan.md)，执行结果见[R1报告](../reports/2026-10-27__report__dagger-a-r1.md)。
 
-用户已确定：先完成 A，验证后再扩展 B。以下轮数、学习率、采样与验收阈值是本次建议，尚未成为冻结的实验协议。
+用户已确定：先完成 A，验证后再扩展 B。首阶段的初始化、学习率、采样和门槛已冻结至[执行协议](../../final/robotnik_arm_task/experiments/protocols/2026-10-27__protocol__dagger-a-r1.json)。下文保留后续轮次的候选设计，不构成启动授权。
 
 ## 目标与当前起点
 
 目标是让模型学会处理自身执行误差造成的偏离状态，提高真实闭环仿真的到达和持续保持能力。DAgger 的核心是向专家查询学生访问状态上的动作，把新标注累积进训练集，再训练策略；参见 [DAgger 原论文](https://proceedings.mlr.press/v15/ross11a.html) 与 [imitation 官方说明](https://imitation.readthedocs.io/en/stable/algorithms/dagger.html)。这不能保证当前专家能从所有偏离状态恢复，需要先检查专家纠偏能力。
 
-目前 `data_collection/dagger.py` 会抛出 `NotImplementedError`，没有可直接启动的完整 DAgger 训练命令。现有 clean 训练配置和数据加载器明确拒绝 DAgger 数据；实现时必须增加独立入口，不能把新数据伪装成 clean。
+审批前 `data_collection/dagger.py` 还是 `NotImplementedError` 占位入口；现已增加独立采集、累计数据验证、训练与评估入口。原 clean 训练配置和数据加载器仍明确拒绝 DAgger 数据，新数据没有伪装成 clean。
 
 建议以刚完成的A D8-W256 BC作为R0，保持其0.8/0.2损失权重和网络。它在221个fitting与32个validation场景中均0次reach/hold，已具备完整R0闭环基准，见[D8报告](../reports/2026-10-27__report__d08w0256-single-run.md)。旧M6起点退为历史方案；本轮拟单独考察学生访问状态数据的作用。
 
@@ -26,7 +26,7 @@
 
 路径均相对于 `final/robotnik_arm_task/`。
 
-- 建议初始模型：`checkpoints/capacity/2026-10-27__experiment__arm08-wheel02-d08w0256/clean/A/bc/clean-A-bc-clean253-d08w0256-lr3e-4-s0-selection-ca837b8fa585/best.pt`，选中步数84000。该选择尚待启动前确认。
+- 已确认初始模型：`checkpoints/capacity/2026-10-27__experiment__arm08-wheel02-d08w0256/clean/A/bc/clean-A-bc-clean253-d08w0256-lr3e-4-s0-selection-ca837b8fa585/best.pt`，选中步数84000。
 - 权重 SHA256：`a439ce195692874c6a712c05d2d0de6a13c22e8061ac5af2783805e5034dcd35`；同目录`inference.npz` SHA256为`2300123d9cd98e74f1db7db554789226f72e91fa8b8b377ff1166abd4e5520ad`。
 - 原 `normaliser.npz` 文件 SHA256：`d69994cf4ac00b84213113aabc6ab51560df3ec6bcd430795c7cfc8357f1ea53`；原 provenance 中的归一化内容身份为 `1ba73a11d1bb7d581a034d86600e8f92d78a76760118e3c76130d3718ea31ef4`，两者不混用。全部轮次冻结这份输入/输出归一化，避免加载旧权重后因尺度变化而改变策略。
 - 网络：21输入，`[256] × 8`个隐藏层，每层Linear→LayerNorm→SiLU；双输出头为7个关节力矩和2个独立轮速，共472,585参数。
@@ -60,7 +60,7 @@
 
 每轮20,000 optimizer updates，batch1024，AdamW（β1=0.9、β2=0.999、eps1e-8），峰值LR `1e-4`，weight decay `1e-4`，warmup500 updates后cosine。沿用标准化动作Huber（delta=1），总损失为 `0.8 × 七个力矩的平均 Huber + 0.2 × 两个独立轮速的平均 Huber`，不加Jacobian项。继承上一轮晋级模型权重，每轮AdamW与scheduler重新开始、update从0计；禁止把R0的84000步训练状态当作本轮resume。4轮计划新增80,000 updates；数据大小变化，主横轴用update与累计标注数。
 
-分阶段执行建议：先实现预检和R1（64个新场景、20k更新），完成R1报告后再审阅是否启动R2–R4；本次审查不授权任何训练。下表仍保留完整4轮的候选日程以明确后续边界。
+分阶段执行范围：用户已授权并完成预检和R1（64个新场景、20k更新），完成R1报告后再审阅是否启动R2–R4。下表仍保留完整4轮的候选日程以明确后续边界。
 
 继承原采样方式：先在全部累计轨迹中均匀抽轨迹，再在该轨迹有效行中均匀抽时间点。若64条均有有效行，DAgger轨迹采样占比由R1的64/285≈22.5%增至R4的256/477≈53.7%；这不是数据集时间步占比，也不是β。短失败轨迹的单行被抽中概率较高，应同时报告每轮/每阶段的有效行数、轨迹长度和实际梯度样本占比。首轮不额外设置阶段/失败权重。
 
