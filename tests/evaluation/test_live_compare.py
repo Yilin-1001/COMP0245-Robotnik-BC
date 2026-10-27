@@ -29,3 +29,19 @@ def test_live_comparison_uses_two_independent_simulators_at_the_same_time(tmp_pa
     np.testing.assert_allclose(rows[0]["initial_base_pos"], rows[1]["initial_base_pos"])
     np.testing.assert_allclose(rows[0]["initial_arm_q"], rows[1]["initial_arm_q"])
     assert not np.allclose(rows[0]["final_arm_q"], rows[1]["final_arm_q"], atol=1e-7)
+
+
+@pytest.mark.sim
+def test_custom_target_is_used_by_both_simulators(tmp_path):
+    output = tmp_path / "custom.json"
+    result = subprocess.run(
+        [sys.executable, "-m", "evaluation.live_compare", "--headless", "--seconds", "0.02",
+         "--target", "0.2", "1.1", "0.5", "--output", str(output)],
+        cwd=TASK_DIR, capture_output=True, text=True, timeout=45)
+    assert result.returncode == 0, result.stdout + result.stderr
+    rows = json.loads(output.read_text())["runs"]
+    assert len(rows) == 2
+    for row in rows:
+        np.testing.assert_allclose(row["target_ee_pos"], [.2, 1.1, .5])
+        assert row["failure"] is None and row["steps"] == 20
+    np.testing.assert_allclose(rows[0]["initial_base_pos"], rows[1]["initial_base_pos"])

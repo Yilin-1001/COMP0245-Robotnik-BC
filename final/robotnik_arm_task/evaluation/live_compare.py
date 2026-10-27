@@ -20,6 +20,8 @@ DEFAULT_PROTOCOL = TASK_DIR / "experiments/protocols/p-e26487f2a548.yaml"
 
 
 def resolve_demo(args):
+    from dataclasses import replace
+    import numpy as np
     import yaml
     from evaluation.test_sets import get_split
     protocol = yaml.safe_load(args.protocol.read_text())
@@ -33,6 +35,9 @@ def resolve_demo(args):
     scenario = next((s for s in scenarios if s.scenario_id == args.scenario), None)
     if scenario is None:
         raise ValueError(f"{args.scenario} is not in the validation set")
+    if args.target is not None:
+        scenario = replace(scenario, target_ee_pos=np.asarray(args.target, dtype=float),
+                           scenario_id=f"{scenario.scenario_id}/custom-target", split="custom")
     return artifact, scenario, str(path)
 
 
@@ -142,6 +147,7 @@ def _worker(role, args, artifact, scenario, path, barrier, stopped, paused, rest
         stopped.set()
         barrier.abort()
         results.put({"role": role, "pid": os.getpid(), "scenario_id": scenario.scenario_id,
+                     "target_ee_pos": scenario.target_ee_pos.tolist(),
                      "steps": steps, "simulation_time_s": env.t if env else 0.0,
                      "final_error_mm": error * 1000 if initial else None,
                      "final_arm_q": obs.q_mes.tolist() if obs is not None else None,
@@ -156,6 +162,8 @@ def main(argv=None):
     p.add_argument("--objective", choices=["bc", "bcj"], default="bc")
     p.add_argument("--seed", type=int, choices=[0, 1, 2], default=0)
     p.add_argument("--scenario", default="train-0143", help="one of the 32 frozen validation scenarios")
+    p.add_argument("--target", type=float, nargs=3, metavar=("X", "Y", "Z"),
+                   help="override world-frame EE target in meters; retain the scenario's starting pose")
     p.add_argument("--seconds", type=float, default=40.0, help="simulation duration before freezing")
     p.add_argument("--speed", type=float, default=1.0, help="wall-clock playback speed, physics stays at 1 kHz")
     p.add_argument("--protocol", type=Path, default=DEFAULT_PROTOCOL)
@@ -166,6 +174,8 @@ def main(argv=None):
     if not (math.isfinite(args.seconds) and args.seconds >= .001 and
             math.isfinite(args.speed) and args.speed > 0):
         p.error("seconds must be finite and >= 0.001; speed must be finite and positive")
+    if args.target is not None and not all(math.isfinite(v) for v in args.target):
+        p.error("target coordinates must be finite")
     try:
         artifact, scenario, path = resolve_demo(args)
     except (ValueError, StopIteration, OSError) as exc:
