@@ -36,7 +36,8 @@ def test_training_requires_frozen_calibration():
 def test_calibration_must_match_teacher_architecture_and_scales(tmp_path):
     from training.common.config import resolve_config
     c = resolve_config(TASK_DIR / "experiments/configs/jacobian.yaml", "A", {})
-    record = {"lambda_j": 0.25, "teacher": "B", "architecture": "m2", "normaliser_sha256": "x", "reference_seed": 0}
+    record = {"lambda_j": 0.25, "teacher": "B", "architecture": "m2", "normaliser_sha256": "x", "reference_seed": 0,
+              "arm_weight": 0.8, "wheel_weight": 0.2}
     path = tmp_path / "cal.json"
     path.write_text(json.dumps(record))
     c["loss"]["jacobian"]["calibration"] = str(path)

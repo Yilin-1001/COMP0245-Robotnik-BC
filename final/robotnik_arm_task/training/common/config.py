@@ -32,6 +32,7 @@ OWNERS = {
                "training.warmup_updates", "training.schedule", "training.updates", "training.log_every",
                "training.checkpoint_every", "training.device",
                "loss.action", "loss.action_candidates", "loss.huber_delta", "loss.epsilon_tau",
+               "loss.arm_weight", "loss.wheel_weight",
                "data.split_manifest", "data.cache_root", "data.input_scale_floor", "data.arm_scale_floor",
                "data.wheel_scale_floor",
                "evaluation.workers", "evaluation.episode_cap_s", "evaluation.min_reach_time_s", "evaluation.post_reach_s",
@@ -47,6 +48,7 @@ KNOWN = {k for keys in OWNERS.values() for k in keys}
 CLI_PERMITTED = {"identity.cohort", "identity.architecture", "identity.seed", "identity.fit_stage", "identity.replicate",
                  "training.lr", "training.lr_grid", "training.updates", "training.schedule", "training.warmup_updates",
                  "training.log_every", "training.checkpoint_every", "training.device", "loss.action",
+                 "loss.arm_weight", "loss.wheel_weight",
                  "loss.jacobian.lambda_j", "loss.jacobian.calibration", "data.cache_root", "evaluation.workers",
                  "outputs.checkpoint_root", "outputs.results_root", "outputs.results_index"}
 # Recorded but excluded from scientific identity: moving artifacts or changing device is not a new experiment.
@@ -205,6 +207,15 @@ def resolve_config(path: Path, teacher: str, overrides: dict) -> dict:
 
 # ---------------------------------------------------------------- validation
 
+def action_weights(loss: dict) -> tuple[float, float]:
+    """Read explicit action-group weights; checkpoints predating the fields used 0.5/0.5."""
+    values = (loss.get("arm_weight", 0.5), loss.get("wheel_weight", 0.5))
+    if any(isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0
+           for v in values) or not math.isclose(sum(values), 1.0, rel_tol=0.0, abs_tol=1e-12):
+        raise ValueError("action weights must be finite non-negative numbers summing to 1")
+    return float(values[0]), float(values[1])
+
+
 def validate_config(config: dict, ready_to_train: bool = False) -> None:
     """Invariants of every clean config; ready_to_train additionally requires a complete training recipe."""
     ident, model, training, loss = config["identity"], config["model"], config["training"], config["loss"]
@@ -226,6 +237,7 @@ def validate_config(config: dict, ready_to_train: bool = False) -> None:
         raise ValueError(f"schedule must be one of {SCHEDULES}; optimizer must be adamw")
     if loss["action"] is not None and loss["action"] not in ACTION_LOSSES:
         raise ValueError(f"action loss must be one of {ACTION_LOSSES}")
+    action_weights(loss)
     for key in ("seed", "replicate", "batch_size", "warmup_updates", "log_every", "checkpoint_every"):
         value = ident.get(key, training.get(key))
         if not isinstance(value, int) or value < 0:

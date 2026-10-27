@@ -18,7 +18,7 @@ import json
 from pathlib import Path
 
 from training.baseline.train import build_parser, run, summary
-from training.common.config import TASK_DIR, parse_overrides, resolve_config, validate_config
+from training.common.config import TASK_DIR, action_weights, parse_overrides, resolve_config, validate_config
 
 DEFAULT_CONFIG = TASK_DIR / "experiments/configs/jacobian.yaml"
 REFERENCE_SEED = 0
@@ -39,6 +39,8 @@ def apply_calibration(config: dict, normaliser_sha256: str) -> dict:
             raise ValueError(f"calibration {field} {record[field]!r} != run {field} {ident[field]!r}")
     if ident["fit_stage"] == "selection" and record["normaliser_sha256"] != normaliser_sha256:
         raise ValueError("calibration was made with different fitting-only normaliser scales")
+    if action_weights(record) != action_weights(config["loss"]):
+        raise ValueError("calibration action weights differ from the run; recalibrate for the new weights")
     if jac.get("lambda_j") is not None and jac["lambda_j"] != record["lambda_j"]:
         raise ValueError("loss.jacobian.lambda_j disagrees with the frozen calibration record")
     out = copy.deepcopy(config)
@@ -52,8 +54,9 @@ def objective_from(config: dict):
     from training.jacobian.loss import JacobianObjective
     loss = config["loss"]
     jac = loss["jacobian"]
+    arm, wheel = action_weights(loss)
     return JacobianObjective(loss["action"], jac["lambda_j"], loss["epsilon_tau"], jac["subbatch_size"], jac["kd"],
-                             config["interface"]["torque_limit"], loss["huber_delta"])
+                             config["interface"]["torque_limit"], loss["huber_delta"], arm_weight=arm, wheel_weight=wheel)
 
 
 def calibrate(args) -> dict:
@@ -75,7 +78,8 @@ def calibrate(args) -> dict:
     jac, loss = config["loss"]["jacobian"], config["loss"]
     record = calibrate_lambda(init_model(config), x, y, normaliser, {
         "kind": loss["action"], "huber_delta": loss["huber_delta"], "epsilon_tau": loss["epsilon_tau"], "kd": jac["kd"],
-        "torque_limit": config["interface"]["torque_limit"], "calibration_ratio": jac["calibration_ratio"]})
+        "torque_limit": config["interface"]["torque_limit"], "calibration_ratio": jac["calibration_ratio"],
+        "arm_weight": loss.get("arm_weight", 0.5), "wheel_weight": loss.get("wheel_weight", 0.5)})
     ident = config["identity"]
     record.update(teacher=ident["teacher"], architecture=ident["architecture"], cohort=ident["cohort"],
                   reference_seed=REFERENCE_SEED, action_kind=loss["action"], batch_rule="sample_indices with "

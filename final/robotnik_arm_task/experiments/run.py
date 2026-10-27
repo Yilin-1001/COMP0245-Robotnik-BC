@@ -116,14 +116,19 @@ def build_jobs(stage: str, protocol: dict) -> list[dict]:
     if stage not in STAGES:
         raise ValueError(f"unknown stage {stage!r}; DART/DAgger are separate later workflows")
     d = protocol.get("decisions") or {}
+    weights = {}
+    if protocol.get("protocol_id"):
+        from training.common.config import action_weights
+        arm, wheel = action_weights(d.get("loss") or {})
+        weights = {"loss.arm_weight": arm, "loss.wheel_weight": wheel}
     if stage == "pilot":
-        return [_job(stage, "A", "m2", 0, {"training.lr": lr, "training.updates": PILOT["updates"],
+        return [_job(stage, "A", "m2", 0, {**weights, "training.lr": lr, "training.updates": PILOT["updates"],
                                            "training.schedule": "constant", "loss.action": "huber",
                                            "training.log_every": PILOT["log_every"],
                                            "training.checkpoint_every": PILOT["checkpoint_every"]})
                 for lr in PILOT["lrs"]]
     updates, pilot_lr = _need(d, "budget", "updates"), _need(d, "budget", "pilot_lr")
-    cosine = {"training.updates": updates, "training.schedule": "cosine"}
+    cosine = {**weights, "training.updates": updates, "training.schedule": "cosine"}
     if stage == "loss":
         return [_job(stage, "A", "m2", 0, {**cosine, "training.lr": pilot_lr, "loss.action": kind})
                 for kind in ("huber", "mse")]
@@ -297,8 +302,8 @@ def run_job(job: dict, workers: int = 16) -> dict:
 
 
 def _action_objective(config):
-    from training.baseline.loss import ActionObjective
-    return ActionObjective(config["loss"]["action"], config["loss"]["huber_delta"])
+    from training.baseline.train import objective_from
+    return objective_from(config)
 
 
 def _index_rows() -> list[dict]:
@@ -388,6 +393,8 @@ def screen_decisions(runs: list[dict], workers: int) -> tuple[dict, list[Path]]:
 def seed_decisions(runs: list[dict], protocol: dict, workers: int) -> tuple[dict, list[Path]]:
     """Closed-loop selection of every finalist seed, then the selected architecture per teacher."""
     d = protocol["decisions"]
+    from training.common.config import action_weights
+    arm, wheel = action_weights(d["loss"])
     holds, evidence = {}, []
     for r in runs:
         sel = select_run(r, workers)
@@ -397,7 +404,8 @@ def seed_decisions(runs: list[dict], protocol: dict, workers: int) -> tuple[dict
     for (t, a) in list(holds):  # seed 0 comes from the screen's selected-LR run
         seed0 = run_job(_job("screen", t, a, 0, {"training.updates": d["budget"]["updates"],
                                                   "training.schedule": "cosine", "loss.action": d["loss"]["action"],
-                                                  "training.lr": d["lr"][t][a]}), workers)
+                                                  "training.lr": d["lr"][t][a],
+                                                  "loss.arm_weight": arm, "loss.wheel_weight": wheel}), workers)
         sel = select_run(seed0, workers)
         holds[(t, a)].insert(0, float(sel["validation"]["sustained_hold_success"]))
         evidence.append(Path(sel["run_dir"]) / "selection.json")

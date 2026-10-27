@@ -64,15 +64,21 @@ def run(prep: dict, objective, resume: bool) -> dict:
                 checkpoints=sorted(k for k in result.checkpoints if isinstance(k, int)))
 
 
+def objective_from(config: dict):
+    from training.baseline.loss import ActionObjective
+    from training.common.config import action_weights
+    loss = config["loss"]
+    arm, wheel = action_weights(loss)
+    return ActionObjective(loss["action"], loss["huber_delta"], arm_weight=arm, wheel_weight=wheel)
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser("Clean-data MLP behaviour cloning, action loss only (objective bc).", DEFAULT_CONFIG).parse_args(argv)
     prep = prepare_from_args(args, "baseline.yaml")
     if args.dry_run:
         print(json.dumps(summary(prep), indent=1))
         return 0
-    from training.baseline.loss import ActionObjective
-    loss = prep["config"]["loss"]
-    print(json.dumps(run(prep, ActionObjective(loss["action"], loss["huber_delta"]), args.resume), indent=1))
+    print(json.dumps(run(prep, objective_from(prep["config"]), args.resume), indent=1))
     return 0
 
 

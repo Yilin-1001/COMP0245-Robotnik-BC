@@ -53,6 +53,7 @@ def make_config(tmp_path, normaliser, **training):
     c["training"].update({"lr": 3e-3, "updates": 4, "warmup_updates": 2, "log_every": 2, "checkpoint_every": 2,
                           "batch_size": 16, **training})
     c["loss"]["action"] = "mse"
+    c["loss"].update(arm_weight=0.5, wheel_weight=0.5)  # fixtures use the legacy direct objective defaults
     c["evaluation"]["jacobian_samples"] = 8
     prov = {"source_sha256": {"e0": "a" * 64}, "split_sha256": "b" * 64, "feature_sha256": "c" * 64,
             "normaliser_sha256": normaliser.sha256(), "code_digest": "d" * 64, "dataset_kind": "clean subset",

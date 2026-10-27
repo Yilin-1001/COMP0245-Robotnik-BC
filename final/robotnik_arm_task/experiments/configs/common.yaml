@@ -29,6 +29,8 @@ training:
   device: auto              # operational: cuda when a kernel runs, else cpu
 loss:
   action: null              # huber or mse, frozen after the matched M2-A pilot pair
+  arm_weight: 0.8           # group mean over seven standardised torque losses
+  wheel_weight: 0.2         # group mean over two independent standardised wheel losses
   action_candidates: [huber, mse]
   huber_delta: 1.0          # standardised units
   epsilon_tau: 1.0e-4       # N*m, torque-boundary tolerance for valid derivative rows

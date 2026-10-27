@@ -75,6 +75,12 @@ Simulator and clean-collection settings are in `final/robotnik_arm_task/settings
 
 ### MLP training and evaluation
 
+New training configurations from 2026-10-27 use `loss.arm_weight=0.8` and `loss.wheel_weight=0.2` for the two
+standardised action-group means. Both are explicit CLI/configuration fields and enter the run identity.
+Historical checkpoints and frozen protocols without these fields retain their original 0.5/0.5 meaning;
+use `--set loss.arm_weight=0.5 --set loss.wheel_weight=0.5` for a new equal-weight run.
+BC+J calibration records must match the action weights; changing them requires a matching new calibration.
+
 ```bash
 cd final/robotnik_arm_task
 python -m training.common.dataset --write-split              # experiments/splits/clean253.json (already versioned)

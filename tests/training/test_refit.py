@@ -56,7 +56,8 @@ def test_refit_keeps_frozen_lambda_with_new_scales(tmp_path):
     from training.jacobian.train import apply_calibration
     c = resolve_config(TASK_DIR / "experiments/configs/jacobian.yaml", "A", {"identity.fit_stage": "refit"})
     path = tmp_path / "cal.json"
-    path.write_text(json.dumps({"lambda_j": 0.7, "teacher": "A", "architecture": "m2", "normaliser_sha256": "old"}))
+    path.write_text(json.dumps({"lambda_j": 0.7, "teacher": "A", "architecture": "m2", "normaliser_sha256": "old",
+                               "arm_weight": 0.8, "wheel_weight": 0.2}))
     c["loss"]["jacobian"]["calibration"] = str(path)
     out = apply_calibration(c, normaliser_sha256="refit-scales")
     assert out["loss"]["jacobian"]["lambda_j"] == 0.7
