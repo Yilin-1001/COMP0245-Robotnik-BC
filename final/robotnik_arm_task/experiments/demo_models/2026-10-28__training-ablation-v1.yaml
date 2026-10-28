@@ -1,0 +1,116 @@
+kind: demo-models
+experiment: 2026-10-28__training-ablation-v1
+manifest: experiments/ablation/2026-10-28__training-ablation-v1.yaml
+note: terminal models of the ablation; written by experiments.ablation.run --stage
+  demo
+decisions:
+  final:
+    artifacts:
+    - label: R1-baseline__MLP01-256x3__s0__v1__2026-10-28
+      row: R1-baseline
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R1-baseline__MLP01-256x3__s0__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R1-baseline__MLP01-256x3__s0__v1__2026-10-28/R1-baseline__MLP01-256x3__s0__v1__2026-10-28.npz
+      inference_sha256: 9ffb7e7fa8888a079cf34a88e64fc7755202831940433b55a0a0596edfa37bb5
+      validation_full_student_hold: 0/32
+    - label: R1-baseline__MLP01-256x3__s1__v1__2026-10-28
+      row: R1-baseline
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R1-baseline__MLP01-256x3__s1__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R1-baseline__MLP01-256x3__s1__v1__2026-10-28/R1-baseline__MLP01-256x3__s1__v1__2026-10-28.npz
+      inference_sha256: edbbb3d4261884193397a8cb0e4fbc5e0a213e4f8bd96f12a08c67d3d568bb5b
+      validation_full_student_hold: 1/32
+    - label: R1-baseline__MLP01-256x3__s2__v1__2026-10-28
+      row: R1-baseline
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R1-baseline__MLP01-256x3__s2__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R1-baseline__MLP01-256x3__s2__v1__2026-10-28/R1-baseline__MLP01-256x3__s2__v1__2026-10-28.npz
+      inference_sha256: 9d580a700b7edae50e665b5364574e7e0bba722c08c2ba39e83878368060e7dc
+      validation_full_student_hold: 0/32
+    - label: R2-gate__MLP01-256x3__s0__v1__2026-10-28
+      row: R2-gate
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R2-gate__MLP01-256x3__s0__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R2-gate__MLP01-256x3__s0__v1__2026-10-28/R2-gate__MLP01-256x3__s0__v1__2026-10-28.npz
+      inference_sha256: 5e203edb11f8d451296e8df9d688fdc8cb9756a8799b7bc41160fba215eef482
+      validation_full_student_hold: 2/32
+    - label: R2-gate__MLP01-256x3__s1__v1__2026-10-28
+      row: R2-gate
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R2-gate__MLP01-256x3__s1__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R2-gate__MLP01-256x3__s1__v1__2026-10-28/R2-gate__MLP01-256x3__s1__v1__2026-10-28.npz
+      inference_sha256: 817de08f6f40a28065fe446dbeb544daed9a5c01dc8efea1abebc24de1af1601
+      validation_full_student_hold: 3/32
+    - label: R2-gate__MLP01-256x3__s2__v1__2026-10-28
+      row: R2-gate
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R2-gate__MLP01-256x3__s2__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R2-gate__MLP01-256x3__s2__v1__2026-10-28/R2-gate__MLP01-256x3__s2__v1__2026-10-28.npz
+      inference_sha256: 70beb3902088b76337d8ac2cd5d29cc6215c395aa5b0c9c28ed977061aeb67fe
+      validation_full_student_hold: 5/32
+    - label: R3-dart__MLP01-256x3__s0__v1__2026-10-28
+      row: R3-dart
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R3-dart__MLP01-256x3__s0__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R3-dart__MLP01-256x3__s0__v1__2026-10-28/R3-dart__MLP01-256x3__s0__v1__2026-10-28.npz
+      inference_sha256: 1b9cb29d23084aef1f007cd6dd6c8ffe23d4237a96d5a812f33b0512d0def05e
+      validation_full_student_hold: 0/32
+    - label: R3-dart__MLP01-256x3__s1__v1__2026-10-28
+      row: R3-dart
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R3-dart__MLP01-256x3__s1__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R3-dart__MLP01-256x3__s1__v1__2026-10-28/R3-dart__MLP01-256x3__s1__v1__2026-10-28.npz
+      inference_sha256: 53d98c2ce9739c4c76bf4289a9ae85d57094f25899c23ca607cccfae14123639
+      validation_full_student_hold: 1/32
+    - label: R3-dart__MLP01-256x3__s2__v1__2026-10-28
+      row: R3-dart
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R3-dart__MLP01-256x3__s2__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R3-dart__MLP01-256x3__s2__v1__2026-10-28/R3-dart__MLP01-256x3__s2__v1__2026-10-28.npz
+      inference_sha256: 3fc8b5d5e7562dc11bed67e61214ef83ddd25513402aa2a1dfd0f21651bcabe3
+      validation_full_student_hold: 0/32
+    - label: R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28
+      row: R4-dart-gate
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.npz
+      inference_sha256: 709b64e0952bca2e800cb62a0926d6940d6d6a7def7bfcbfd240daea824a41e4
+      validation_full_student_hold: 29/32
+    - label: R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28
+      row: R4-dart-gate
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28/R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28.npz
+      inference_sha256: 168b72acc544b7fa65a01093d3992b9e5147fcc9a25c979aefffccfd260de605
+      validation_full_student_hold: 27/32
+    - label: R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28
+      row: R4-dart-gate
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28
+      inference: checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28/R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28.npz
+      inference_sha256: bfbe29cf8bf21afd14d37c5e01a747ebbdd7560b47c936e750fe91b668b43409
+      validation_full_student_hold: 27/32

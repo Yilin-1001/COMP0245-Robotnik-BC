@@ -96,22 +96,27 @@ python -m evaluation.evaluate --policy mlp --artifact checkpoints/clean/A/bc/<ru
 python -m evaluation.evaluate --policy expert --teacher A --split validation --record    # teacher reference
 ```
 
-For a live physical comparison, open two independent PyBullet windows on the same validation scenario.
-The models these commands loaded by default (clean M6/M1 and the arm 0.8/wheel 0.2 retraining) and their demo
-manifests were archived on 2026-10-28 (see [Archive/README.md](Archive/README.md)); until the ablation models replace
-them, pass a model manifest with `--protocol`:
+For a live physical comparison, open two independent PyBullet windows on the same validation scenario. The models come
+from [`experiments/demo_models/2026-10-28__training-ablation-v1.yaml`](final/robotnik_arm_task/experiments/demo_models/2026-10-28__training-ablation-v1.yaml),
+which pins every terminal model of the training-method ablation by hash. It is written by
+`experiments.ablation.run --stage demo`. The earlier clean and reweighted demo models are archived (see [Archive/README.md](Archive/README.md)).
 
 ```bash
-python -m evaluation.live_compare --protocol <manifest.yaml>                   # expert vs the manifest's student
-python -m evaluation.live_compare --protocol <manifest.yaml> --target 0.2 1.1 0.5   # custom world-frame target (meters)
+python -m evaluation.live_compare                          # teacher A vs R4-dart-gate seed 0 on train-0186
+python -m evaluation.live_compare --row R1-baseline        # the same scenario with the baseline row
+python -m evaluation.live_compare --seed 2 --scenario train-0245          # another seed and validation scenario
+python -m evaluation.live_compare --target 0.2 1.1 0.5      # custom world-frame target (meters)
 ```
+
+The default scenario `train-0186` puts the target 2.7 m away, behind the robot (it must turn, drive and reach). All three
+R4 seeds hold it on validation.
 
 Both simulations keep the original 1 kHz control/physics interface and synchronize every 20 steps.
 Each window shows its controller, simulation time, true end-effector error, torque magnitude and wheel commands;
 the red sphere is the target and the red line joins it to the end effector. SPACE pauses/resumes both, R resets
 both to the identical start, Q closes both, and F toggles camera following in the focused window (mouse orbit/zoom
 remains available). After 40 simulated seconds the scene freezes until R or Q. Use `--speed 0.5` for slow motion,
-`--scenario train-0143` to select a frozen validation scene, or `--headless --seconds 0.1` for a two-simulator smoke
+`--scenario <validation ID>` to select another frozen validation scene, or `--headless --seconds 0.1` for a two-simulator smoke
 check. `--target X Y Z` replaces the target in both simulators while retaining the selected scenario's initial
 base pose and arm configuration. The run summary is saved to `results/live_compare/comparison.json`;
 demo runs do not enter the evaluation index.
@@ -173,6 +178,16 @@ python -m training.datasets.train --variant R4-dart-gate --set identity.version=
 ```
 
 Training uses the frozen split: clean datasets keep only fitting scenarios, DART datasets hold fitting scenarios only (checked), and the 32 validation scenarios come from the clean dataset. Architectures use a new registry, `MLP<NN>` numbered in order of first use (`MLP01` = 256×256×256), in place of the clean pipeline's m1–m6. Runs are named `<row>__<architecture>-<shape>__s<seed>__<version>__<date>` and stored in `checkpoints/ablation/<date>__training-ablation-<version>/`, for example `checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/`. The terminal model is also saved there as `<run name>.npz` and `<run name>.pt`, and it loads in `evaluation.evaluate` like any other MLP. Raise the version whenever the recipe, data or features change; reusing a name with a different configuration is refused.
+
+A whole ablation runs from one manifest, which fixes rows, seeds, recipe and evaluation rules before any result is seen:
+
+```bash
+python -m experiments.ablation.run --manifest experiments/ablation/2026-10-28__training-ablation-v1.yaml \
+    [--stage train|validate|hold|summary|all] [--parallel 3] [--workers 22]
+python -m evaluation.hold_test --artifact <model.npz>     # the hold test for one model
+```
+
+Each stage skips finished work, so an interrupted run continues where it stopped. `train` runs `training.datasets.train` for every (row, seed). `validate` evaluates each terminal model on the 32 validation scenarios twice: the full student (the primary metric), and the student arm with teacher A driving the base; the rows are appended to `results/results.csv` with evaluation IDs `rollout-v1` and `rollout-v1-arm`. `hold` runs `evaluation.hold_test`: teacher A reaches and holds a target, the student takes over, and the arm closed loop is linearised. `summary` writes everything to `results/ablation/<date>__training-ablation-<version>/`: `runs.csv` (one row per model), `summary.csv` and `summary.md` (per ablation row: per-seed values and a pooled Wilson 95% interval), `validation/`, `hold_test/` and `logs/`.
 
 ## Layout
 

@@ -16,8 +16,9 @@ import threading
 import time
 
 TASK_DIR = Path(__file__).resolve().parents[1]
-DEFAULT_PROTOCOL = TASK_DIR / "experiments/protocols/p-e26487f2a548.yaml"
-REWEIGHTED_PROTOCOL = TASK_DIR / "experiments/demo_models/2026-10-27__demo__arm08-wheel02-a.yaml"
+# Terminal models of the training-method ablation; the default demo is its best row, R4-dart-gate, seed 0.
+DEFAULT_PROTOCOL = TASK_DIR / "experiments/demo_models/2026-10-28__training-ablation-v1.yaml"
+DEFAULT_ROW = "R4-dart-gate"
 
 
 def resolve_demo(args):
@@ -25,16 +26,16 @@ def resolve_demo(args):
     import numpy as np
     import yaml
     from evaluation.test_sets import get_split
-    protocol_path = args.protocol or (REWEIGHTED_PROTOCOL if (args.teacher, args.seed) == ("A", 0)
-                                      else DEFAULT_PROTOCOL)
+    protocol_path = args.protocol or DEFAULT_PROTOCOL
     archived = "the pre-ablation models and demo manifests are archived under Archive/ (see Archive/README.md); " \
                "pass --protocol <model manifest>"
     if not protocol_path.exists():
         raise FileNotFoundError(f"{protocol_path.name} not found: {archived}")
     protocol = yaml.safe_load(protocol_path.read_text())
+    # Ablation manifests list several rows per (teacher, objective, seed); older manifests have no row field.
     artifact = next(a for a in protocol["decisions"]["final"]["artifacts"]
-                    if (a["teacher"], a["objective"], a["seed"]) ==
-                    (args.teacher, args.objective, args.seed))
+                    if (a["teacher"], a["objective"], a["seed"]) == (args.teacher, args.objective, args.seed)
+                    and a.get("row", args.row) == args.row)
     path = TASK_DIR / artifact["inference"]
     if not path.exists():
         raise FileNotFoundError(f"{artifact['inference']} not found: {archived}")
@@ -60,7 +61,8 @@ def _worker(role, args, artifact, scenario, path, barrier, stopped, paused, rest
     env = None
     steps, failure = 0, None
     initial, obs = None, None
-    label = f"EXPERT {args.teacher}" if role == "expert" else f"{args.objective.upper()} {args.teacher} seed {args.seed}"
+    label = f"EXPERT {args.teacher}" if role == "expert" else \
+        f"{artifact.get('row', args.objective.upper())} {args.teacher} seed {args.seed}"
     color = [0.0, 0.55, 0.15] if role == "expert" else [0.05, 0.3, 0.9]
     try:
         env = RobotEnv(gui=not args.headless)
@@ -168,15 +170,17 @@ def _worker(role, args, artifact, scenario, path, barrier, stopped, paused, rest
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--teacher", choices=["A", "B"], default="A")
-    p.add_argument("--objective", choices=["bc", "bcj"], default="bc")
+    p.add_argument("--row", default=DEFAULT_ROW, help="ablation row in the manifest, e.g. R1-baseline or R4-dart-gate")
+    p.add_argument("--objective", choices=["bc", "bcj"], default="bcj")
     p.add_argument("--seed", type=int, choices=[0, 1, 2], default=0)
-    p.add_argument("--scenario", default="train-0143", help="one of the 32 frozen validation scenarios")
+    p.add_argument("--scenario", default="train-0186",
+                   help="one of the 32 frozen validation scenarios (default: target 2.7 m away, behind the robot)")
     p.add_argument("--target", type=float, nargs=3, metavar=("X", "Y", "Z"),
                    help="override world-frame EE target in meters; retain the scenario's starting pose")
     p.add_argument("--seconds", type=float, default=40.0, help="simulation duration before freezing")
     p.add_argument("--speed", type=float, default=1.0, help="wall-clock playback speed, physics stays at 1 kHz")
     p.add_argument("--protocol", type=Path,
-                   help="model manifest; default A seed0 uses arm0.8/wheel0.2 M6 at 42000 updates; others use the original protocol")
+                   help=f"model manifest (default {DEFAULT_PROTOCOL.relative_to(TASK_DIR)}: teacher-A ablation models)")
     p.add_argument("--headless", action="store_true", help="run both simulators without windows, then exit")
     p.add_argument("--output", type=Path, default=TASK_DIR / "results/live_compare/comparison.json")
     args = p.parse_args(argv)
