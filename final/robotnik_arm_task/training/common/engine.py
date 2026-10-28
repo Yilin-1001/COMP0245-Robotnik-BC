@@ -90,7 +90,8 @@ def policy_meta(config: dict) -> dict:
     ident = config["identity"]
     return {"teacher": ident["teacher"], "input_dim": config["model"]["input_dim"], "run_id": ident["run_id"],
             "objective": ident["objective"], "interface": dict(config["interface"]),
-            "task_context": config["data"]["task_context"], "feature_names": None}
+            "task_context": config["data"]["task_context"], "feature_names": None,
+            "feature_definition": config["data"].get("feature_definition")}
 
 
 def offline_validation(model, validation, normaliser, config: dict) -> dict:

@@ -1,0 +1,5 @@
+# R4 + DART + gate: Clean_253 fitting and d2-s075-x2 DART episodes, 22 inputs (features-v1 + reach_gate).
+data:
+  feature_definition: features-v1-gate
+  datasets: [clean253__features-v1-gate, dart-d2s075x2__features-v1-gate]
+  validation_dataset: clean253__features-v1-gate

@@ -42,14 +42,6 @@ def test_dart_or_dagger_manifests_are_refused(fake_dataset):
             prepare_run(config)
 
 
-def test_legacy_wrapper_points_to_new_entry_point(capsys):
-    from training import train_mlp
-    with pytest.raises(SystemExit) as e:
-        train_mlp.main(["--data", "data/D0.npz"])
-    assert e.value.code != 0
-    assert "training.baseline.train" in capsys.readouterr().err
-
-
 @pytest.mark.realdata
 def test_dry_run_prepares_real_data_and_identity(capsys):
     assert main(["--teacher", "A", "--dry-run"] + READY) == 0

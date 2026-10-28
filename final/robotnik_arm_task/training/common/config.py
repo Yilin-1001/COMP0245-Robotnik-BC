@@ -312,9 +312,12 @@ def finalise_identity(config: dict, provenance: dict) -> dict:
 
 
 def run_dir_for(config: dict) -> Path:
+    """<root>/<regime>/<teacher>/<objective>/<run_id>, or <root>/<regime>/<experiment dir>/<run_id> for experiment runs."""
     ident = config["identity"]
     root = Path(config["outputs"]["checkpoint_root"])
     root = root if root.is_absolute() else TASK_DIR / root
+    if config["outputs"].get("experiment_dir"):
+        return root / ident["regime"] / config["outputs"]["experiment_dir"] / ident["run_id"]
     return root / ident["regime"] / ident["teacher"] / ident["objective"] / ident["run_id"]
 
 

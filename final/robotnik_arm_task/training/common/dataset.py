@@ -52,13 +52,17 @@ class EpisodeRef:
 
 @dataclass
 class EpisodeCache:
-    """x[N,D] raw features, y[N,9] raw labels, offsets[E+1]; diagnostics are never model inputs."""
+    """x[N,D] raw features, y[N,9] raw labels, offsets[E+1]; diagnostics are never model inputs.
+
+    episode_weights[E], when set, replaces uniform episode sampling (dataset mixes); None keeps the original stream.
+    """
     x: np.ndarray
     y: np.ndarray
     offsets: np.ndarray
     episode_ids: list
     diagnostics: dict = field(default_factory=dict)
     metadata: dict = field(default_factory=dict)
+    episode_weights: np.ndarray | None = None
 
     @property
     def lengths(self) -> np.ndarray:
@@ -258,25 +262,35 @@ def select_refs(refs: list[EpisodeRef], ids: list[str]) -> list[EpisodeRef]:
 # ---------------------------------------------------------------- feature cache
 
 class FeatureBuilder:
-    """Deployable A/B features from the first T recorded observations (core.features is shared with inference)."""
+    """Deployable A/B features from the first T recorded observations (core.features is shared with inference).
 
-    def __init__(self, teacher: str, task_context: dict | None = None):
+    definition names a core.feature_sets entry; features-v1 keeps its original builder_id, so existing cache IDs hold.
+    """
+
+    def __init__(self, teacher: str, task_context: dict | None = None, definition: str | None = None):
+        from core.feature_sets import DEFAULT_DEFINITION, feature_names
         self.teacher, self.task_context = teacher, task_context
+        self.definition = definition or DEFAULT_DEFINITION
         self._fk = None
-        from core.features import FEATURE_DEFINITION_VERSION, FEATURE_NAMES_A, FEATURE_NAMES_B, FK_CONFIG
-        self.feature_names = FEATURE_NAMES_A if teacher == "A" else FEATURE_NAMES_B
+        from core.features import FEATURE_DEFINITION_VERSION, FK_CONFIG
+        self.feature_names = feature_names(teacher, self.definition)
         code = hashlib.sha256((TASK_DIR / "core" / "features.py").read_bytes()).hexdigest()
-        self.builder_id = json.dumps({"teacher": teacher, "features": FEATURE_DEFINITION_VERSION, "fk": FK_CONFIG,
-                                      "task_context": task_context, "features_py_sha256": code}, sort_keys=True)
+        key = {"teacher": teacher, "features": FEATURE_DEFINITION_VERSION, "fk": FK_CONFIG,
+               "task_context": task_context, "features_py_sha256": code}
+        if self.definition != DEFAULT_DEFINITION:
+            key.update(definition=self.definition, feature_sets_py_sha256=hashlib.sha256(
+                (TASK_DIR / "core" / "feature_sets.py").read_bytes()).hexdigest())
+        self.builder_id = json.dumps(key, sort_keys=True)
 
     def __call__(self, obs: dict, meta: dict) -> np.ndarray:
+        from core.feature_sets import extend
         from core.features import DeployableFK, features_a, features_b
         if self._fk is None:
             self._fk = DeployableFK()
         target = np.asarray(meta["target_ee_pos_W"], dtype=float)
         args = (obs["obs_base_pos"], obs["obs_base_yaw"], obs["obs_q_mes"], obs["obs_qd_mes"])
         if self.teacher == "A":
-            return features_a(*args, target, self._fk)
+            return extend("A", self.definition, features_a(*args, target, self._fk))
         ctx = meta["teacher_initial_state"]
         if float(ctx["time_scale_s"]) != float(self.task_context["time_scale_s"]):
             raise ValueError(f"{meta['scenario_id']}: time scale {ctx['time_scale_s']} != {self.task_context}")
@@ -395,11 +409,15 @@ def subset_cache(cache: EpisodeCache, ids: list[str]) -> EpisodeCache:
 # ---------------------------------------------------------------- sampling
 
 def sample_indices(cache: EpisodeCache, size: int, generator, device):
-    """Row indices: an episode uniformly, then a timestep uniformly within it."""
+    """Row indices: an episode uniformly (or by cache.episode_weights), then a timestep uniformly within it."""
     import torch
     offsets = torch.as_tensor(cache.offsets, device=device)
     lengths = offsets[1:] - offsets[:-1]
-    e = torch.randint(len(lengths), (size,), generator=generator, device=device)
+    if cache.episode_weights is None:
+        e = torch.randint(len(lengths), (size,), generator=generator, device=device)
+    else:
+        w = torch.as_tensor(cache.episode_weights, dtype=torch.float64, device=device)
+        e = torch.multinomial(w, size, replacement=True, generator=generator)
     u = torch.rand(size, generator=generator, device=device)
     step = torch.minimum((u * lengths[e]).long(), lengths[e] - 1)
     return offsets[:-1][e] + step

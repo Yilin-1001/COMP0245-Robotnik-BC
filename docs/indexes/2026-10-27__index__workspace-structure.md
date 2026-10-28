@@ -14,6 +14,23 @@
 源码采用功能名；原始数据、run_id、step_<k>.pt、best.pt、哈希协议和 results.csv 保持原有接口。
 这些文件已有版本和关联语义，使用时间索引查找，不逐个改写其名称或内容。
 
+## 2026-10-28 更新：统一结构与归档
+
+训练方法消融实验开始前做了一次整理：旧程序和旧模型移入 `Archive/`，相对路径保持不变，清单见 [Archive/README.md](../../Archive/README.md)；新模型统一使用下述命名。
+
+| 类别 | 位置（`final/robotnik_arm_task/` 下） |
+|---|---|
+| 训练集 / 验证集 | 场景清单：`experiments/splits/clean253.json`（fitting 221 / validation 32）。数据：`data/datasets/A/clean253__<特征版本>/`（含两者），`data/datasets/A/dart-d2s075x2__<特征版本>/`（只含训练场景） |
+| 测试集 | `data/Markovian/Clean_253/scenarios_test.csv`（64 个，封存，只做闭环评估） |
+| 原始轨迹 | `data/Markovian/{Clean,Clean_253,DART}/` |
+| 模型 | `checkpoints/ablation/<日期>__training-ablation-<版本>/<行>__<结构>__s<seed>__<版本>__<日期>/`，例如 `R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28` |
+| 数据采集程序 | `data_collection/`：`expert.py`、`collect.py`（clean）、`collect_dart.py`（DART）；噪声协议在 `experiments/configs/dart/` |
+| 特征处理程序 | `core/features.py`、`core/feature_sets.py`、`training/datasets/build.py`、`training/datasets/load.py` |
+| 训练程序 | `training/datasets/train.py`；配置：`experiments/configs/datasets/{base.yaml, variants/R1–R4}` |
+| 测试结果 | `results/results.csv`（索引）；`results/ablation/<日期>__training-ablation-<版本>/`（实验结果集中存放） |
+
+结构命名改用新注册表 `MLP<编号>`，按首次使用顺序编号（`MLP01` = 256×256×256）。旧的 m1–m6 名称只保留在 clean 流程的历史协议中。
+
 ## 主要结构
 
 ```text
@@ -21,11 +38,12 @@ ML_Final/
 ├── .venv/                            Python 环境
 ├── COMP_0245_2026_Final/              Git 项目（名称保持兼容）
 │   ├── docs/{plans,specs,reports,research,references,indexes}/
+│   ├── Archive/                      已归档的旧程序（git 跟踪）和旧模型（git 忽略）
 │   ├── final/robotnik_arm_task/
 │   │   ├── core/, training/, evaluation/, data_collection/   源码
 │   │   ├── experiments/              配置、冻结协议、划分
-│   │   ├── data/                     原始数据与特征缓存
-│   │   ├── checkpoints/              模型与训练日志（保留 run_id）
+│   │   ├── data/                     原始数据、训练就绪数据集（datasets/）与特征缓存
+│   │   ├── checkpoints/              ablation/<实验>/<模型>/（旧模型已归档）
 │   │   └── results/
 │   │       ├── figures/2026-10-24/expert-comparison/
 │   │       ├── figures/2026-10-27/{baseline-evaluation,training-diagnostics,train-test-learning-curves}/

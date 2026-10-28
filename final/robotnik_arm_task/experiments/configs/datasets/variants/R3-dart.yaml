@@ -1,0 +1,5 @@
+# R3 + DART: Clean_253 fitting episodes and the d2-s075-x2 DART episodes, 21 features-v1 inputs.
+data:
+  feature_definition: features-v1
+  datasets: [clean253__features-v1, dart-d2s075x2__features-v1]
+  validation_dataset: clean253__features-v1

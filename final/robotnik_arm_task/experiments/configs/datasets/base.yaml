@@ -1,0 +1,27 @@
+# Training on published feature datasets (data/datasets/A/<name>): the training-method ablation.
+# Resolution: common.yaml -> objectives/<objective>.yaml -> datasets/base.yaml -> datasets/variants/<row>.yaml
+# -> --set overrides. Hyperparameters left null in common.yaml (training.lr, training.updates, loss.action) must be set.
+#
+# Naming: checkpoints/ablation/<date>__<experiment>-<version>/<row>__<architecture>__s<seed>__<version>__<date>/
+#   e.g. checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/
+# The final model is saved again under the run's own name (<run>.npz / <run>.pt) next to the step checkpoints.
+identity:
+  regime: ablation
+  teacher: A
+  objective: bcj             # bc (action loss) or bcj (plus the damping Jacobian; lambda_J calibrated at seed-0 init)
+  architecture: MLP01
+  version: null              # experiment version v<N>: raise it whenever the recipe, data or features change
+  date: null                 # experiment date YYYY-MM-DD, fixed for the whole experiment (so resumed runs keep their name)
+model:
+  architectures:             # new registry MLP<NN>, numbered in order of first use; replaces the old m1-m6 names here
+    MLP01: [256, 256, 256]
+data:
+  dataset_root: data/datasets
+  feature_definition: null   # set by the row; every listed dataset must use it
+  datasets: null             # set by the row: published dataset names
+  mix: null                  # null: every episode equally likely; or one share per dataset, summing to 1
+  validation_dataset: null   # clean dataset whose 32 frozen validation scenarios give the offline proxy
+  fitting_ids: fitting_ids.clean253   # key in the split manifest; clean datasets are restricted to these scenarios
+  task_context: null
+outputs:
+  experiment: training-ablation

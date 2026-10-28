@@ -27,11 +27,17 @@ def resolve_demo(args):
     from evaluation.test_sets import get_split
     protocol_path = args.protocol or (REWEIGHTED_PROTOCOL if (args.teacher, args.seed) == ("A", 0)
                                       else DEFAULT_PROTOCOL)
+    archived = "the pre-ablation models and demo manifests are archived under Archive/ (see Archive/README.md); " \
+               "pass --protocol <model manifest>"
+    if not protocol_path.exists():
+        raise FileNotFoundError(f"{protocol_path.name} not found: {archived}")
     protocol = yaml.safe_load(protocol_path.read_text())
     artifact = next(a for a in protocol["decisions"]["final"]["artifacts"]
                     if (a["teacher"], a["objective"], a["seed"]) ==
                     (args.teacher, args.objective, args.seed))
     path = TASK_DIR / artifact["inference"]
+    if not path.exists():
+        raise FileNotFoundError(f"{artifact['inference']} not found: {archived}")
     if hashlib.sha256(path.read_bytes()).hexdigest() != artifact["inference_sha256"]:
         raise ValueError(f"artifact hash differs from the frozen protocol: {path}")
     scenarios = get_split("validation", TASK_DIR / "experiments/splits/clean253.json", args.teacher)

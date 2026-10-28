@@ -54,6 +54,8 @@ class MLPPolicy(Policy):
         self.x_mean, self.x_scale = np.asarray(normaliser["x_mean"]), np.asarray(normaliser["x_scale"])
         self.y_mean, self.y_scale = np.asarray(normaliser["y_mean"]), np.asarray(normaliser["y_scale"])
         self.teacher, self.task_context = meta["teacher"], meta.get("task_context")
+        # Exports predating feature definitions are features-v1.
+        self.feature_definition = meta.get("feature_definition") or "features-v1"
         interface = meta["interface"]
         self.torque_limit, self.wheel_limit = float(interface["torque_limit"]), float(interface["wheel_limit"])
         self.dt = 1.0 / float(interface["control_hz"])
@@ -84,11 +86,11 @@ class MLPPolicy(Policy):
         else:
             raise ValueError(f"backend must be numpy or torch, got {backend!r}")
         if strict_features:
-            from core.features import FEATURE_NAMES_A, FEATURE_NAMES_B
-            names = FEATURE_NAMES_A if meta["teacher"] == "A" else FEATURE_NAMES_B
-            if list(meta.get("feature_names") or []) != names:
+            from core.feature_sets import feature_names
+            definition = meta.get("feature_definition") or "features-v1"
+            if list(meta.get("feature_names") or []) != feature_names(meta["teacher"], definition):
                 raise ValueError(f"{path}: saved feature order differs from the deployable features of teacher "
-                                 f"{meta['teacher']}")
+                                 f"{meta['teacher']} ({definition})")
         for field, value in (expected or {}).items():
             if meta.get(field) != value:
                 raise ValueError(f"policy {field} mismatch: stored {meta.get(field)!r}, expected {value!r}")
@@ -100,6 +102,7 @@ class MLPPolicy(Policy):
         self.last_features = self.last_raw = None
 
     def features(self, obs: Observation) -> np.ndarray:
+        from core.feature_sets import extend
         from core.features import DeployableFK, features_a, features_b, stateful_goal
         if self._fk is None:
             self._fk = DeployableFK()
@@ -107,7 +110,7 @@ class MLPPolicy(Policy):
                 np.asarray(obs.q_mes, dtype=float)[None], np.asarray(obs.qd_mes, dtype=float)[None])
         target = np.asarray(obs.target_ee_pos, dtype=float)
         if self.teacher == "A":
-            return features_a(*args, target, self._fk)[0]
+            return extend("A", self.feature_definition, features_a(*args, target, self._fk))[0]
         if self._goal is None:
             self._goal = stateful_goal(target, self.task_context)
         elapsed = np.array([self._k * self.dt])

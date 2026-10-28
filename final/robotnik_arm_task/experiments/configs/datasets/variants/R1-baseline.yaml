@@ -1,0 +1,5 @@
+# R1 baseline: Clean_253 fitting episodes, 21 features-v1 inputs.
+data:
+  feature_definition: features-v1
+  datasets: [clean253__features-v1]
+  validation_dataset: clean253__features-v1
