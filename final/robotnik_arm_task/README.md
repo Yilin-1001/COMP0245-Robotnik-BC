@@ -1,3 +1,9 @@
+# Robotnik task entry point
+
+Follow the [project tutorial](../../README.md) to install the environment, collect data, train R4 and evaluate it.
+Test-set commands are in [step 5: Test on all 64 test scenarios](../../README.md#5-test-on-all-64-test-scenarios).
+The original course-template instructions below describe the expert controller demonstration.
+
 1) Make sure the folders "/models", "/configs" from RoboEnv are accessible (easiest is to copy them to this folder)
 2) Use your RoboEnv environent (in whichever way you have been running the labs: pixi, uv, conda, etc)
 3) Run robotnik_arm_task.py
