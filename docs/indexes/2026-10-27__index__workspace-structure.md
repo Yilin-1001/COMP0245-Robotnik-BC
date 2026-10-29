@@ -79,6 +79,7 @@ ML_Final/
 | 2026-10-27 | report | [arm08-wheel02-retraining-a：7组A模型配对重训结果](../reports/2026-10-27__report__arm08-wheel02-retraining-a.md) |
 | 2026-10-27 | report | [d08w0256-single-run：D8-W256 训练与完整训练场景闭环结果](../reports/2026-10-27__report__d08w0256-single-run.md) |
 | 2026-10-27 | review | [dagger-a-plan：结合D8结果的DAgger A方案复查](../reports/2026-10-27__review__dagger-a-plan.md) |
+| 2026-10-29 | report | [teacher-a-operating-envelope：专家 A 的运动与任务极限（报告前提）](../reports/2026-10-29__report__teacher-a-operating-envelope.md) |
 | 2026-10-26 | research | [mlp-training-recipe](../research/2026-10-26__research__mlp-training-recipe.md) |
 | 2026-10-26 | design | [mlp-training-structure](../specs/2026-10-26__design__mlp-training-structure.md) |
 | 2026-10-27 | design | [dagger-a：首轮训练设计与执行阶段（待审阅）](../specs/2026-10-27__design__dagger-a.md) |

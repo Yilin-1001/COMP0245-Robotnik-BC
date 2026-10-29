@@ -9,7 +9,7 @@ its base goal once from the start pose and latches "base done".
 
 Output: results/expert_t3_dev.csv and a summary table.
 
-Usage: python -m evaluation.expert_t3_dev --n 20 --workers 20 [--controllers template expert]
+Usage: python -m evaluation.expert_t3_dev --n 20 --workers 20 [--controllers template expert] [--lead-time 0.5 --out ...]
 """
 import argparse
 import csv
@@ -86,12 +86,12 @@ def make_scenario(condition: str, i: int):
                     base_start_bearing=bearing, physics=physics)
 
 
-def _init_worker():
+def _init_worker(lead_time: float = 0.15):
     global _env, _expert
     from core.env import RobotEnv
-    from data_collection.expert import MarkovianExpert
+    from data_collection.expert import MarkovianExpert, MarkovianExpertParams
     _env = RobotEnv(reach_tolerance=SETTINGS["reach_tolerance"])
-    _expert = MarkovianExpert()
+    _expert = MarkovianExpert(MarkovianExpertParams(lead_time=lead_time))
 
 
 def run_episode(job):
@@ -198,12 +198,14 @@ def main():
     parser.add_argument("--workers", type=int, default=20)
     parser.add_argument("--controllers", nargs="+", choices=CONTROLLERS, default=list(CONTROLLERS))
     parser.add_argument("--out", default="results/expert_t3_dev.csv")
+    parser.add_argument("--lead-time", type=float, default=0.15,
+                        help="Markovian expert lead time (s); 0.15 is the code default, 0.50 the training teacher A")
     args = parser.parse_args()
 
     jobs = [(k, c, i) for k in args.controllers for c in CONDITIONS
             for i in range(args.n // 2 if CONDITIONS[c][1] == "unreachable" else args.n)]
     rows = []
-    with mp.Pool(args.workers, initializer=_init_worker) as pool:
+    with mp.Pool(args.workers, initializer=_init_worker, initargs=(args.lead_time,)) as pool:
         for r in pool.imap_unordered(run_episode, jobs):
             rows.append(r)
             if len(rows) % 20 == 0:
