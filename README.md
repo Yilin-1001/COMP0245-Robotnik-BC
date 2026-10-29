@@ -106,10 +106,13 @@ python -m evaluation.live_compare                          # teacher A vs R4-dar
 python -m evaluation.live_compare --row R1-baseline        # the same scenario with the baseline row
 python -m evaluation.live_compare --seed 2 --scenario train-0245          # another seed and validation scenario
 python -m evaluation.live_compare --target 0.2 1.1 0.5      # custom world-frame target (meters)
+python -m evaluation.live_compare --start -0.3 0.4 --bearing 3.0 --target 1.8 -1.2 0.9   # custom start (m), yaw (rad) and target
 ```
 
 The default scenario `train-0186` puts the target 2.7 m away, behind the robot (it must turn, drive and reach). All three
-R4 seeds hold it on validation.
+R4 seeds hold it on validation. `--target`, `--start` and `--bearing` each replace one part of the selected scenario.
+A scene outside the training ranges prints a warning: start-to-target distance 0.5–3.0 m, target height 0.1–1.25 m,
+start x and y within ±0.5 m. The student has never seen such scenes, so its behaviour there is not covered by the results.
 
 Both simulations keep the original 1 kHz control/physics interface and synchronize every 20 steps.
 Each window shows its controller, simulation time, true end-effector error, torque magnitude and wheel commands;

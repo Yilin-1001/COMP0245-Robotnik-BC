@@ -61,3 +61,29 @@ def test_custom_target_is_used_by_both_simulators(tmp_path):
         np.testing.assert_allclose(row["target_ee_pos"], [.2, 1.1, .5])
         assert row["failure"] is None and row["steps"] == 20
     np.testing.assert_allclose(rows[0]["initial_base_pos"], rows[1]["initial_base_pos"])
+
+
+@pytest.mark.sim
+def test_custom_start_and_bearing_are_used_by_both_simulators(tmp_path):
+    require_demo_artifact("R4-dart-gate")
+    output = tmp_path / "start.json"
+    result = subprocess.run(
+        [sys.executable, "-m", "evaluation.live_compare", "--headless", "--seconds", "0.02",
+         "--start", "0.3", "-0.2", "--bearing", "1.2", "--target", "2.0", "1.5", "0.6", "--output", str(output)],
+        cwd=TASK_DIR, capture_output=True, text=True, timeout=45)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "WARNING" not in result.stdout  # 2.27 m away, 0.6 m high, start within +-0.5 m: inside the training ranges
+    rows = json.loads(output.read_text())["runs"]
+    for row in rows:
+        np.testing.assert_allclose(row["initial_base_pos"][:2], [.3, -.2], atol=1e-3)
+        assert row["scenario_id"].endswith("/custom-target-start-bearing") and row["failure"] is None
+
+
+def test_scenes_outside_the_training_ranges_are_flagged():
+    from data_collection.scenarios import Scenario
+    from evaluation.live_compare import outside_training_range
+    inside = Scenario(seed=0, target_ee_pos=np.array([1.5, 0.0, 0.6]), base_start_pos=np.zeros(3))
+    far_high = Scenario(seed=0, target_ee_pos=np.array([4.5, 0.0, 1.5]), base_start_pos=np.array([1.0, 0.0, 0.0]))
+    edge = Scenario(seed=0, target_ee_pos=np.array([3.0, 0.0, 1.25]), base_start_pos=np.zeros(3))
+    assert outside_training_range(inside) == [] and outside_training_range(edge) == []  # range ends are inside
+    assert len(outside_training_range(far_high)) == 3  # 3.5 m away, 1.5 m high, start x 1.0 m

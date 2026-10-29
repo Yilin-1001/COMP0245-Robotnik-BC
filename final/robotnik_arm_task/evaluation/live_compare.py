@@ -45,10 +45,36 @@ def resolve_demo(args):
     scenario = next((s for s in scenarios if s.scenario_id == args.scenario), None)
     if scenario is None:
         raise ValueError(f"{args.scenario} is not in the validation set")
+    custom = []
     if args.target is not None:
-        scenario = replace(scenario, target_ee_pos=np.asarray(args.target, dtype=float),
-                           scenario_id=f"{scenario.scenario_id}/custom-target", split="custom")
+        scenario = replace(scenario, target_ee_pos=np.asarray(args.target, dtype=float))
+        custom.append("target")
+    if args.start is not None:
+        scenario = replace(scenario, base_start_pos=np.array([args.start[0], args.start[1], 0.0]))
+        custom.append("start")
+    if args.bearing is not None:
+        scenario = replace(scenario, base_start_bearing=float(args.bearing))
+        custom.append("bearing")
+    if custom:
+        scenario = replace(scenario, scenario_id=f"{scenario.scenario_id}/custom-{'-'.join(custom)}", split="custom")
+    for warning in outside_training_range(scenario):
+        print(f"WARNING: {warning}; the student never saw such scenes in training", flush=True)
     return artifact, scenario, str(path)
+
+
+def outside_training_range(scenario) -> list[str]:
+    """Where a (custom) scene leaves the ranges the clean and DART training scenarios were sampled from."""
+    import numpy as np
+    start, target = np.asarray(scenario.base_start_pos, float), np.asarray(scenario.target_ee_pos, float)
+    dist = float(np.linalg.norm(target[:2] - start[:2]))
+    out = []
+    if not 0.5 <= dist <= 3.0:
+        out.append(f"target is {dist:.2f} m from the start (training: 0.5-3.0 m)")
+    if not 0.1 <= target[2] <= 1.25:
+        out.append(f"target height {target[2]:.2f} m (training: 0.1-1.25 m)")
+    if np.any(np.abs(start[:2]) > 0.5):
+        out.append(f"start ({start[0]:.2f}, {start[1]:.2f}) m (training: x and y within +-0.5 m)")
+    return out
 
 
 def _worker(role, args, artifact, scenario, path, barrier, stopped, paused, restart, results):
@@ -176,7 +202,10 @@ def main(argv=None):
     p.add_argument("--scenario", default="train-0186",
                    help="one of the 32 frozen validation scenarios (default: target 2.7 m away, behind the robot)")
     p.add_argument("--target", type=float, nargs=3, metavar=("X", "Y", "Z"),
-                   help="override world-frame EE target in meters; retain the scenario's starting pose")
+                   help="override the world-frame EE target in meters")
+    p.add_argument("--start", type=float, nargs=2, metavar=("X", "Y"),
+                   help="override the base start position in meters (world frame)")
+    p.add_argument("--bearing", type=float, metavar="B", help="override the base start yaw in radians (0 = facing +X)")
     p.add_argument("--seconds", type=float, default=40.0, help="simulation duration before freezing")
     p.add_argument("--speed", type=float, default=1.0, help="wall-clock playback speed, physics stays at 1 kHz")
     p.add_argument("--protocol", type=Path,
@@ -190,6 +219,9 @@ def main(argv=None):
         p.error("seconds must be finite and >= 0.001; speed must be finite and positive")
     if args.target is not None and not all(math.isfinite(v) for v in args.target):
         p.error("target coordinates must be finite")
+    if (args.start is not None and not all(math.isfinite(v) for v in args.start)) or \
+            (args.bearing is not None and not math.isfinite(args.bearing)):
+        p.error("start coordinates and bearing must be finite")
     try:
         artifact, scenario, path = resolve_demo(args)
     except (ValueError, StopIteration, OSError) as exc:
