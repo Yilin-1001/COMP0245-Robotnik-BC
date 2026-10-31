@@ -1,0 +1,17 @@
+# DART noise protocol d2-s075-x4 (overnight3): d2-s075-x2 with arm sigma 0.75 N*m, wheel sigma 0.15 rad/s, 4 draws.
+protocol: d2-s075-x4
+teacher: A
+scenarios:
+  source: data/Markovian/Clean_253/scenarios_train.csv
+  split_manifest: experiments/splits/clean253.json
+  ids: fitting_ids.clean253
+draws_per_scenario: 4
+seed: 20261028
+noise:
+  type: ou
+  tau_s: 0.2
+  alpha: [0.25, 1.0]
+  arm_sigma_nm: 0.75
+  wheel_sigma_rad_s: 0.15
+  wheel_off: first_reach_active
+  all_off_after_reach_s: 1.5

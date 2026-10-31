@@ -25,6 +25,27 @@ class MLP(nn.Module):
         return torch.cat((self.torque_head(h), self.wheel_head(h)), dim=-1)
 
 
+class GatedMLP(nn.Module):
+    """Two MLP branches of the same shape, switched per row by the reach_gate input (features-v1-gate).
+
+    The gate column is standardised with the fitting mean m (0 < m < 1 whenever both gate values occur), so a raw 0
+    maps to a negative and a raw 1 to a positive value: the switch is the sign of that column, with no extra
+    parameter. Each branch only receives gradients from its own rows (navigation: gate 0, reaching: gate 1).
+    """
+    kind = "gated"
+
+    def __init__(self, input_dim: int, hidden: list[int], layernorm_eps: float = 1e-5, gate_index: int = -1):
+        super().__init__()
+        self.nav = MLP(input_dim, hidden, layernorm_eps)
+        self.reach = MLP(input_dim, hidden, layernorm_eps)
+        self.input_dim, self.hidden, self.layernorm_eps = self.nav.input_dim, self.nav.hidden, self.nav.layernorm_eps
+        self.gate_index = int(gate_index)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        g = (x[..., self.gate_index] > 0).unsqueeze(-1).to(x.dtype)
+        return g * self.reach(x) + (1.0 - g) * self.nav(x)
+
+
 def expand_wheels(y9):
     """[..., 7 torques, right, left] -> [..., 7 torques, FR=right, FL=left, BL=left, BR=right]."""
     if isinstance(y9, torch.Tensor):
@@ -34,6 +55,22 @@ def expand_wheels(y9):
     return np.concatenate((y9[..., :7], y9[..., 7:8], y9[..., 8:9], y9[..., 8:9], y9[..., 7:8]), axis=-1)
 
 
-def build_model(config: dict) -> MLP:
+def build_model(config: dict) -> nn.Module:
+    """model.type: absent or 'mlp' (one network), or 'gated' (two networks switched by the last input, reach_gate)."""
     m = config["model"]
-    return MLP(m["input_dim"], m["architectures"][config["identity"]["architecture"]], m["layernorm_eps"])
+    hidden = m["architectures"][config["identity"]["architecture"]]
+    kind = m.get("type", "mlp")
+    if kind == "gated":
+        if config.get("data", {}).get("feature_definition") != "features-v1-gate":
+            raise ValueError("model.type 'gated' switches on reach_gate and needs feature_definition features-v1-gate")
+        return GatedMLP(m["input_dim"], hidden, m["layernorm_eps"], gate_index=m["input_dim"] - 1)
+    if kind != "mlp":
+        raise ValueError(f"model.type must be 'mlp' or 'gated', got {kind!r}")
+    return MLP(m["input_dim"], hidden, m["layernorm_eps"])
+
+
+def model_from_spec(spec: dict) -> nn.Module:
+    """Rebuild a network from a saved model spec (checkpoint metadata)."""
+    if spec.get("type", "mlp") == "gated":
+        return GatedMLP(spec["input_dim"], spec["hidden"], spec["layernorm_eps"], gate_index=spec["gate_index"])
+    return MLP(spec["input_dim"], spec["hidden"], spec["layernorm_eps"])

@@ -137,9 +137,14 @@ def prepare(config: dict) -> dict:
     for name in data["datasets"]:
         full = load_dataset(name, data["dataset_root"])
         config["interface"] = check_interface(config["interface"], full.metadata["interface"])
-        if full.metadata["source"]["kind"] != "clean" and not set(full.metadata["scenario_ids"]) <= set(fit_ids):
-            raise ValueError(f"{name}: non-clean data outside the fitting scenarios")
-        part = select_scenarios(full, fit_ids)
+        kind, ids = full.metadata["source"]["kind"], list(dict.fromkeys(full.metadata["scenario_ids"]))
+        # DAgger rounds may add fresh development scenes (ids dev-*), never validation or test scenarios.
+        dev = [i for i in ids if i.startswith("dev-")] if kind == "dagger" else []
+        if kind != "clean" and not set(ids) <= set(fit_ids) | set(dev):
+            raise ValueError(f"{name}: non-clean data outside the fitting (and DAgger development) scenarios")
+        if set(dev) & set(val_ids):
+            raise ValueError(f"{name}: development scenes overlap validation")
+        part = select_scenarios(full, list(fit_ids) + dev)
         if not part.episode_ids:
             raise ValueError(f"{name}: no fitting episodes")
         parts.append(part)

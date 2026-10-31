@@ -1,0 +1,10 @@
+# R5 + DART + gate, split networks: R4's data and 22 inputs, but two MLP branches of the row's architecture,
+# one for navigation rows (reach_gate 0) and one for reaching rows (reach_gate 1), switched by reach_gate
+# (training/common/models.py GatedMLP). Each branch has the shape of the run's architecture, so the model holds
+# twice R4's parameters.
+model:
+  type: gated
+data:
+  feature_definition: features-v1-gate
+  datasets: [clean253__features-v1-gate, dart-d2s075x2__features-v1-gate]
+  validation_dataset: clean253__features-v1-gate

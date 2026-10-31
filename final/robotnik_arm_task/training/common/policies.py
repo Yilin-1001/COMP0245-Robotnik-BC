@@ -12,13 +12,21 @@ import numpy as np
 from core.interfaces import Action, Observation, Policy
 
 
+def _numpy_net(z, meta: dict):
+    if meta["model"].get("type", "mlp") == "gated":
+        return _NumpyGated(z, meta)
+    return _NumpyNet(z, meta)
+
+
 class _NumpyNet:
-    def __init__(self, z, meta: dict):
+    def __init__(self, z, meta: dict, prefix: str = ""):
         n = len(meta["model"]["hidden"])
         self.eps = float(meta["model"]["layernorm_eps"])
-        self.layers = [(z[f"layer{i}_W"].T.copy(), z[f"layer{i}_b"], z[f"ln{i}_gamma"], z[f"ln{i}_beta"]) for i in range(n)]
-        self.head_W = np.concatenate((z["torque_W"], z["wheel_W"])).T.copy()
-        self.head_b = np.concatenate((z["torque_b"], z["wheel_b"]))
+        p = prefix
+        self.layers = [(z[f"{p}layer{i}_W"].T.copy(), z[f"{p}layer{i}_b"], z[f"{p}ln{i}_gamma"], z[f"{p}ln{i}_beta"])
+                       for i in range(n)]
+        self.head_W = np.concatenate((z[f"{p}torque_W"], z[f"{p}wheel_W"])).T.copy()
+        self.head_b = np.concatenate((z[f"{p}torque_b"], z[f"{p}wheel_b"]))
 
     def __call__(self, x: np.ndarray) -> np.ndarray:
         h = x
@@ -31,13 +39,25 @@ class _NumpyNet:
         return h @ self.head_W + self.head_b
 
 
+class _NumpyGated:
+    """NumPy twin of models.GatedMLP: the sign of the standardised reach_gate column picks the branch."""
+
+    def __init__(self, z, meta: dict):
+        self.nav, self.reach = _NumpyNet(z, meta, "nav_"), _NumpyNet(z, meta, "reach_")
+        self.gate_index = int(meta["model"]["gate_index"])
+
+    def __call__(self, x: np.ndarray) -> np.ndarray:
+        gate = np.asarray(x)[..., self.gate_index] > 0
+        return np.where(gate[..., None], self.reach(x), self.nav(x))
+
+
 class _TorchNet:
     def __init__(self, payload: dict):
         import torch
-        from training.common.models import MLP
+        from training.common.models import model_from_spec
         spec = payload["meta"]["model"]
         self.torch = torch
-        self.model = MLP(spec["input_dim"], spec["hidden"], spec["layernorm_eps"])
+        self.model = model_from_spec(spec)
         self.model.load_state_dict(payload["model_state"])
         self.model.eval()
 
@@ -75,7 +95,7 @@ class MLPPolicy(Policy):
                 meta = json.loads(str(z["metadata_json"]))
                 if meta.get("format") != "mlp-numpy-export-v1":
                     raise ValueError(f"{path}: not an MLP NumPy export")
-                net = _NumpyNet(z, meta)
+                net = _numpy_net(z, meta)
         elif backend == "torch":
             if path.suffix != ".pt":
                 raise ValueError(f"the torch backend loads .pt checkpoints, not {path.name}")
