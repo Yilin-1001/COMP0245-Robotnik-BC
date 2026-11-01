@@ -48,3 +48,6 @@ docs/references/2026-10-24__assignment__comp0245-final-project.pdf
 
 # Archived model weights and run outputs (code under Archive/ stays tracked)
 Archive/final/robotnik_arm_task/checkpoints/
+Archive/final/robotnik_arm_task/data/
+Archive/final/robotnik_arm_task/results/
+Archive/docs/COMP0245-Assignment-2026-2.pdf

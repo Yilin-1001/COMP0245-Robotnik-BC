@@ -4,7 +4,7 @@
 
 用户目标：先训练多种深度和神经元数量的网络，检验当前网络容量是否限制了复杂控制的学习。用户已确定先做 A，验证后再考虑 B。下列架构矩阵、预算和评估规则由本次方案提出，尚未冻结为实验协议。DAgger 暂列在本轮容量实验之后。
 
-本轮承接[原baseline训练plan](../plans/2026-10-26__plan__mlp-baseline-training.md)及[训练配方研究](../research/2026-10-26__research__mlp-training-recipe.md)，复用现有`training/common/engine.py`训练循环。用户补充要求沿用Adam系列优化与学习率方法、数据统一采用Clean_253；以下明确这两项。
+本轮承接[原baseline训练plan](../../../docs/plans/2026-10-26__plan__mlp-baseline-training.md)及[训练配方研究](../../../docs/research/2026-10-26__research__mlp-training-recipe.md)，复用现有`training/common/engine.py`训练循环。用户补充要求沿用Adam系列优化与学习率方法、数据统一采用Clean_253；以下明确这两项。
 
 ## 要回答的问题
 

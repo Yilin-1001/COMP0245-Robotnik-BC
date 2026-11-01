@@ -41,5 +41,5 @@
 
 - [完整逐batch与汇总JSON](../../final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/arm_wheel_gradient_diagnostics.json)。
 - [复现诊断脚本](../../final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/2026-10-27__analysis__shared-loss-gradients.py)，脚本内容SHA与JSON绑定一致。
-- [当前共享trunk与双输出头实现](../../final/robotnik_arm_task/training/common/models.py)。
+- [当前共享trunk与双输出头实现](../../../final/robotnik_arm_task/training/common/models.py)。
 - [已完成的0.8/0.2配对重训](2026-10-27__report__arm08-wheel02-retraining-a.md)、[R1闭环与反馈诊断](2026-10-27__report__dagger-a-r1.md)。

@@ -1,45 +1,45 @@
-# 学生输入中的FK末端位置：定义与直接精度检查
+# FK End-Effector Position in the Student Inputs: Definition and Direct Accuracy Check
 
-日期：2026-10-27。只做训练后诊断，没有修改输入、模型、物理、场景或模型选择，没有访问新test。
+Date: 2026-10-27. This is a post-training diagnostic only. No inputs, models, physics, scenarios or model selection were changed, and no new test data was accessed.
 
-## FK表示什么
+## What the FK computes
 
-FK是Forward Kinematics，正向运动学：根据URDF中的连杆几何、关节轴和当前关节角，计算末端坐标系原点的位置。当前实现为`core.features.DeployableFK.ee_pos()`，使用Pinocchio输出`robot_j2s7s300_end_effector`坐标系的世界坐标。
+FK (forward kinematics) computes the position of the end-effector frame origin. It uses the URDF link geometry, the joint axes and the current joint angles. The implementation is `core.features.DeployableFK.ee_pos()`, which uses Pinocchio to return the world position of the `robot_j2s7s300_end_effector` frame.
 
-使用的量包括观测底盘xyz、yaw和7个arm关节角。底盘roll固定0、pitch固定0.0022rad；6个手指角固定0.1rad。它是一个确定的几何计算，输入中的末端误差为`Rz(-yaw) × (target_world − ee_FK_world)`。
+Its inputs are the observed base xyz, the base yaw and the 7 arm joint angles. Base roll is fixed at 0, base pitch at 0.0022 rad, and the 6 finger angles at 0.1 rad. It is a deterministic geometric computation. The end-effector error input is `Rz(-yaw) × (target_world − ee_FK_world)`.
 
-固定pitch是平地校准近似；观测没有真实roll/pitch，因此底盘姿态变化会带来位置估计误差。URDF质量修正主要影响重力力矩，不等于改变FK的连杆几何计算。
+The fixed pitch is a flat-ground calibration. The observation contains no true roll or pitch, so changes in base attitude cause position errors. The URDF mass correction mainly affects gravity torques; it does not change the FK link geometry.
 
-## 此次直接测量
+## Direct measurement
 
-预先选取此前8个冻结恢复探针中的前4个fitting场景：`train-0001`、`train-0035`、`train-0067`、`train-0108`。分别运行A专家与当前R1选中step5000学生。专家使用lead_time0.50；学生沿用原21维输入及冻结归一化。控制1kHz，每10步即10ms记录一次位置比较。
+The first 4 fitting scenarios of the 8 frozen recovery probes were selected in advance: `train-0001`, `train-0035`, `train-0067`, `train-0108`. Each was run with expert A and with the then-selected R1 student (step 5000). The expert used lead_time 0.50; the student used the original 21 inputs and frozen normalisation. Control ran at 1 kHz, and positions were compared every 10 steps (10 ms).
 
-参考位置直接读取PyBullet `getLinkState(...)[4]`，即同一个EE link frame原点的世界坐标，避免将质心位置与link原点混比；同时核对`RobotEnv.ee_pos()`的真实完整底盘姿态FK。所有仿真真值只进入诊断日志，没有传入策略。
+The reference position is read directly from PyBullet `getLinkState(...)[4]`, the world origin of the same EE link frame. This avoids comparing a centre-of-mass position with a link origin. `RobotEnv.ee_pos()`, the FK with the true full base attitude, was checked as well. Simulator truth went only into the diagnostic log, never into a policy.
 
-| FK相对PyBullet位置的欧氏误差 | 专家轨迹4条 | 当前R1学生轨迹4条 |
+| Euclidean FK error vs PyBullet position | Expert, 4 trajectories | R1 student, 4 trajectories |
 |---|---:|---:|
-| 采样观测数 | 4604 | 16000 |
-| 中位数 | 0.507 mm | 0.607 mm |
-| 95分位 | 1.539 mm | 1.694 mm |
-| 采样最大值 | 3.918 mm | 5.435 mm |
-| 采样误差超过10mm的比例 | 0 | 0 |
-| 各轨迹最后1s合并后的误差中位数 | 0.643 mm | 0.734 mm |
+| Sampled observations | 4604 | 16000 |
+| Median | 0.507 mm | 0.607 mm |
+| 95th percentile | 1.539 mm | 1.694 mm |
+| Sampled maximum | 3.918 mm | 5.435 mm |
+| Fraction of samples above 10 mm | 0 | 0 |
+| Median over the final 1 s of each trajectory | 0.643 mm | 0.734 mm |
 
-这里最大值仅指10ms采样点，不是对全部1ms物理状态的上界。该检查只有4个nominal场景，不能推广成任意扰动、倾斜或实体机器人的精度保证。
+The maximum refers only to the 10 ms samples. It is not an upper bound over every 1 ms physics state. The check covers only 4 nominal scenarios, so it does not generalise to arbitrary disturbances, tilt or a physical robot.
 
-使用真实底盘完整姿态的`RobotEnv.ee_pos()`与PyBullet位置，全部记录中的差异小于0.000129mm；表中毫米级误差主要来自部署FK的固定roll/pitch近似，而非URDF几何映射不一致。
+With the true full base attitude, `RobotEnv.ee_pos()` differs from the PyBullet position by less than 0.000129 mm in every record. The millimetre-level errors in the table therefore come from the deployed FK's fixed roll/pitch approximation, not from a mismatch in the URDF geometry.
 
-4条专家轨迹均持续保持成功；4条学生轨迹均未reaching，学生最终真实目标误差分别约2100、1962、1575、1090mm。FK位置估计误差远小于这些任务误差，因此这组证据不支持将这些失败主要归因于FK。毫米级近似仍会消耗10mm到达阈值的部分余量，需要与精确保持问题区分。
+All 4 expert trajectories held the target. None of the 4 student trajectories reached it: their final true errors were about 2100, 1962, 1575 and 1090 mm. The FK error is far smaller than these task errors, so this evidence does not attribute those failures mainly to the FK. The millimetre-level approximation still uses part of the 10 mm margin, which is a separate question from precise holding.
 
-## 与旧精度报告的区别
+## Difference from the earlier accuracy report
 
-[旧专家模型精度报告](2026-10-24__report__markovian-expert-model-accuracy.md)中的0.2–3.2mm是专家最终到达目标的控制误差，不是直接测量的FK位置误差。当前表格直接比较FK预测位置与真实link位置，二者统计对象不同。
+The 0.2–3.2 mm in the [earlier expert model accuracy report](2026-10-24__report__markovian-expert-model-accuracy.md) is the expert's final control error at the target, not a direct FK position error. The table above compares the FK-predicted position with the true link position, which is a different quantity.
 
-## 结果与复现
+## Results and reproduction
 
-- [原始逐点诊断和汇总](../../final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/fk_accuracy.json)。
-- [冻结探针、模型及代码哈希](../../final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/fk_accuracy_contract.json)。
-- [复现脚本](../../final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/2026-10-27__analysis__fk-input-accuracy.py)。脚本正文与已记录source SHA一致；如需重跑，应使用新的结果目录，以保留原冻结证据。
-- [FK实现](../../final/robotnik_arm_task/core/features.py)。
+- [Raw per-sample diagnostics and summary](../../Archive/final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/fk_accuracy.json).
+- [Frozen probes, model and code hashes](../../Archive/final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/fk_accuracy_contract.json).
+- [Reproduction script](../../Archive/final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/2026-10-27__analysis__fk-input-accuracy.py). The script matches its recorded source SHA. To rerun it, use a new result directory so the original frozen evidence is kept.
+- [FK implementation](../../final/robotnik_arm_task/core/features.py).
 
-本次没有变更生产代码；验证为8次真实PyBullet完整闭环回放、PyBullet link frame与完整姿态FK的独立几何核对。
+No production code was changed. Verification consisted of 8 full closed-loop PyBullet replays and an independent geometric check of the PyBullet link frame against the full-attitude FK.

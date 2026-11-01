@@ -1,1 +1,0 @@
-../../specs/2026-10-26__design__mlp-training-structure.md

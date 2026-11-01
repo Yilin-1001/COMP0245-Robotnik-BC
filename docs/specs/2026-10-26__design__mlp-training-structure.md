@@ -4,7 +4,7 @@ Date: 26 October 2026. Status: unified implementation target; documentation only
 
 Companion documents: [training research and recipe](../research/2026-10-26__research__mlp-training-recipe.md), [baseline training plan](../plans/2026-10-26__plan__mlp-baseline-training.md), and [dataset contract](2026-10-26__spec__expert-datasets.md).
 
-Implementation tasks for the current clean BC/BC+J stage are in the [implementation plan](../plans/2026-10-26__implementation-plan__mlp-baseline-and-jacobian.md). Later DART/DAgger collection stays outside that plan.
+Implementation tasks for the current clean BC/BC+J stage are in the [implementation plan](../../Archive/docs/plans/2026-10-26__implementation-plan__mlp-baseline-and-jacobian.md). Later DART/DAgger collection stays outside that plan.
 
 Authority by subject: this document defines code boundaries, configuration resolution, run identity and artifacts; the research recipe defines the current numerical training settings and BC+J protocol; the baseline plan defines the exact clean scenario split and evaluation predicate; dataset manifests define the recorded teacher, action order and execution limits. The older total plan and ablation matrix are historical where these documents replace them. An inconsistency between a manifest, checkpoint and requested runtime interface must fail validation rather than be resolved by a silent override.
 

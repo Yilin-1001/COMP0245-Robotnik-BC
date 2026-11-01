@@ -8,8 +8,8 @@ from conftest import TASK_DIR
 from training.baseline.loss import ActionObjective
 from training.common.config import finalise_identity, resolve_config, validate_config
 from training.jacobian.loss import calibrate_lambda
+from training.baseline.train import objective_from as action_objective
 from training.jacobian.train import apply_calibration, objective_from
-from experiments.run import _action_objective
 from test_config import provenance, ready
 
 
@@ -35,7 +35,7 @@ def test_configuration_reaches_both_objective_factories(workflow):
         cfg['loss']['jacobian']['lambda_j'] = 0.
         objective = objective_from(cfg)
     else:
-        objective = _action_objective(cfg)
+        objective = action_objective(cfg)
     pred = torch.tensor([[1.] * 7 + [0.] * 2])
     result = objective(torch.nn.Identity(), pred, torch.zeros_like(pred), None, None)
     assert result.total.item() == pytest.approx(.8)
@@ -83,15 +83,3 @@ def test_old_calibration_is_refused_for_new_weights_but_accepted_for_legacy_conf
     cfg['loss'].pop('arm_weight', None)
     cfg['loss'].pop('wheel_weight', None)
     assert apply_calibration(cfg, 'x')['loss']['jacobian']['lambda_j'] == .25
-
-
-def test_frozen_legacy_experiment_keeps_its_original_action_weights():
-    from experiments.run import build_jobs
-    protocol = {'protocol_id': 'legacy', 'decisions': {
-        'budget': {'updates': 42000, 'pilot_lr': .0003}, 'loss': {'action': 'huber'}}}
-    jobs = build_jobs('screen', protocol)
-    assert all(job['overrides'].get('loss.arm_weight') == .5 and
-               job['overrides'].get('loss.wheel_weight') == .5 for job in jobs)
-    protocol['decisions']['loss'].update(arm_weight=.8, wheel_weight=.2)
-    assert all(job['overrides'].get('loss.arm_weight') == .8 and
-               job['overrides'].get('loss.wheel_weight') == .2 for job in build_jobs('screen', protocol))

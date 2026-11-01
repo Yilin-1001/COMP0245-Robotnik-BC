@@ -16,7 +16,7 @@
 
 ## 2026-10-28 更新：统一结构与归档
 
-训练方法消融实验开始前做了一次整理：旧程序和旧模型移入 `Archive/`，相对路径保持不变，清单见 [Archive/README.md](../../Archive/README.md)；新模型统一使用下述命名。
+训练方法消融实验开始前做了一次整理：旧程序和旧模型移入 `Archive/`，相对路径保持不变，清单见 [Archive/README.md](../../README.md)；新模型统一使用下述命名。
 
 | 类别 | 位置（`final/robotnik_arm_task/` 下） |
 |---|---|
@@ -62,29 +62,29 @@ ML_Final/
 
 | 日期 | 类型 | 文档 |
 |---|---|---|
-| 2026-10-24 | roadmap | [project-milestones](../plans/2026-10-24__roadmap__project-milestones.md) |
+| 2026-10-24 | roadmap | [project-milestones](../../../docs/plans/2026-10-24__roadmap__project-milestones.md) |
 | 2026-10-26 | implementation-plan | [mlp-baseline-and-jacobian](../plans/2026-10-26__implementation-plan__mlp-baseline-and-jacobian.md) |
-| 2026-10-26 | plan | [ablation-strategy](../plans/2026-10-26__plan__ablation-strategy.md) |
-| 2026-10-26 | plan | [mlp-baseline-training](../plans/2026-10-26__plan__mlp-baseline-training.md) |
+| 2026-10-26 | plan | [ablation-strategy](../../../docs/plans/2026-10-26__plan__ablation-strategy.md) |
+| 2026-10-26 | plan | [mlp-baseline-training](../../../docs/plans/2026-10-26__plan__mlp-baseline-training.md) |
 | 2026-10-27 | plan | [arm08-wheel02-retraining-a：A 已有网络配对重训](../plans/2026-10-27__plan__arm08-wheel02-retraining-a.md) |
 | 2026-10-27 | plan | [d08w0256-single-run：D8-W256 单模型训练与验证](../plans/2026-10-27__plan__d08w0256-single-run.md) |
-| 2026-10-26 | plan | [project-overview](../plans/2026-10-26__plan__project-overview.md) |
-| 2026-10-24 | assignment | [comp0245-final-project](../references/2026-10-24__assignment__comp0245-final-project.pdf) (local only, not in Git: course material from Moodle) |
-| 2026-10-26 | reference | [research-bibliography](../references/2026-10-26__reference__research-bibliography.md) |
-| 2026-10-24 | report | [markovian-expert-model-accuracy](../reports/2026-10-24__report__markovian-expert-model-accuracy.md) |
-| 2026-10-26 | report | [clean-expert-data-collection](../reports/2026-10-26__report__clean-expert-data-collection.md) |
-| 2026-10-26 | report | [expert-operating-limits](../reports/2026-10-26__report__expert-operating-limits.md) |
-| 2026-10-26 | report | [paired-clean-dataset-subsets](../reports/2026-10-26__report__paired-clean-dataset-subsets.md) |
+| 2026-10-26 | plan | [project-overview](../../../docs/plans/2026-10-26__plan__project-overview.md) |
+| 2026-10-24 | assignment | [comp0245-final-project](../../../docs/references/2026-10-24__assignment__comp0245-final-project.pdf) (local only, not in Git: course material from Moodle) |
+| 2026-10-26 | reference | [research-bibliography](../../../docs/references/2026-10-26__reference__research-bibliography.md) |
+| 2026-10-24 | report | [markovian-expert-model-accuracy](../../../docs/reports/2026-10-24__report__markovian-expert-model-accuracy.md) |
+| 2026-10-26 | report | [clean-expert-data-collection](../../../docs/reports/2026-10-26__report__clean-expert-data-collection.md) |
+| 2026-10-26 | report | [expert-operating-limits](../../../docs/reports/2026-10-26__report__expert-operating-limits.md) |
+| 2026-10-26 | report | [paired-clean-dataset-subsets](../../../docs/reports/2026-10-26__report__paired-clean-dataset-subsets.md) |
 | 2026-10-27 | report | [reaching-failure-and-training-rollouts](../reports/2026-10-27__report__reaching-failure-and-training-rollouts.md) |
 | 2026-10-27 | report | [arm08-wheel02-retraining-a：7组A模型配对重训结果](../reports/2026-10-27__report__arm08-wheel02-retraining-a.md) |
 | 2026-10-27 | report | [d08w0256-single-run：D8-W256 训练与完整训练场景闭环结果](../reports/2026-10-27__report__d08w0256-single-run.md) |
 | 2026-10-27 | review | [dagger-a-plan：结合D8结果的DAgger A方案复查](../reports/2026-10-27__review__dagger-a-plan.md) |
-| 2026-10-29 | report | [teacher-a-operating-envelope：专家 A 的运动与任务极限（报告前提）](../reports/2026-10-29__report__teacher-a-operating-envelope.md) |
-| 2026-10-26 | research | [mlp-training-recipe](../research/2026-10-26__research__mlp-training-recipe.md) |
-| 2026-10-26 | design | [mlp-training-structure](../specs/2026-10-26__design__mlp-training-structure.md) |
+| 2026-10-29 | report | [teacher-a-operating-envelope：专家 A 的运动与任务极限（报告前提）](../../../docs/reports/2026-10-29__report__teacher-a-operating-envelope.md) |
+| 2026-10-26 | research | [mlp-training-recipe](../../../docs/research/2026-10-26__research__mlp-training-recipe.md) |
+| 2026-10-26 | design | [mlp-training-structure](../../../docs/specs/2026-10-26__design__mlp-training-structure.md) |
 | 2026-10-27 | design | [dagger-a：首轮训练设计与执行阶段（待审阅）](../specs/2026-10-27__design__dagger-a.md) |
 | 2026-10-27 | design | [network-capacity-a：A 模型深度与宽度容量实验（待审阅）](../specs/2026-10-27__design__network-capacity-a.md) |
-| 2026-10-26 | spec | [expert-datasets](../specs/2026-10-26__spec__expert-datasets.md) |
+| 2026-10-26 | spec | [expert-datasets](../../../docs/specs/2026-10-26__spec__expert-datasets.md) |
 
 project-overview、ablation-strategy 保留早期方案及后续修订；文中标记为 archived 的表格不是当前训练默认值。
 mlp-training-recipe、mlp-baseline-training、mlp-training-structure 描述当前训练流程的设计来源；最终结果见项目 README 和冻结协议。
@@ -96,16 +96,16 @@ mlp-training-recipe、mlp-baseline-training、mlp-training-structure 描述当�
 - [学习率与训练 loss](../../final/robotnik_arm_task/results/figures/2026-10-27/training-diagnostics/2026-10-27__figure__baseline-learning-rate-and-loss.png)
 - [网络结构对比](../../final/robotnik_arm_task/results/figures/2026-10-27/training-diagnostics/2026-10-27__figure__baseline-architecture-learning-curves.png)
 - [Huber／MSE 对比](../../final/robotnik_arm_task/results/figures/2026-10-27/training-diagnostics/2026-10-27__figure__baseline-huber-vs-mse.png)
-- [OU 扰动验证报告](../../../outputs/2026-10-26/validation/ou-noise/2026-10-26__report__ou-noise-validation.md)
-- [Markovian lead_time 实验报告](../../../outputs/2026-10-25/experiments/markovian-lead-time/2026-10-25__report__markovian-lead-time.md)
-- [项目文件清单（排除环境与第三方）](../../../outputs/2026-10-27/organization/2026-10-27__inventory__project-files.csv)
-- [整理后的全部文件位置](../../../outputs/2026-10-27/organization/2026-10-27__inventory__current-file-locations.csv)
-- [按日期和类型汇总](../../../outputs/2026-10-27/organization/2026-10-27__timeline__project-files.csv)
-- [文件类型统计](../../../outputs/2026-10-27/organization/2026-10-27__summary__file-types.csv)
-- [所有原始文件清单](../../../outputs/2026-10-27/organization/2026-10-27__inventory__all-original-files.csv)
-- [旧名到规范名对照表](../../../outputs/2026-10-27/organization/2026-10-27__mapping__renamed-paths.csv)
-- [按训练时间排序的模型索引](../../../outputs/2026-10-27/organization/2026-10-27__index__trained-models.csv)
-- [完整性检查结果](../../../outputs/2026-10-27/organization/2026-10-27__verification__organization.json)
+- [OU 扰动验证报告](../../../../outputs/2026-10-26/validation/ou-noise/2026-10-26__report__ou-noise-validation.md)
+- [Markovian lead_time 实验报告](../../../../outputs/2026-10-25/experiments/markovian-lead-time/2026-10-25__report__markovian-lead-time.md)
+- [项目文件清单（排除环境与第三方）](../../../../outputs/2026-10-27/organization/2026-10-27__inventory__project-files.csv)
+- [整理后的全部文件位置](../../../../outputs/2026-10-27/organization/2026-10-27__inventory__current-file-locations.csv)
+- [按日期和类型汇总](../../../../outputs/2026-10-27/organization/2026-10-27__timeline__project-files.csv)
+- [文件类型统计](../../../../outputs/2026-10-27/organization/2026-10-27__summary__file-types.csv)
+- [所有原始文件清单](../../../../outputs/2026-10-27/organization/2026-10-27__inventory__all-original-files.csv)
+- [旧名到规范名对照表](../../../../outputs/2026-10-27/organization/2026-10-27__mapping__renamed-paths.csv)
+- [按训练时间排序的模型索引](../../../../outputs/2026-10-27/organization/2026-10-27__index__trained-models.csv)
+- [完整性检查结果](../../../../outputs/2026-10-27/organization/2026-10-27__verification__organization.json)
 
 ## 清单与兼容性
 

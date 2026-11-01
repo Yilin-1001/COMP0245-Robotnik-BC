@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.10, NumPy, PyYAML, PyTorch ≥ 2.7 with CUDA 12.8/`sm_120` verification and CPU fallback, existing Pinocchio/PyBullet/RoboEnv, pytest for targeted verification. No new orchestration framework or hyperparameter optimisation service.
 
-**Spec:** [Unified structure design](../specs/2026-10-26__design__mlp-training-structure.md), [numerical recipe](../research/2026-10-26__research__mlp-training-recipe.md), [clean split/evaluation plan](2026-10-26__plan__mlp-baseline-training.md), [dataset contract](../specs/2026-10-26__spec__expert-datasets.md), [subset inventories](../reports/2026-10-26__report__paired-clean-dataset-subsets.md). Read the spec and recipe before executing any task.
+**Spec:** [Unified structure design](../../../docs/specs/2026-10-26__design__mlp-training-structure.md), [numerical recipe](../../../docs/research/2026-10-26__research__mlp-training-recipe.md), [clean split/evaluation plan](../../../docs/plans/2026-10-26__plan__mlp-baseline-training.md), [dataset contract](../../../docs/specs/2026-10-26__spec__expert-datasets.md), [subset inventories](../../../docs/reports/2026-10-26__report__paired-clean-dataset-subsets.md). Read the spec and recipe before executing any task.
 
 ## Global Constraints
 

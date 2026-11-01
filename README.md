@@ -128,3 +128,4 @@ Results are saved in `results/test/r4-seed0/`; use a new output directory when r
 This entry point reproduces the existing R4 test diagnosis; report it as such and disclose any later model changes informed by these test results.
 
 For all three seeds, other ablation rows, packaging and historical results, see the [detailed reproduction reference](docs/2026-10-29__guide__reproduction-details.md).
+For where each stage's code, data, models and results live, see the [project pipeline overview](docs/2026-10-30__guide__project-pipeline.md); retired versions are in [Archive/](Archive/README.md).

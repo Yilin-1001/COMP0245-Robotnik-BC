@@ -1,1 +1,0 @@
-research/2026-10-26__research__mlp-training-recipe.md
