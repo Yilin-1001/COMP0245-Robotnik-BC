@@ -15,6 +15,7 @@ import json
 import multiprocessing as mp
 from pathlib import Path
 import platform
+import re
 import subprocess
 import time
 from zoneinfo import ZoneInfo
@@ -34,7 +35,7 @@ def parser():
     p.add_argument('--rows',nargs='+',choices=list(ROWS))
     p.add_argument('--seeds',nargs='+',type=int)
     p.add_argument('--suites',nargs='+',choices=[f'T{i}' for i in range(6)])
-    p.add_argument('--models',nargs='+',help='explicit step_42000 NumPy exports, each with adjacent config.yaml')
+    p.add_argument('--models',nargs='+',help='explicit step_42000 .npz/.pt models, each with adjacent config.yaml')
     p.add_argument('--workers',type=int,default=min(12,len(os.sched_getaffinity(0))))
     p.add_argument('--out',type=Path)
     p.add_argument('--resume',type=Path)
@@ -58,7 +59,8 @@ def job_identity(run_hash,policy_id,scene_id):
 
 def job_path(directory,identity):
     # Full model names are retained in run/rollout tables; the hash avoids path and filename collisions.
-    return Path(directory)/'jobs'/f"{identity['policy_id']}__{identity['scene_id']}__{digest(identity)[:12]}.json"
+    name=re.sub(r'[^A-Za-z0-9_.-]','_',identity['policy_id'])[:150]
+    return Path(directory)/'jobs'/f"{name}__{identity['scene_id']}__{digest(identity)[:12]}.json"
 
 
 def save_job(path,identity,record):
@@ -71,15 +73,59 @@ def load_job(path,identity):
     except (ValueError,OSError) as e:raise ValueError(f'{path}: invalid result integrity') from e
     if data.get('identity')!=identity:raise ValueError(f'{path}: incompatible job identity')
     if data.get('record_sha256')!=digest(data.get('record')):raise ValueError(f'{path}: result integrity mismatch')
+    validate_outcome(data['record'],identity)
     return data['record']
+
+
+def validate_outcome(record,identity):
+    required={'success','grade','completion_time_s','final1s_max_err_mm','scenario_id','model_id','failure'}
+    if not required <= record.keys():raise ValueError('result integrity: incomplete outcome schema')
+    if record['model_id']!=identity['policy_id'] or record['scenario_id']!=identity['scene_id']:
+        raise ValueError('result identity disagrees with outcome')
+    if type(record['success']) is not bool or record['grade'] not in tuple('ABCDEF'):raise ValueError('invalid success/grade')
+    if record['grade']=='F' and (record['success'] or not record['failure']):raise ValueError('invalid F outcome')
+    if record['success'] and record['completion_time_s'] is None:raise ValueError('success lacks completion time')
+    if record['grade']!='F' and record['final1s_max_err_mm'] is None:raise ValueError('missing terminal error')
+
+
+def simulator_preflight():
+    from core.interfaces import Observation
+    from evaluation.evaluate import make_robot_env,MarkovianReference
+    from types import SimpleNamespace
+    env=make_robot_env()
+    try:
+        scene=SimpleNamespace(seed=9000001,target_ee_pos=np.array([1.2,.8,.6]),base_start_pos=np.array([-.2,.1,0.]),
+                              base_start_bearing=.4,physics={},scenario_id='development-preflight')
+        obs=env.reset(scene);policy=MarkovianReference(lead_time=.50)
+        env.step(policy.act(obs))
+    finally:env.close()
+
+
+def validate_run(run,manifest):
+    ident=run['identity']
+    if digest(ident)!=run['run_hash']:raise ValueError('run identity integrity mismatch')
+    if run['models']!=ident['models'] or run['scenario_ids']!=ident['scenario_ids']:
+        raise ValueError('run selection differs from pinned identity')
+    if run['scene_manifest_sha256']!=manifest['sha256'] or ident['manifest_sha256']!=manifest['sha256']:
+        raise ValueError('run scenario manifest identity differs')
+    if len({m['id'] for m in run['models']})!=len(run['models']) or len(set(run['scenario_ids']))!=len(run['scenario_ids']):
+        raise ValueError('duplicate run selection identities')
+    if not set(run['scenario_ids'])<={s['scenario_id'] for s in manifest['scenarios']}:
+        raise ValueError('run selected scenario missing from manifest')
+    if run['expected_jobs']!=len(run['models'])*len(run['scenario_ids']):raise ValueError('run expected coverage differs')
 
 
 def code_hashes():
     files=['evaluation/test_suite.py','evaluation/suite_rollout.py','evaluation/suite_manifest.py',
-           'evaluation/evaluate.py','training/common/policies.py','core/interfaces.py','core/features.py',
+           'evaluation/evaluate.py','training/common/policies.py','training/common/models.py','training/common/checkpoint.py','core/interfaces.py','core/features.py',
            'core/feature_sets.py','core/env.py','data_collection/expert.py','robotnik_arm_control.py',
            'settings.yaml','configs/robotnik_arm.json','models/summit_xl_arm_description/summit_xl_complete_pin.urdf']
-    return {f:sha_file(TASK_DIR/f) for f in files}
+    files += [str(p.relative_to(TASK_DIR)) for p in (TASK_DIR/'models/summit_xl_arm_description').rglob('*') if p.is_file()]
+    import simulation_and_control
+    package=Path(simulation_and_control.__file__).resolve().parent
+    result={f:sha_file(TASK_DIR/f) for f in sorted(set(files))}
+    result.update({f'simulation_and_control/{p.relative_to(package)}':sha_file(p) for p in package.rglob('*.py')})
+    return result
 
 
 def _policy(record):
@@ -87,7 +133,7 @@ def _policy(record):
         from evaluation.evaluate import MarkovianReference
         return MarkovianReference(lead_time=.50)
     from evaluation.evaluate import mlp_factory
-    return mlp_factory(record['path'])
+    return mlp_factory(record['path'],backend=record.get('backend','numpy'))
 
 
 def _init_worker():
@@ -135,6 +181,7 @@ def prepare(args):
     if args.resume:
         directory=args.resume.resolve();run=json.loads((directory/'run.json').read_text())
         manifest=load_manifest(directory/'scene_manifest.json')
+        validate_run(run,manifest)
         if run['identity']['code_sha256']!=code_hashes():raise ValueError('resume code identity differs')
         if run['scene_manifest_sha256']!=manifest['sha256']:raise ValueError('resume scenario identity differs')
         if args.rows or args.seeds or args.suites or args.models:raise ValueError('resume uses pinned selection; omit model/suite filters')
@@ -170,7 +217,8 @@ def prepare(args):
          'requested_rows':args.rows or list(ROWS),'requested_seeds':args.seeds or [0,1,2],
          'git_head':_git(['rev-parse','HEAD']),'git_status':_git(['status','--short']),
          'platform':platform.platform(),'python':platform.python_version(),'packages':packages,
-         'cpu_count':len(os.sched_getaffinity(0)),'workers':args.workers}
+         'cpu_count':len(os.sched_getaffinity(0)),'workers':args.workers,
+         'report_code_sha256':{name:sha_file(TASK_DIR/'evaluation'/name) for name in ['suite_report.py','suite_plots.py']}}
     atomic_json(directory/'scene_manifest.json',manifest)
     atomic_json(directory/'run.json',run)
     return directory,run,manifest
@@ -198,6 +246,7 @@ def main(argv=None):
     started=time.perf_counter();last_log=started;new=failed=0
     try:
         if pending:
+            simulator_preflight()
             with mp.get_context('spawn').Pool(args.workers,_init_worker) as pool:
                 iterator=pool.imap_unordered(execute_job,pending,chunksize=1)
                 while new<len(pending):

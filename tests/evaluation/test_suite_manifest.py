@@ -59,7 +59,7 @@ def _fake_run(task,row,round,seed,step=42000):
           'teacher':'A','feature_definition':'features-v1',
           'interface':{'control_hz':1000,'torque_limit':30.,'wheel_limit':6.}}
     np.savez(d/'step_42000.npz',metadata_json=np.array(json.dumps(meta)),layer0_W=np.zeros((1,21)))
-    (d/'config.yaml').write_text(yaml.safe_dump({'training':{'updates':42000},'identity':{'seed':seed}}))
+    (d/'config.yaml').write_text(yaml.safe_dump({'training':{'updates':42000},'identity':{'seed':seed,'run_id':ident,'teacher':'A'},'data':{'feature_definition':'features-v1'},'model':{'input_dim':21}}))
     return str((d/f'{ident}.npz').relative_to(task))
 
 
@@ -87,3 +87,21 @@ def test_explicit_model_wrong_step_is_rejected(tmp_path):
     p=tmp_path/Path(model).parent/'step_42000.npz'
     with pytest.raises(ValueError,match='42000'):
         select_models(None,None,[str(p)],task_dir=tmp_path)
+
+
+def test_export_and_adjacent_config_must_describe_same_training_seed(tmp_path):
+    model=_fake_run(tmp_path,'R4',0,0)
+    config=tmp_path/Path(model).parent/'config.yaml'
+    c=yaml.safe_load(config.read_text());c['identity']['seed']=999;config.write_text(yaml.safe_dump(c))
+    # Export seed becomes mandatory for real metadata; absence is allowed only with consistent caller inference.
+    with pytest.raises(ValueError,match='seed'):
+        select_models(None,None,[str(tmp_path/Path(model).parent/'step_42000.npz')],task_dir=tmp_path)
+
+
+@pytest.mark.realdata
+def test_explicit_torch_terminal_checkpoint_uses_existing_adapter():
+    m,_=select_models(['R4'],[0])
+    pt=Path(m[0]['path']).with_suffix('.pt')
+    models,missing=select_models(None,None,[str(pt)])
+    assert not missing and models[0]['backend']=='torch'
+    assert models[0]['id']==m[0]['id'] and models[0]['checkpoint_step']==42000

@@ -104,3 +104,10 @@ def test_rollout_failure_after_success_is_f_and_closes_environment():
     r = rollout(ConstantPolicy(), scene, 5, 3, {'control_hz':10,'torque_limit':30,'wheel_limit':6}, lambda:env)
     assert not r['success'] and r['grade'] == 'F' and env.closed
     assert r['failure_type'] == 'RuntimeError'
+
+
+def test_simulator_construction_failure_is_infrastructure_not_an_f_rollout():
+    def broken_factory():raise FileNotFoundError('robot URDF unavailable')
+    scene=SimpleNamespace(target_ee_pos=np.zeros(3),scenario_id='development')
+    with pytest.raises(FileNotFoundError):
+        rollout(ConstantPolicy(),scene,5,3,{'control_hz':10,'torque_limit':30,'wheel_limit':6},broken_factory)

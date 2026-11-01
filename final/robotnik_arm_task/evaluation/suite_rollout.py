@@ -62,8 +62,9 @@ def rollout(policy, scenario, duration_s, hold_s, interface, env_factory=None):
     env, failure, final_pos = None, None, None
     stride = max(1, hz // PROTOCOL['history_hz'])
     started = time.perf_counter()
+    # A missing/broken simulator is infrastructure, not 6000 independent controller failures.
+    env = env_factory()
     try:
-        env = env_factory()
         obs = env.reset(scenario)
         if hasattr(policy, 'bind_env'):
             policy.bind_env(env)

@@ -40,3 +40,33 @@ def test_all_failure_figures_are_created_without_finite_errors(tmp_path):
     png=list((tmp_path/'plots').glob('*.png'))
     assert len(png)>=7
     assert len(list((tmp_path/'plots').glob('*.pdf')))==len(png)
+
+
+def test_copied_job_files_cannot_create_fake_complete_coverage(tmp_path):
+    import json
+    import pytest
+    from evaluation.suite_manifest import digest,freeze_manifest
+    from evaluation.test_suite import save_job,job_identity
+    from evaluation.suite_report import load_records
+    manifest=freeze_manifest(tmp_path/'scene_manifest.json',{'scenarios':[{'scenario_id':'a'},{'scenario_id':'b'}]})
+    identity={'models':[{'id':'R1-s0'}],'scenario_ids':['a','b'],'manifest_sha256':manifest['sha256']}
+    rh=digest(identity)
+    (tmp_path/'run.json').write_text(json.dumps({'run_hash':rh,'identity':identity,'expected_jobs':2,'models':[{'id':'R1-s0'}],
+        'scenario_ids':['a','b'],'scene_manifest_sha256':manifest['sha256']}))
+    row=records()[0]
+    save_job(tmp_path/'jobs/first.json',job_identity(rh,'R1-s0','a'),row)
+    (tmp_path/'jobs/copy.json').write_bytes((tmp_path/'jobs/first.json').read_bytes())
+    with pytest.raises(ValueError,match='duplicate'):
+        load_records(tmp_path)
+
+
+def test_partial_results_keep_expected_denominator_and_pending_expert_visible():
+    rows=records()[:1]
+    models=[{'id':'R1-s0','row':'R1','seed':0},{'id':'Markovian-expert-A','row':'expert','seed':None}]
+    scenes=[{'scenario_id':sid,'suite':'T0','band':'core'} for sid in ['a','b']]
+    summary=summarise(rows,models,scenes)
+    r=next(x for x in summary if x['level']=='model' and x['policy']=='R1-s0' and x['subset']=='all')
+    assert r['n_expected']==2 and r['n']==1 and r['n_missing']==1
+    assert r['coverage_status']=='partial' and r['ci_low'] is None
+    sub=next(x for x in summary if x['policy']=='R1-s0' and x['subset']=='expert_success')
+    assert sub['expert_pending_scenes']==2 and sub['success_rate'] is None

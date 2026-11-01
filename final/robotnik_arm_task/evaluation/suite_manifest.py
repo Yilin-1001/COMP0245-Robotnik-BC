@@ -2,6 +2,7 @@
 import csv
 import hashlib
 import json
+import re
 from pathlib import Path
 
 import numpy as np
@@ -79,14 +80,19 @@ def build_manifest(task_dir=TASK_DIR):
         meta=json.loads(f.read_text())
         inventories.add(task/meta['source']['root']/'scenarios_train.csv')
     keys=('start_x','start_y','start_yaw','target_x','target_y','target_z')
-    original=set(); source_hashes={}
+    original=set(); source_hashes={}; original_starts=set(); original_targets=set(); source_seeds=set()
     for f in sorted(inventories):
         source_hashes[str(f.relative_to(task))]=sha_file(f)
-        original.update(tuple(float(r[k]) for k in keys) for r in read_csv(f))
+        source_rows=read_csv(f)
+        original.update(tuple(float(r[k]) for k in keys) for r in source_rows)
+        original_starts.update((float(r['start_x']),float(r['start_y'])) for r in source_rows)
+        original_targets.update(tuple(float(r[k]) for k in ('target_x','target_y','target_z')) for r in source_rows)
+        source_seeds.update(int(r['seed']) for r in source_rows)
     overlaps=[]
     for r in scenes:
         key=tuple(r['start'][:2])+ (r['yaw'],)+tuple(r['target'])
-        if key in original:overlaps.append(r['scenario_id'])
+        if key in original or tuple(r['start'][:2]) in original_starts or tuple(r['target']) in original_targets or r['seed'] in source_seeds:
+            overlaps.append(r['scenario_id'])
     if overlaps:raise ValueError(f'test scenes overlap training/validation: {overlaps}')
     assert len(scenes)==240 and len({r['seed'] for r in scenes})==240
     return {'version':'unified-test-v1','generation_seed':MASTER_SEED,'generation':'LHS per independent band; T4 paired translations',
@@ -123,22 +129,54 @@ def scene_from_record(record):
                     physics={},scenario_id=record['scenario_id'],split='unified-test')
 
 
-def _model_record(path,row,seed,round_number):
-    path=Path(path).resolve()
+def _artifact_metadata(path):
+    path=Path(path)
+    if path.suffix=='.pt':
+        from training.common.checkpoint import load_checkpoint
+        payload=load_checkpoint(path)
+        return {**payload['meta'],'normaliser':payload['normaliser'],'source_step':payload['step']}, sum(v.numel() for v in payload['model_state'].values()), 'torch'
+    if path.suffix!='.npz':raise ValueError('supported model artifacts are .npz and .pt')
     with np.load(path) as z:
         meta=json.loads(str(z['metadata_json']))
-        params=sum(z[k].size for k in z.files if k!='metadata_json' and np.issubdtype(z[k].dtype,np.number))
-    if meta.get('format')!='mlp-numpy-export-v1' or meta.get('source_step')!=42000:
-        raise ValueError(f'{path}: expected step_42000 MLP NumPy export')
-    if meta['interface'] != {**meta['interface'],**INTERFACE}:
+        if meta.get('format')!='mlp-numpy-export-v1':raise ValueError('not an MLP NumPy export')
+        count=sum(z[k].size for k in z.files if k!='metadata_json' and np.issubdtype(z[k].dtype,np.number))
+    return meta,count,'numpy'
+
+
+def _model_record(path,row,seed,round_number):
+    path=Path(path).resolve()
+    meta,params,backend=_artifact_metadata(path)
+    if meta.get('source_step')!=42000:
+        raise ValueError(f'{path}: expected step_42000 model')
+    if any(meta['interface'].get(k)!=v for k,v in INTERFACE.items()):
         raise ValueError(f'{path}: incompatible control interface')
     config=path.parent/'config.yaml'
     if not config.exists():raise FileNotFoundError(f'model config missing: {config}')
-    c=yaml.safe_load(config.read_text())
-    return {'id':meta.get('run_id') or path.stem,'row':row,'seed':seed if seed is not None else c['identity']['seed'],
-            'round':round_number,'path':str(path),'sha256':sha_file(path),'config_path':str(config),
-            'config_sha256':sha_file(config),'checkpoint_step':42000,'input_dim':meta['input_dim'],
-            'feature_definition':meta.get('feature_definition','features-v1'),'parameters':int(params),'kind':'model'}
+    c=yaml.safe_load(config.read_text());ident=c['identity'];rid=meta['run_id']
+    inferred=re.search(r'(?:__s|-s)([0-9]+)(?:__|$)',rid)
+    if (seed is not None and ident['seed']!=seed) or (inferred and int(inferred[1])!=ident['seed']):
+        raise ValueError(f'{path}: config/model training seed mismatch')
+    for key in ['run_id','teacher','objective']:
+        if key in ident and ident[key]!=meta.get(key):raise ValueError(f'{path}: config/model {key} mismatch')
+    if c['training']['updates']!=42000:raise ValueError('config terminal step differs from 42000')
+    definition=meta.get('feature_definition','features-v1')
+    if c.get('data',{}).get('feature_definition',definition)!=definition:
+        raise ValueError('config/model feature definition mismatch')
+    from core.feature_sets import feature_names
+    names=feature_names(meta['teacher'],definition)
+    if len(names)!=meta['input_dim'] or c.get('model',{}).get('input_dim',meta['input_dim'])!=meta['input_dim']:
+        raise ValueError('config/model feature dimension mismatch')
+    if meta.get('feature_names',names)!=names:raise ValueError('model feature order mismatch')
+    if c.get('interface',meta['interface'])!=meta['interface']:raise ValueError('config/model interface mismatch')
+    if 'normaliser' in meta:
+        normaliser_sha=hashlib.sha256(json.dumps(meta['normaliser'],sort_keys=True).encode()).hexdigest()
+        if meta.get('normaliser_sha256')!=normaliser_sha:raise ValueError('model normalizer integrity mismatch')
+        if c.get('provenance',{}).get('normaliser_sha256',normaliser_sha)!=normaliser_sha:
+            raise ValueError('config/model normalizer mismatch')
+    return {'id':rid,'row':row,'seed':ident['seed'], 'round':round_number,'path':str(path),
+            'sha256':sha_file(path),'config_path':str(config),'config_sha256':sha_file(config),
+            'checkpoint_step':42000,'input_dim':meta['input_dim'],'backend':backend,
+            'feature_definition':definition,'parameters':int(params),'kind':'model'}
 
 
 def select_models(rows=None,seeds=None,paths=None,task_dir=TASK_DIR):
@@ -146,7 +184,7 @@ def select_models(rows=None,seeds=None,paths=None,task_dir=TASK_DIR):
     if paths:
         for path in paths:
             p=Path(path).resolve()
-            with np.load(p) as z:meta=json.loads(str(z['metadata_json']))
+            meta,_,_=_artifact_metadata(p)
             rid=meta.get('run_id',p.stem)
             row=rid.split('-')[0] if rid.split('-')[0] in ROWS else rid
             models.append(_model_record(p,row,None,None))

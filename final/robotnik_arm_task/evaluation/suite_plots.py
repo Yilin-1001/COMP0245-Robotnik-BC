@@ -1,6 +1,9 @@
 """Publication/export figures from saved outcome records only."""
 from pathlib import Path
 import math
+import os
+import tempfile
+os.environ.setdefault("MPLCONFIGDIR",str(Path(tempfile.gettempdir())/"ml-final-matplotlib"))
 
 import matplotlib
 matplotlib.use('Agg')
@@ -39,11 +42,13 @@ def plot_results(directory,rows,summary):
             for i,n in enumerate(students):
                 s=stat(g,n,subset)
                 if s and s['success_rate'] is not None:
-                    y=100*s['success_rate'];lo=100*s['ci_low'];hi=100*s['ci_high']
+                    y=100*s['success_rate']
                     ax.bar(i,y,color=palette[n],alpha=.65)
-                    ax.errorbar(i,y,yerr=[[max(0,y-lo)],[max(0,hi-y)]],color='black',capsize=3)
+                    if s['ci_low'] is not None:
+                        lo=100*s['ci_low'];hi=100*s['ci_high']
+                        ax.errorbar(i,y,yerr=[[max(0,y-lo)],[max(0,hi-y)]],color='black',capsize=3)
                     seedstats=[x for x in summary if x['level']=='model' and x['row']==n and x['suite']==g[0] and x['band']==g[1] and x['subset']==subset and x['success_rate'] is not None]
-                    ax.scatter([i]*len(seedstats),[100*x['success_rate'] for x in seedstats],s=15,color='black',zorder=3)
+                    ax.scatter(i+np.linspace(-.12,.12,len(seedstats)),[100*x['success_rate'] for x in seedstats],s=15,color='black',zorder=3)
             expert=stat(g,'expert',subset)
             if expert and expert['success_rate'] is not None:ax.axhline(100*expert['success_rate'],color='black',ls='--',label='Markovian expert A')
             ax.set_xticks(range(len(students)),students);ax.set_ylim(0,105);ax.set_ylabel('Success (%)');ax.set_title('/'.join(g));ax.grid(axis='y',alpha=.2)
@@ -96,21 +101,31 @@ def plot_results(directory,rows,summary):
                 if rs:xs.append(np.mean([r[key] for r in rs]));ys.append(100*np.mean([r['success'] for r in rs]))
             if xs:ax.plot(xs,ys,'o--',label=n,color=palette[n])
         ax.set_ylim(0,105);ax.set_ylabel('Success (%)');ax.set_xlabel('Distance (m)' if suite=='T1' else 'Height (m)')
-        ax.set_title(suite+' — separate frozen bands');ax.grid(alpha=.2)
+        ax.set_title(suite+' — separate frozen bands'+(' (caps 80 / 80 / 120 s)' if suite=='T1' else ' (cap 40 s)'));ax.grid(alpha=.2)
         ax.text(.02,.02,'; '.join(f"{g[1]}: n={len({r['scenario_id'] for r in data(g)})}" for g in relevant),transform=ax.transAxes,fontsize=7)
     if axes[0].get_legend_handles_labels()[0]:axes[0].legend(fontsize=7,ncol=3)
     save(fig,'05_distance_height_success')
-    # 6. Robot-frame target locations by terminal grade, one suite per figure.
+    # 6. Aggregate the worst seed explicitly, rather than hiding overlapping seed-colored points.
     cmap=ListedColormap([COLORS[g] for g in 'ABCDEF']);norm=BoundaryNorm(np.arange(-.5,6.5),6)
     for suite in sorted({r['suite'] for r in rows}):
-        fig,axes=panels(len(names))
-        for ax,n in zip(axes,names):
-            rs=[r for r in rows if r['suite']==suite and r['row']==n]
-            ax.scatter([r['target_bx'] for r in rs],[r['target_by'] for r in rs],c=['ABCDEF'.index(r['grade']) for r in rs],cmap=cmap,norm=norm,s=18,alpha=.75)
-            ax.plot(0,0,'k+',ms=8);ax.set_aspect('equal',adjustable='datalim');ax.set_title(n)
-            ax.set_xlabel('Initial forward target x (m)');ax.set_ylabel('Initial left target y (m)')
-        fig.suptitle(suite+' initial robot-frame targets; colors A green → E red, F grey',y=1.01)
-        save(fig,'06_targets_'+suite)
+        for view in ['xy','distance-height']:
+            fig,axes=panels(len(names))
+            for ax,n in zip(axes,names):
+                rs=[r for r in rows if r['suite']==suite and r['row']==n]
+                byscene={}
+                for r in rs:
+                    sid=r['scenario_id']
+                    if sid not in byscene or 'ABCDEF'.index(r['grade'])>'ABCDEF'.index(byscene[sid]['grade']):byscene[sid]=r
+                points=list(byscene.values())
+                x=[r['target_bx'] if view=='xy' else r['target_dist_m'] for r in points]
+                y=[r['target_by'] if view=='xy' else r['target_z_m'] for r in points]
+                ax.scatter(x,y,c=['ABCDEF'.index(r['grade']) for r in points],cmap=cmap,norm=norm,s=18,alpha=.85)
+                if view=='xy':ax.plot(0,0,'k+',ms=8);ax.set_aspect('equal',adjustable='datalim')
+                ax.set_title(n+f"; {len({r['model_id'] for r in rs})} controller seed(s)")
+                ax.set_xlabel('Initial forward target x (m)' if view=='xy' else 'Initial horizontal target distance (m)')
+                ax.set_ylabel('Initial left target y (m)' if view=='xy' else 'World target height (m)')
+            fig.suptitle(suite+' worst terminal grade across available seeds; A green → E red, F grey',y=1.01)
+            save(fig,'06_targets_'+suite+'_'+view)
     # 7. Completion curves include failures in the denominator; successful times only in table.
     fig,axes=panels(len(groups))
     for ax,g in zip(axes,groups):
@@ -118,7 +133,7 @@ def plot_results(directory,rows,summary):
             rs=data(g,n)
             if not rs:continue
             times=sorted(r['completion_time_s'] for r in rs if r['success'])
-            cap=max(r['duration_s'] for r in rs)
+            cap=max(r.get('time_limit_s',r['duration_s']) for r in rs)
             ax.step([0]+times+[cap],[0]+list(100*np.arange(1,len(times)+1)/len(rs))+[100*len(times)/len(rs)],where='post',label=n,color=palette[n])
         ax.set_ylim(0,105);ax.set_title('/'.join(g));ax.set_xlabel('Simulation time (s), including hold');ax.set_ylabel('All-scene completion (%)');ax.grid(alpha=.2)
     if axes[0].get_legend_handles_labels()[0]:axes[0].legend(fontsize=7,ncol=3)
@@ -130,7 +145,7 @@ def plot_results(directory,rows,summary):
         for ax,n in zip(axes,names):
             candidates=[r for r in longs if r['row']==n]
             if candidates:
-                r=max(candidates,key=lambda r:r.get('final1s_max_err_mm') or float('inf'))
+                r=max(candidates,key=lambda r:float('inf') if r.get('final1s_max_err_mm') is None else r['final1s_max_err_mm'])
                 h=np.array(r['history']);ax.plot(h[:,0],h[:,1],color=palette[n]);ax.set_title(n+' / '+r['scenario_id'])
                 ax.set_yscale('symlog',linthresh=1);ax.axhline(10,color='grey',ls='--');ax.set_xlabel('Time (s)');ax.set_ylabel('EE error (mm)')
         fig.suptitle('T5 worst terminal outcome per row — full error history',y=1.01);save(fig,'08_long_hold_error_traces')

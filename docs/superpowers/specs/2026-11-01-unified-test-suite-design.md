@@ -1,6 +1,6 @@
 # Unified R1–R8 test suite: final design
 
-Date: 2026-11-01. Status: requirements confirmed in conversation; written design independently reviewed with no important unanswered implementation questions; awaiting approval before implementation.
+Date: 2026-11-01. Status: requirements confirmed in conversation; written design independently reviewed with no important unanswered implementation questions; approved by the user; implementation and full execution authorized.
 
 ## Intent and scope
 
