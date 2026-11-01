@@ -1,0 +1,86 @@
+{
+ "cap_s": 80.0,
+ "n_per_band": 12,
+ "bands": {
+  "D0-in-range-0.5-3m": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.72,
+    "median_t_first_reach_s": 8.0
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.69,
+    "median_t_first_reach_s": 8.0
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.88,
+    "median_t_first_reach_s": 8.0
+   }
+  },
+  "D1-3-6m": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.69,
+    "median_t_first_reach_s": 17.4
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.48,
+    "median_t_first_reach_s": 17.7
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.68,
+    "median_t_first_reach_s": 17.5
+   }
+  },
+  "D2-6-9m": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.64,
+    "median_t_first_reach_s": 28.0
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.95,
+    "median_t_first_reach_s": 29.3
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.52,
+    "median_t_first_reach_s": 28.6
+   }
+  },
+  "D3-9-12m": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.74,
+    "median_t_first_reach_s": 43.1
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.18,
+    "median_t_first_reach_s": 45.0
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.73,
+    "median_t_first_reach_s": 44.4
+   }
+  }
+ }
+}

@@ -27,7 +27,27 @@ def sha256_file(path: Path) -> str:
 
 
 def model_spec(model) -> dict:
-    return {"input_dim": model.input_dim, "hidden": list(model.hidden), "layernorm_eps": model.layernorm_eps}
+    spec = {"input_dim": model.input_dim, "hidden": list(model.hidden), "layernorm_eps": model.layernorm_eps}
+    if getattr(model, "kind", "mlp") == "gated":  # plain MLP specs stay unchanged, so existing hashes hold
+        spec.update(type="gated", gate_index=int(model.gate_index))
+    return spec
+
+
+def _mlp_arrays(mlp, prefix: str = "") -> dict:
+    arrays, i = {}, 0
+    layers = list(mlp.trunk)
+    for k in range(0, len(layers), 3):
+        lin, ln = layers[k], layers[k + 1]
+        arrays[f"{prefix}layer{i}_W"] = lin.weight.detach().cpu().numpy().astype(np.float64)
+        arrays[f"{prefix}layer{i}_b"] = lin.bias.detach().cpu().numpy().astype(np.float64)
+        arrays[f"{prefix}ln{i}_gamma"] = ln.weight.detach().cpu().numpy().astype(np.float64)
+        arrays[f"{prefix}ln{i}_beta"] = ln.bias.detach().cpu().numpy().astype(np.float64)
+        i += 1
+    for head in ("torque", "wheel"):
+        lin = getattr(mlp, f"{head}_head")
+        arrays[f"{prefix}{head}_W"] = lin.weight.detach().cpu().numpy().astype(np.float64)
+        arrays[f"{prefix}{head}_b"] = lin.bias.detach().cpu().numpy().astype(np.float64)
+    return arrays
 
 
 def model_payload(model, normaliser, meta: dict, step: int, **state) -> dict:
@@ -74,19 +94,10 @@ def export_numpy(path: Path, model, normaliser, metadata: dict) -> dict:
     meta = {k: v for k, v in metadata.items() if k not in ("source_checkpoint", "source_step")}
     meta.update(info, format=EXPORT_FORMAT, model=model_spec(model), normaliser=normaliser.to_dict(),
                 normaliser_sha256=normaliser.sha256())
-    arrays, i = {}, 0
-    layers = list(model.trunk)
-    for k in range(0, len(layers), 3):
-        lin, ln = layers[k], layers[k + 1]
-        arrays[f"layer{i}_W"] = lin.weight.detach().cpu().numpy().astype(np.float64)
-        arrays[f"layer{i}_b"] = lin.bias.detach().cpu().numpy().astype(np.float64)
-        arrays[f"ln{i}_gamma"] = ln.weight.detach().cpu().numpy().astype(np.float64)
-        arrays[f"ln{i}_beta"] = ln.bias.detach().cpu().numpy().astype(np.float64)
-        i += 1
-    for head in ("torque", "wheel"):
-        lin = getattr(model, f"{head}_head")
-        arrays[f"{head}_W"] = lin.weight.detach().cpu().numpy().astype(np.float64)
-        arrays[f"{head}_b"] = lin.bias.detach().cpu().numpy().astype(np.float64)
+    if getattr(model, "kind", "mlp") == "gated":
+        arrays = {**_mlp_arrays(model.nav, "nav_"), **_mlp_arrays(model.reach, "reach_")}
+    else:
+        arrays = _mlp_arrays(model)
     tmp = path.with_name(path.name + ".tmp.npz")
     np.savez(tmp, metadata_json=np.array(json.dumps(meta)), **arrays)
     os.replace(tmp, path)

@@ -1,0 +1,6 @@
+# R6 DAgger round 3 (v1): R4's data (Clean_253 fitting + DART d2-s075x2) plus DAgger rounds 1..3,
+# 22 inputs (features-v1 + reach_gate). Written by experiments/dagger_rounds.py.
+data:
+  feature_definition: features-v1-gate
+  datasets: [clean253__features-v1-gate, dart-d2s075x2__features-v1-gate, daggerv1-r1__features-v1-gate, daggerv1-r2__features-v1-gate, daggerv1-r3__features-v1-gate]
+  validation_dataset: clean253__features-v1-gate

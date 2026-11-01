@@ -1,0 +1,6 @@
+# R1-baseline + DAgger round 2 (R1v1): the row's data (clean253) plus DAgger rounds 1..2,
+# inputs features-v1. Written by experiments/dagger_rounds.py.
+data:
+  feature_definition: features-v1
+  datasets: [clean253__features-v1, daggerR1v1-r1__features-v1, daggerR1v1-r2__features-v1]
+  validation_dataset: clean253__features-v1

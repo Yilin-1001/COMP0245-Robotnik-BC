@@ -1,0 +1,86 @@
+{
+ "cap_s": 80.0,
+ "n_per_band": 12,
+ "bands": {
+  "D0-in-range-0.5-3m": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.72,
+    "median_t_first_reach_s": 8.0
+   },
+   "R6-dagger-v1-r1__MLP01-256x3__s0__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.26,
+    "median_t_first_reach_s": 8.0
+   },
+   "R6-dagger-v1-r3__MLP01-256x3__s0__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.99,
+    "median_t_first_reach_s": 8.0
+   }
+  },
+  "D1-3-6m": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.69,
+    "median_t_first_reach_s": 17.4
+   },
+   "R6-dagger-v1-r1__MLP01-256x3__s0__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.94,
+    "median_t_first_reach_s": 17.5
+   },
+   "R6-dagger-v1-r3__MLP01-256x3__s0__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.85,
+    "median_t_first_reach_s": 17.6
+   }
+  },
+  "D2-6-9m": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.64,
+    "median_t_first_reach_s": 28.0
+   },
+   "R6-dagger-v1-r1__MLP01-256x3__s0__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.76,
+    "median_t_first_reach_s": 27.9
+   },
+   "R6-dagger-v1-r3__MLP01-256x3__s0__v1__2026-10-30": {
+    "hold": "7/12",
+    "hold_where_teacher_holds": "7/12",
+    "median_final_err_mm": 0.93,
+    "median_t_first_reach_s": 28.1
+   }
+  },
+  "D3-9-12m": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.74,
+    "median_t_first_reach_s": 43.1
+   },
+   "R6-dagger-v1-r1__MLP01-256x3__s0__v1__2026-10-30": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 1.56,
+    "median_t_first_reach_s": 38.9
+   },
+   "R6-dagger-v1-r3__MLP01-256x3__s0__v1__2026-10-30": {
+    "hold": "0/12",
+    "hold_where_teacher_holds": "0/12",
+    "median_final_err_mm": 1598.65,
+    "median_t_first_reach_s": null
+   }
+  }
+ }
+}

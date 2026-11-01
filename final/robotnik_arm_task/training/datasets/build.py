@@ -82,6 +82,44 @@ def dart_sources(root: Path) -> tuple[list[EpisodeRef], dict, dict]:
                              "code_digest": manifest["code_digest"], "excluded_episodes": excluded}
 
 
+def dagger_sources(root: Path) -> tuple[list[EpisodeRef], dict, dict]:
+    """Hash-checked episodes of one DAgger round (data_collection.collect_dagger), in episodes.csv order.
+
+    Every episode is kept, failed student rollouts included: their teacher labels on the states the student reached
+    are what DAgger adds. Only episodes with a recorded numerical failure are excluded.
+    """
+    manifest = json.loads((root / "manifest.json").read_text())
+    if manifest.get("dataset_kind") != "dagger" or manifest.get("teacher_version") != TEACHER_VERSIONS["A"]:
+        raise ValueError(f"{root}: not a teacher-A DAgger collection")
+    cc = manifest["collection_configuration"]
+    interface = {"action_order": ACTION_ORDER, "torque_limit": float(cc["exec_torque_limit"]),
+                 "wheel_limit": float(cc["exec_wheel_limit"]), "control_hz": CONTROL_HZ}
+    with open(root / "episodes.csv", newline="") as f:
+        rows = list(csv.DictReader(f))
+    refs, excluded = [], []
+    for row in rows:
+        path = (root / row["file"]).resolve()
+        if path.parent != (root / "train").resolve():
+            raise ValueError(f"unsafe episode path {row['file']!r}")
+        digest = sha256_file(path)
+        if digest != row["sha256"]:
+            raise ValueError(f"{path.name}: file hash {digest[:12]} != episodes.csv {row['sha256'][:12]}")
+        meta = _read_metadata(path)
+        if meta.get("source") != "expert_dagger" or meta.get("teacher_version") != TEACHER_VERSIONS["A"] \
+                or meta["execution_interface"]["order"] != ACTION_ORDER or meta.get("control_hz") != CONTROL_HZ:
+            raise ValueError(f"{path.name}: metadata is not a teacher-A DAgger episode")
+        if meta["outcome"]["category"] == "numerical_failure" or meta["outcome"]["T_actions"] == 0:
+            excluded.append({"episode_id": meta["episode_id"], "category": meta["outcome"]["category"]})
+            continue
+        refs.append(EpisodeRef(path=path, scenario_id=meta["scenario_id"], teacher="A", sha256=digest, metadata=meta))
+    return refs, interface, {"kind": "dagger", "dataset_kind": "dagger", "round": manifest["round"],
+                             "student": manifest["student"], "code_digest": manifest["code_digest"],
+                             "excluded_episodes": excluded}
+
+
+SOURCES = {"dart": dart_sources, "dagger": dagger_sources}
+
+
 def _rows(ref: EpisodeRef, builder: FeatureBuilder):
     x, y, diag = _episode_rows(ref, builder)
     with np.load(ref.path) as z:
@@ -101,7 +139,7 @@ def build(source: str, definition: str, name: str | None = None, out_root: Path 
     out_root = Path(out_root or TASK_DIR / "data/datasets") / "A"
     dest = out_root / f"{prefix}__{definition}"
     kind = json.loads((src / "manifest.json").read_text()).get("dataset_kind", "")
-    refs, interface, source_info = (dart_sources if kind == "dart" else clean_sources)(src)
+    refs, interface, source_info = SOURCES.get(kind, clean_sources)(src)
     builder = FeatureBuilder("A", None, definition)
     names = feature_names("A", definition)
     key = hashlib.sha256(json.dumps({"builder": builder.builder_id, "sources": [[r.metadata["episode_id"], r.sha256] for r in refs],
@@ -142,9 +180,10 @@ def build(source: str, definition: str, name: str | None = None, out_root: Path 
         qa["v1_prefix_equal_to_sibling"] = {"sibling": sibling.name, "equal": bool(same)}
     else:
         qa["v1_prefix_equal_to_sibling"] = "not checked (no features-v1 sibling yet)"
-    if source_info["kind"] == "dart":
+    if source_info["kind"] in SOURCES:
         split = load_split(TASK_DIR / SPLIT)
-        leaked = sorted({r.scenario_id for r in refs} & set(split["validation_ids"]))
+        ids = {r.scenario_id for r in refs}
+        leaked = sorted((ids & set(split["validation_ids"])) | {i for i in ids if i.startswith("test-")})
         qa["validation_scenarios_present"] = leaked
     failed = [k for k, ok in (("finite", qa["finite"]), ("feature_dim", qa["feature_dim"] == qa["expected_dim"]),
                               ("reach_gate", qa.get("reach_gate_vs_teacher_flag", {}).get("mismatched_rows", 0) == 0),
