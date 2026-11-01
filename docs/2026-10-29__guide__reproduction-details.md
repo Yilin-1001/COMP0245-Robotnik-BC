@@ -426,7 +426,7 @@ COMP_0245_2026_Final/
 │   │                      collect.py (clean), collect_dart.py (DART), QA and subset builders
 │   ├── training/          common/ (model, engine, policy), baseline/ + jacobian/ (BC and BC+J losses),
 │   │                      datasets/ (build.py: raw -> training-ready datasets; train.py: ablation training)
-│   ├── evaluation/        evaluate.py (closed loop), offline.py, test_sets.py, plots.py, live_compare.py, expert diagnostics
+│   ├── evaluation/        evaluate.py (closed loop), offline.py, test_sets.py, test_diagnosis.py, probes, hold_test.py, live_compare.py, expert diagnostics
 │   ├── experiments/       configs/ (common, objectives, teachers, dart/, datasets/), splits/, ablation/ (v1 runner + manifest),
 │   │                      dagger_rounds.py (v2 DAgger runner), demo_models/
 │   ├── tools/             build_a_clean253.py (teacher-A-only Clean_253 when teacher B differs locally)

@@ -78,3 +78,12 @@ def calibrate_lambda(model, x, y, normaliser, config: dict) -> dict:
             "ratio": config["calibration_ratio"], "valid_entry_frac": frac, "batch_rows": int(len(x)),
             "batch_sha256": _tensor_sha(x, y), "init_sha256": _tensor_sha(*state.values()),
             "normaliser_sha256": normaliser.sha256(), "arm_weight": arm, "wheel_weight": wheel}
+
+
+def objective_from(config: dict) -> JacobianObjective:
+    """The BC+J objective of a resolved run config (objective bcj); loss.jacobian.lambda_j must be set."""
+    loss = config["loss"]
+    jac = loss["jacobian"]
+    arm, wheel = action_weights(loss)
+    return JacobianObjective(loss["action"], jac["lambda_j"], loss["epsilon_tau"], jac["subbatch_size"], jac["kd"],
+                             config["interface"]["torque_limit"], loss["huber_delta"], arm_weight=arm, wheel_weight=wheel)

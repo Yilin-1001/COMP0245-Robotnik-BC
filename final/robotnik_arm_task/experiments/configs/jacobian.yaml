@@ -1,4 +1,4 @@
-# Clean-data BC+J: action loss plus damping-Jacobian loss (python -m training.jacobian.train).
+# Legacy clean-pipeline workflow (BC+J); its launcher is archived. Kept for the config-resolution tests.
 identity:
   regime: clean
   objective: bcj

@@ -1,4 +1,4 @@
-# Clean-data plain BC: action loss only (python -m training.baseline.train).
+# Legacy clean-pipeline workflow (plain BC). Still used: `evaluation.evaluate --policy expert` resolves its config through it.
 identity:
   regime: clean
   objective: bc

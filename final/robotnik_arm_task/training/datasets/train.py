@@ -216,9 +216,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print(json.dumps(summary(prep), indent=1))
         return 0
-    from training.baseline.train import objective_from as bc_objective
+    from training.baseline.loss import objective_from as bc_objective
     from training.common.engine import fit, init_model
-    from training.jacobian.train import objective_from as bcj_objective
+    from training.jacobian.loss import objective_from as bcj_objective
     config = prep["config"]
     objective = (bcj_objective if config["identity"]["objective"] == "bcj" else bc_objective)(config)
     latest = run_dir_for(config) / "latest.pt" if args.resume else None

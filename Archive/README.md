@@ -61,7 +61,7 @@ Goal: the main folders hold only the current version (ablation v1, rows R1–R4)
 | `tests/training/test_experiments.py`, `tests/evaluation/test_residual_noise.py` | Tests of the above |
 | `test_frozen_legacy_experiment_keeps_its_original_action_weights` from `tests/training/test_action_weights.py` | Moved to `Archive/tests/training/test_action_weights_legacy.py`. The rest of that file stays and now calls `training.baseline.train.objective_from` directly (equivalent to the old `experiments.run._action_objective`). |
 
-The single-model CLIs in `training/baseline/train.py` and `training/jacobian/train.py` stay in place, because the current entry point imports their `objective_from`. The CLIs themselves belong to the clean pipeline (they need `Clean_223` and `data/cache/`) and are no longer used.
+The single-model CLIs in `training/baseline/train.py` and `training/jacobian/train.py` stayed in place in this pass, because the current entry point imported their `objective_from` (archived in the third pass). The CLIs themselves belong to the clean pipeline (they need `Clean_223` and `data/cache/`) and are no longer used.
 
 ### Documents (tracked)
 
@@ -119,6 +119,19 @@ Goal: after merging the DAgger branch (`feature/dart-ablation`), keep one curren
 | Original path | Reason |
 |---|---|
 | `final/robotnik_arm_task/experiments/scripts/*.sh` | Shell scripts that ran v2 on a teammate's machine (home-directory paths, legacy row names). Kept as a record; `experiments.dagger_rounds` replaces them |
+| `final/robotnik_arm_task/training/baseline/train.py`, `training/jacobian/train.py` | Single-model CLIs of the clean M1–M6 pipeline (they need `Clean_223` and `data/cache/`). Their `objective_from` moved to `training/baseline/loss.py` and `training/jacobian/loss.py`, where `training/datasets/train.py` now imports it |
+| `final/robotnik_arm_task/evaluation/plots.py` | Figures from the clean pipeline's result index; nothing else used it |
+| Functions cut from live modules, kept as `*_legacy.py` beside the original path: `prepare_run` (`training/common/engine_legacy.py`); `select_refs`, `cache_id`, `subset_cache` (`training/common/dataset_legacy.py`); frozen-protocol IDs and checks (`training/common/config_legacy.py`); `validate_final_protocol`, `evaluate_final` (`evaluation/evaluate_legacy.py`) | Only the clean launchers or the archived `experiments/run.py` called them. `build_cache`/`load_cache` stay, because the tests use them to check raw-episode validation |
+| `tests/training/test_baseline_cli.py`, `test_jacobian_cli.py`, `tests/evaluation/test_plots.py`, `test_final_protocol.py`; two tests from `test_refit.py` (`Archive/tests/training/test_refit_legacy.py`) and one from `test_action_weights.py` (appended to `test_action_weights_legacy.py`) | Tests of the code above |
+
+`experiments/configs/baseline.yaml` and `teachers/*.yaml` stay: `evaluation.evaluate --policy expert` resolves the teacher configuration through them. `jacobian.yaml` stays for the configuration tests, and `common.yaml` keeps its `cache_root` key: removing it would change the resolved configuration, and with it the configuration hash of every new run.
+
+### Data and results (git-ignored)
+
+| Original path `final/robotnik_arm_task/…` | Archived as | Reason |
+|---|---|---|
+| `data/cache/` (750 MB) | `data/cache-2026-11-01/` | Caches rebuilt on 2026-10-30 by the real-data test of `prepare_run`; nothing current reads them |
+| `results/tables/2026-10-24`, `2026-10-25`, `2026-10-26` and `results/figures/2026-10-24/` | Same paths | Byte-identical dated copies of `results/controller_timing.csv`, `expert_t3_dev.csv`, `expert_noise_robustness.csv` and `figures/controller_timing.png`, which stay |
 
 ### Renamed in place (v2)
 

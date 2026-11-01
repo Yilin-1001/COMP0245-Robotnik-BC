@@ -43,3 +43,10 @@ class ActionObjective:
         total, arm, wheel = action_loss_parts(model(x), y, self.kind, self.delta,
                                              arm_weight=self.arm_weight, wheel_weight=self.wheel_weight)
         return LossResult(total, {"action_loss": total.item(), "arm_loss": arm.item(), "wheel_loss": wheel.item()})
+
+
+def objective_from(config: dict) -> ActionObjective:
+    """The action objective of a resolved run config (objective bc)."""
+    loss = config["loss"]
+    arm, wheel = action_weights(loss)
+    return ActionObjective(loss["action"], loss["huber_delta"], arm_weight=arm, wheel_weight=wheel)

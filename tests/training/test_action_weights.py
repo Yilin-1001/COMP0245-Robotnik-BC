@@ -1,6 +1,4 @@
 """Weighted objectives must affect gradients, identities and calibration, not just logs."""
-import json
-
 import pytest
 import torch
 
@@ -8,8 +6,8 @@ from conftest import TASK_DIR
 from training.baseline.loss import ActionObjective
 from training.common.config import finalise_identity, resolve_config, validate_config
 from training.jacobian.loss import calibrate_lambda
-from training.baseline.train import objective_from as action_objective
-from training.jacobian.train import apply_calibration, objective_from
+from training.baseline.loss import objective_from as action_objective
+from training.jacobian.loss import objective_from
 from test_config import provenance, ready
 
 
@@ -71,15 +69,3 @@ def test_calibration_uses_the_weighted_action_loss(unit_normaliser):
     assert record['lambda_j'] == pytest.approx(.0112)
     assert record['arm_weight'] == .8 and record['wheel_weight'] == .2
 
-
-def test_old_calibration_is_refused_for_new_weights_but_accepted_for_legacy_config(tmp_path):
-    cfg = resolve_config(TASK_DIR / 'experiments/configs/jacobian.yaml', 'A', {})
-    record = {'teacher': 'A', 'architecture': 'm2', 'normaliser_sha256': 'x', 'lambda_j': .25}
-    path = tmp_path / 'legacy.json'
-    path.write_text(json.dumps(record))
-    cfg['loss']['jacobian']['calibration'] = str(path)
-    with pytest.raises(ValueError, match='weight'):
-        apply_calibration(cfg, 'x')
-    cfg['loss'].pop('arm_weight', None)
-    cfg['loss'].pop('wheel_weight', None)
-    assert apply_calibration(cfg, 'x')['loss']['jacobian']['lambda_j'] == .25

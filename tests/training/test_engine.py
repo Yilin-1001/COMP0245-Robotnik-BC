@@ -123,7 +123,7 @@ def test_sampling_is_episodic(config, train_cache, validation_cache, model, norm
 
 
 def test_engine_imports_no_method_or_teacher_modules():
-    code = ("import sys, training.common.engine, training.baseline.train; "
+    code = ("import sys, training.common.engine, training.baseline.loss; "
             "print([m for m in sys.modules if m.startswith(('training.jacobian', 'data_collection', 'dart', 'dagger'))"
             " or m in ('pybullet', 'core.env')])")
     out = subprocess.run([sys.executable, "-c", code], cwd=TASK_DIR, capture_output=True, text=True, check=True)
