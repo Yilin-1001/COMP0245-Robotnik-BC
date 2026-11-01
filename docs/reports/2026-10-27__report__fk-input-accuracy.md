@@ -12,7 +12,7 @@ The fixed pitch is a flat-ground calibration. The observation contains no true r
 
 ## Direct measurement
 
-The first 4 fitting scenarios of the 8 frozen recovery probes were selected in advance: `train-0001`, `train-0035`, `train-0067`, `train-0108`. Each was run with expert A and with the then-selected R1 student (step 5000). The expert used lead_time 0.50; the student used the original 21 inputs and frozen normalisation. Control ran at 1 kHz, and positions were compared every 10 steps (10 ms).
+The first 4 fitting scenarios of the 8 frozen recovery probes were selected in advance: `train-0001`, `train-0035`, `train-0067`, `train-0108`. Each was run with expert A and with the then-selected student of the archived 27 October DAgger round 1 (step 5000; "R1" below means that round, not the ablation row R1-baseline). The expert used lead_time 0.50; the student used the original 21 inputs and frozen normalisation. Control ran at 1 kHz, and positions were compared every 10 steps (10 ms).
 
 The reference position is read directly from PyBullet `getLinkState(...)[4]`, the world origin of the same EE link frame. This avoids comparing a centre-of-mass position with a link origin. `RobotEnv.ee_pos()`, the FK with the true full base attitude, was checked as well. Simulator truth went only into the diagnostic log, never into a policy.
 

@@ -80,7 +80,7 @@ def main(argv=None) -> int:
     p.add_argument("--models", nargs="+", required=True, help="student NumPy exports (.npz)")
     p.add_argument("--n", type=int, default=12, help="scenes per condition")
     p.add_argument("--workers", type=int, default=22)
-    p.add_argument("--out", type=Path, default=TASK_DIR / "results/robust_probe/v1")
+    p.add_argument("--out", type=Path, default=TASK_DIR / "results/ablation/2026-10-30__training-ablation-v2/probes/robust/default")
     args = p.parse_args(argv)
     import multiprocessing as mp
     from experiments.ablation.run import _init_worker

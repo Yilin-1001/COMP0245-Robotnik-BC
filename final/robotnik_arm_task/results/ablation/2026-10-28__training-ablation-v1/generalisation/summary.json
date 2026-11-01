@@ -1,0 +1,156 @@
+{
+ "C0-in-range": {
+  "description": "inside every training range (control)",
+  "teacher_hold": 12,
+  "n": 12,
+  "students": {
+   "R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": 11,
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 2.163398442605205
+   },
+   "R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": 11,
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.0672918612798363
+   },
+   "R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": 11,
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.9471975694347887
+   }
+  }
+ },
+ "C1-far-3-4m": {
+  "description": "target 3-4 m away",
+  "teacher_hold": 12,
+  "n": 12,
+  "students": {
+   "R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": 12,
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.7138730043352024
+   },
+   "R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": 12,
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.8035532434098779
+   },
+   "R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": 11,
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.6318151036490542
+   }
+  }
+ },
+ "C2-far-4-6m": {
+  "description": "target 4-6 m away",
+  "teacher_hold": 12,
+  "n": 12,
+  "students": {
+   "R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": 11,
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.6533175315763917
+   },
+   "R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": 11,
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.7809514931077974
+   },
+   "R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": 11,
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.7290233037531471
+   }
+  }
+ },
+ "C3-near-0.3-0.5m": {
+  "description": "target 0.3-0.5 m away",
+  "teacher_hold": 12,
+  "n": 12,
+  "students": {
+   "R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": 7,
+    "hold_where_teacher_holds": "7/12",
+    "median_final_err_mm": 6.483586072705245
+   },
+   "R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": 8,
+    "hold_where_teacher_holds": "8/12",
+    "median_final_err_mm": 5.091600321828308
+   },
+   "R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": 6,
+    "hold_where_teacher_holds": "6/12",
+    "median_final_err_mm": 8.651369333563315
+   }
+  }
+ },
+ "C4-start-1-3m": {
+  "description": "start 1-3 m from the origin",
+  "teacher_hold": 12,
+  "n": 12,
+  "students": {
+   "R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": 12,
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.2719916980636112
+   },
+   "R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": 12,
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.5265984066579696
+   },
+   "R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": 12,
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.9227460052282583
+   }
+  }
+ },
+ "C5-high-1.25-1.4m": {
+  "description": "target 1.25-1.4 m high",
+  "teacher_hold": 8,
+  "n": 12,
+  "students": {
+   "R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": 3,
+    "hold_where_teacher_holds": "3/8",
+    "median_final_err_mm": 688.0164504097247
+   },
+   "R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": 4,
+    "hold_where_teacher_holds": "4/8",
+    "median_final_err_mm": 351.3503262411083
+   },
+   "R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": 6,
+    "hold_where_teacher_holds": "6/8",
+    "median_final_err_mm": 308.30141373497804
+   }
+  }
+ },
+ "C6-low-0.03-0.1m": {
+  "description": "target 0.03-0.1 m high",
+  "teacher_hold": 4,
+  "n": 12,
+  "students": {
+   "R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": 1,
+    "hold_where_teacher_holds": "1/4",
+    "median_final_err_mm": 70.27988371965137
+   },
+   "R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": 2,
+    "hold_where_teacher_holds": "2/4",
+    "median_final_err_mm": 58.405269899259025
+   },
+   "R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": 3,
+    "hold_where_teacher_holds": "3/4",
+    "median_final_err_mm": 51.16444143178249
+   }
+  }
+ }
+}

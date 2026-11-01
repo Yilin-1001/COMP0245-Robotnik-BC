@@ -1,4 +1,4 @@
-# R5 + DART + gate, split networks: R4's data and 22 inputs, but two MLP branches of the row's architecture,
+# R4-dart-gate-split (ablation v2): split networks with R4's data and 22 inputs, but two MLP branches of the row's architecture,
 # one for navigation rows (reach_gate 0) and one for reaching rows (reach_gate 1), switched by reach_gate
 # (training/common/models.py GatedMLP). Each branch has the shape of the run's architecture, so the model holds
 # twice R4's parameters.

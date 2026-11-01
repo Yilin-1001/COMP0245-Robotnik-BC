@@ -26,7 +26,7 @@ The [MLP training structure design](../specs/2026-10-26__design__mlp-training-st
 
 ### 2.1 Torque labels have a known structure
 
-Both teachers compute the arm command as a gravity-compensated joint PD law, clipped to ±30 N·m ([expert.py](../../final/robotnik_arm_task/data_collection/expert.py), [robotnik_arm_control.py](../../final/robotnik_arm_task/robotnik_arm_control.py)):
+Both teachers compute the arm command as a gravity-compensated joint PD law, clipped to ±30 N·m ([expert.py](../../../final/robotnik_arm_task/data_collection/expert.py), [robotnik_arm_control.py](../../../final/robotnik_arm_task/robotnik_arm_control.py)):
 
 ```text
 tau = clip( kp (q_des - q) + kd (qd_des - qd) + g(q),  -30, 30 ),   kp = 100, kd = 30
@@ -35,7 +35,7 @@ tau = clip( kp (q_des - q) + kd (qd_des - qd) + g(q),  -30, 30 ),   kp = 100, kd
 For A, `q_des` is `q + lead * qd_des` or `Q_HOLD`. `qd_des` comes from differential IK on positions only. For B, `q_des` is the integrated internal reference. In both cases nothing except the `-kd qd` term depends on `qd_mes`. This gives three consequences:
 
 1. **The teacher's damping Jacobian is known exactly.** Wherever the torque is unclipped, ∂τ/∂qd_mes = −30·I. Clipped joints have a zero row. For B this holds at a fixed internal state. These derivative labels cost nothing to compute (§3.3).
-2. **Holding gives the value loss almost no information about damping.** Settled holds have joint speeds of about 0.005–0.008 rad/s ([clean collection report](../reports/2026-10-26__report__clean-expert-data-collection.md)). Across that range, the damping term changes torque by only about 0.2 N·m. A network can fit hold torques well with the wrong slope in `qd`, and closed-loop damping depends on that slope.
+2. **Holding gives the value loss almost no information about damping.** Settled holds have joint speeds of about 0.005–0.008 rad/s ([clean collection report](../../../docs/reports/2026-10-26__report__clean-expert-data-collection.md)). Across that range, the damping term changes torque by only about 0.2 N·m. A network can fit hold torques well with the wrong slope in `qd`, and closed-loop damping depends on that slope.
 3. **Gravity dominates hold torques.** The network must reproduce g(q) accurately as a function of seven angles, at the 0.1 N·m scale (§2.2).
 
 The joint-3 chatter is a period-2 (500 Hz) oscillation. It fits a simple stability argument: an explicit velocity feedback of gain kd at step dt becomes oscillatory-unstable when kd·dt/I_eff > 2, i.e. effective inertia below about 0.015 kg·m² here. The collection report already hypothesises this cause, and it has not been tested. If it holds, two things follow. First, the chatter labels are not label noise: they are correct values of the teacher function at large |qd|. Second, a student whose learned |∂τ/∂qd| exceeds 30 has less stability margin than the teacher. That is a concrete failure mode to measure, not a reason to discard data.
@@ -132,7 +132,7 @@ The damping-Jacobian loss changes the training objective and can be used with ei
 
 Combining +J with DART or DAgger is a later paired experiment against the corresponding no-J variant. Hold architecture, validation scenarios, seed set and declared training/collection budgets fixed. Each full DAgger variant must collect with its own current policy; training variants on one frozen aggregate dataset compares training objectives only. Record data sources and sampling proportions, and retain an equal-data expert-collection control for DAgger as required by the existing plan.
 
-If +J is carried into these later runs, determine the valid torque rows using the internal-saturation rules in §4.4. Execution `clip_flags` and noisy executed actions are not Jacobian saturation labels. Recompute standardised derivative targets using the run's saved fitting-only normalisers. For B, the expert memory must evolve along the actual collection trajectory at every step, as specified in [the dataset contract](../specs/2026-10-26__spec__expert-datasets.md#6-clean-noise-augmented-and-dagger-collection).
+If +J is carried into these later runs, determine the valid torque rows using the internal-saturation rules in §4.4. Execution `clip_flags` and noisy executed actions are not Jacobian saturation labels. Recompute standardised derivative targets using the run's saved fitting-only normalisers. For B, the expert memory must evolve along the actual collection trajectory at every step, as specified in [the dataset contract](../../../docs/specs/2026-10-26__spec__expert-datasets.md#6-clean-noise-augmented-and-dagger-collection).
 
 ### 3.5 Fair architecture comparison and model selection
 

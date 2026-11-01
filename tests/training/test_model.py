@@ -3,7 +3,7 @@ import torch
 
 from training.common.models import MLP, expand_wheels
 
-COUNTS = {  # docs/plans/2026-10-26__plan__mlp-baseline-training.md §5 (7 torque + 2 wheel heads)
+COUNTS = {  # Archive/docs/plans/2026-10-26__plan__mlp-baseline-training.md §5 (7 torque + 2 wheel heads)
     (64, 64): (6409, 6729), (128, 128): (21001, 21641), (256, 256): (74761, 76041),
     (128, 128, 128): (37769, 38409), (256, 256, 256): (141065, 142345), (256, 128, 64): (48265, 49545)}
 

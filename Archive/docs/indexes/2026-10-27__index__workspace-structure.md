@@ -62,13 +62,13 @@ ML_Final/
 
 | 日期 | 类型 | 文档 |
 |---|---|---|
-| 2026-10-24 | roadmap | [project-milestones](../../../docs/plans/2026-10-24__roadmap__project-milestones.md) |
+| 2026-10-24 | roadmap | [project-milestones](../plans/2026-10-24__roadmap__project-milestones.md) |
 | 2026-10-26 | implementation-plan | [mlp-baseline-and-jacobian](../plans/2026-10-26__implementation-plan__mlp-baseline-and-jacobian.md) |
-| 2026-10-26 | plan | [ablation-strategy](../../../docs/plans/2026-10-26__plan__ablation-strategy.md) |
-| 2026-10-26 | plan | [mlp-baseline-training](../../../docs/plans/2026-10-26__plan__mlp-baseline-training.md) |
+| 2026-10-26 | plan | [ablation-strategy](../plans/2026-10-26__plan__ablation-strategy.md) |
+| 2026-10-26 | plan | [mlp-baseline-training](../plans/2026-10-26__plan__mlp-baseline-training.md) |
 | 2026-10-27 | plan | [arm08-wheel02-retraining-a：A 已有网络配对重训](../plans/2026-10-27__plan__arm08-wheel02-retraining-a.md) |
 | 2026-10-27 | plan | [d08w0256-single-run：D8-W256 单模型训练与验证](../plans/2026-10-27__plan__d08w0256-single-run.md) |
-| 2026-10-26 | plan | [project-overview](../../../docs/plans/2026-10-26__plan__project-overview.md) |
+| 2026-10-26 | plan | [project-overview](../plans/2026-10-26__plan__project-overview.md) |
 | 2026-10-24 | assignment | [comp0245-final-project](../../../docs/references/2026-10-24__assignment__comp0245-final-project.pdf) (local only, not in Git: course material from Moodle) |
 | 2026-10-26 | reference | [research-bibliography](../../../docs/references/2026-10-26__reference__research-bibliography.md) |
 | 2026-10-24 | report | [markovian-expert-model-accuracy](../../../docs/reports/2026-10-24__report__markovian-expert-model-accuracy.md) |
@@ -80,8 +80,8 @@ ML_Final/
 | 2026-10-27 | report | [d08w0256-single-run：D8-W256 训练与完整训练场景闭环结果](../reports/2026-10-27__report__d08w0256-single-run.md) |
 | 2026-10-27 | review | [dagger-a-plan：结合D8结果的DAgger A方案复查](../reports/2026-10-27__review__dagger-a-plan.md) |
 | 2026-10-29 | report | [teacher-a-operating-envelope：专家 A 的运动与任务极限（报告前提）](../../../docs/reports/2026-10-29__report__teacher-a-operating-envelope.md) |
-| 2026-10-26 | research | [mlp-training-recipe](../../../docs/research/2026-10-26__research__mlp-training-recipe.md) |
-| 2026-10-26 | design | [mlp-training-structure](../../../docs/specs/2026-10-26__design__mlp-training-structure.md) |
+| 2026-10-26 | research | [mlp-training-recipe](../research/2026-10-26__research__mlp-training-recipe.md) |
+| 2026-10-26 | design | [mlp-training-structure](../specs/2026-10-26__design__mlp-training-structure.md) |
 | 2026-10-27 | design | [dagger-a：首轮训练设计与执行阶段（待审阅）](../specs/2026-10-27__design__dagger-a.md) |
 | 2026-10-27 | design | [network-capacity-a：A 模型深度与宽度容量实验（待审阅）](../specs/2026-10-27__design__network-capacity-a.md) |
 | 2026-10-26 | spec | [expert-datasets](../../../docs/specs/2026-10-26__spec__expert-datasets.md) |

@@ -1,4 +1,4 @@
-"""GatedMLP (R5 split networks): branch selection, gradient isolation, export parity and unchanged plain specs."""
+"""GatedMLP (R4-dart-gate-split networks): branch selection, gradient isolation, export parity and unchanged plain specs."""
 import numpy as np
 import pytest
 import torch

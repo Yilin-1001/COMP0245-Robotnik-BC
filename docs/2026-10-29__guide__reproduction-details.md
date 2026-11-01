@@ -1,8 +1,10 @@
 # Detailed reproduction reference
 
-Navigation: [Workspace structure by date and type](../Archive/docs/indexes/2026-10-27__index__workspace-structure.md) · [Documentation index](README.md).
+Date: 29 October 2026, updated 1 November 2026. Status: command reference for ablation v1 (R1–R4) and v2 (R5–R8).
 
-A learned policy maps base pose (`base_pos`, `base_bearing`), arm state (`q_mes`, `qd_mes`) and `TARGET_EE_POS` to arm torques (`torque_arm`, 7) and wheel speeds (`wheel_cmds`, 4). The current reproducible experiment is the teacher-A R1–R4 training-method ablation: clean data, a reach-gate input, DART data, and their combination, with a damping-Jacobian loss (BC+J) in every row. Training, closed-loop evaluation and live comparison are implemented. The earlier clean-only experiments are documented below; their checkpoints are archived.
+Navigation: [Documentation index](README.md) · [Project README](../README.md) · [Project pipeline](2026-10-30__guide__project-pipeline.md).
+
+A learned policy maps base pose (`base_pos`, `base_bearing`), arm state (`q_mes`, `qd_mes`) and `TARGET_EE_POS` to arm torques (`torque_arm`, 7) and wheel speeds (`wheel_cmds`, 4). The reproducible experiments are the teacher-A training-method ablation v1 (R1–R4: clean data, a reach-gate input, DART data and their combination, with a damping-Jacobian loss (BC+J) in every row) and v2 (R5–R8: the same four rows plus DAgger). Training, closed-loop evaluation and live comparison are implemented. The earlier clean-only experiments are archived.
 
 For teammate reproduction, start with [Reproduction and data handoff](#reproduction-and-data-handoff): required files, packaging, evaluation, retraining and collection from scratch.
 
@@ -82,8 +84,7 @@ The current ablation does not depend on the old `data/cache/`, archived models o
 
 ### 2. Package the handoff and restore the paths
 
-On the sender's computer, run the following from the task directory. This creates two archives without raw trajectories;
-the model archive also includes the optional 64-scenario diagnostic script.
+On the sender's computer, run the following from the task directory. This creates two archives without raw trajectories.
 
 ```bash
 mkdir -p results/handoff
@@ -92,8 +93,7 @@ uv pip freeze > results/handoff/ENVIRONMENT.txt
 tar -czf results/handoff/robotnik-models-v1.tar.gz \
     checkpoints/ablation/2026-10-28__training-ablation-v1 \
     data/Markovian/Clean_253/scenarios_train.csv \
-    data/Markovian/Clean_253/scenarios_test.csv \
-    evaluation/test_diagnosis.py
+    data/Markovian/Clean_253/scenarios_test.csv
 tar -czf results/handoff/robotnik-datasets-v1.tar.gz \
     data/datasets/A/clean253__features-v1 \
     data/datasets/A/clean253__features-v1-gate \
@@ -174,7 +174,6 @@ Success requires reaching an end-effector error below 10 mm at t ≥ 8 s within 
 and remaining below 10 mm throughout the final 1 s.
 Report sustained hold as the primary metric; report `reach_success` and `hold_test` takeover results separately.
 The standard evaluation CLI accepts `screening`/`validation`. The table above covers validation.
-The historical clean experiment's frozen test protocol declares older models and cannot evaluate R4.
 
 **See section 6, “Evaluate on the test set”, for the 64-scenario test commands, summary code and reference results.**
 
@@ -254,7 +253,9 @@ python -m training.datasets.build --source "$DART_DIR" --name dart-d2s075x2 --fe
 The teacher CLI names are `markovian` (A) and `stateful` (B); each should have 320 raw clean trajectories.
 `build_clean_subsets` creates both teachers' `Clean_253/` and `Clean_223/`, verifies paired selection, manifests and trajectory checksums,
 and refuses to overwrite existing directories. Retain the versioned split JSON; no `--write-split` step is needed.
+`build_clean_subsets` asserts the expected inventory (253 paired successes, 223 without hold chatter, excluded `train-0064`, `train-0131`, `train-0183`); collection took about 4 minutes on 22 workers.
 If success counts, the 253/223 subset assertions or QA differ on your machine, retain the logs and check simulator/dependency versions.
+If only teacher B differs (for example B fails `train-0220`), `python tools/build_a_clean253.py` builds teacher A's `Clean_253` alone and checks it against the frozen split; it is enough for every teacher-A row.
 Preserve these checks when reporting reproduction of the same dataset.
 Recollection on another machine does not guarantee identical floating-point trajectories or compressed-file SHA-256 values;
 use the sender's data archives when you need the original data.
@@ -269,7 +270,6 @@ and the evaluator measures reach and sustained hold. The R4 test commands below 
 - `data/Markovian/Clean_253/scenarios_test.csv`: initial poses and targets for all 64 scenarios.
 - `experiments/splits/clean253.json`: the versioned split and scenario CSV SHA-256. The loader checks this hash; preserve the CSV bytes.
 - The model `.npz` files and each model's adjacent `config.yaml`, plus the installed RoboEnv.
-- `evaluation/test_diagnosis.py`: explicitly included in the model archive so a locally untracked script is not omitted from a Git-based handoff.
 
 Raw expert trajectories under `test/*.npz` are not required for this closed-loop evaluation.
 Complete Setup, extract the model archive and run the following from `final/robotnik_arm_task/` to test all three R4 seeds.
@@ -349,19 +349,27 @@ before testing, and disclose any use of these test outcomes in subsequent design
 The `evaluation.evaluate` CLI has no `--split test` option.
 The clean-data MLP pipeline that preceded the ablation (M1–M6, `experiments.run`, frozen protocols; no clean model held a validation target) is archived with its commands and results in [Archive/docs/2026-10-29__guide__clean-pipeline-legacy.md](../Archive/docs/2026-10-29__guide__clean-pipeline-legacy.md).
 
-## Data (clean collection details)
+### 7. DAgger rows (ablation v2)
 
-Datasets, feature caches and checkpoints are git-ignored (several GB). Transfer the frozen data as described above, or rebuild it locally with the pinned simulator and dependencies. The frozen split in `experiments/splits/clean253.json` is versioned; bitwise-identical recollection across different machines is not guaranteed. From `final/robotnik_arm_task/`:
+Each DAgger row starts from its base row's v1 seed-0 model in `checkpoints/ablation/2026-10-28__training-ablation-v1/`, so restore or train v1 first (sections 2–4).
+One command runs the whole row: collect, build, train and validate for each round, then seeds 1–2 of the round with the best seed-0 validation hold.
 
 ```bash
-python -m data_collection.scenarios                         # frozen Sobol scenarios   -> data/scenarios/
-python -m data_collection.collect --workers N               # clean expert data (both teachers) -> data/{Markovian,Stateful}/Clean/
-python -m data_collection.qa_clean --workers N              # QA + training manifests  -> data/*/Clean/{qa/,training_manifest.csv}
-python -m data_collection.build_clean_subsets               # paired subsets           -> data/*/Clean_253/, data/*/Clean_223/
-python -m pytest ../../tests -m realdata                    # optional: loads both subsets and builds the feature caches
+for ROW in R5-baseline-dagger R6-gate-dagger R7-dart-dagger R8-dart-gate-dagger; do
+    python -m experiments.dagger_rounds --row "$ROW" --rounds 3 --date 2026-10-30 --final-seeds 1 2 --workers 4
+done
 ```
 
-Set `N` to your CPU core count (default 22). Collection took about 4 minutes on 22 workers. Expect about 15 GB of disk in total: the subset folders are byte-identical copies of episodes in `Clean/`, and the feature caches add about 3 GB. `build_clean_subsets` asserts the expected inventory (253 paired successes, 223 without hold chatter, excluded `train-0064`, `train-0131`, `train-0183`). If it fails on another machine, the simulation there did not reproduce the recorded episodes; report it rather than editing the assertions.
+| Output | Location |
+|---|---|
+| Raw DAgger episodes (one folder per round and student) | `data/Markovian/DAgger/<date>__collection__r<k>-<digest>/` |
+| Feature datasets | `data/datasets/A/dagger-R<n>-v2-r<k>__<features>/` |
+| Variant configs (written by the runner) | `experiments/configs/datasets/variants/<row>-r<k>.yaml` |
+| Models | `checkpoints/ablation/2026-10-30__training-ablation-v2/<row>-r<k>__MLP01-256x3__s<seed>__v2__2026-10-30/` |
+| Per-row summary, validation JSON and logs | `results/ablation/2026-10-30__training-ablation-v2/dagger/<row>/` |
+
+To hand over v2 models, package `checkpoints/ablation/2026-10-30__training-ablation-v2/` as in section 2. The DAgger feature datasets are only needed for retraining.
+The v2 results recorded so far come from a teammate's machine and use legacy names; the mapping is in `results/ablation/2026-10-30__training-ablation-v2/README.md`.
 
 ## Running
 
@@ -379,64 +387,21 @@ python markovian_expert_demo.py                              # Markovian expert 
 python -m evaluation.compare_controllers --n 30              # template vs Markovian time to reach -> results/controller_timing.csv
 ```
 
-Simulator and clean-collection settings are in `final/robotnik_arm_task/settings.yaml`. Its `mlp`, `train_stride` and `dagger` keys are legacy placeholders: the training code never reads them, and the file is left byte-identical because the clean-data QA recomputes a code digest over it. Training settings live in `experiments/configs/` (`common.yaml` → `baseline.yaml`/`jacobian.yaml` → `objectives/` → `teachers/` → `--set key=value`), as defined in the [training structure design](specs/2026-10-26__design__mlp-training-structure.md). The numerical recipe is in [training research](research/2026-10-26__research__mlp-training-recipe.md), and the exact clean split and evaluation predicate are in the [baseline plan](plans/2026-10-26__plan__mlp-baseline-training.md). The clean datasets, outcome definitions and QA are described in `docs/reports/2026-10-26__report__clean-expert-data-collection.md`.
+Simulator and clean-collection settings are in `final/robotnik_arm_task/settings.yaml`. Its `mlp`, `train_stride` and `dagger` keys are legacy placeholders: the training code never reads them, and the file is left byte-identical because the clean-data QA recomputes a code digest over it. Training settings for the ablation resolve as `experiments/configs/common.yaml` → `objectives/<objective>.yaml` → `datasets/base.yaml` → `datasets/variants/<row>.yaml` → `--set key=value`. The recipe, split and success predicate are in the [project pipeline](2026-10-30__guide__project-pipeline.md) (Sections 2, 3 and 6); the clean datasets, outcome definitions and QA are in the [clean collection report](reports/2026-10-26__report__clean-expert-data-collection.md). The design notes these settings came from are archived in `Archive/docs/`.
 
-### Live comparison demo
-
-For a live physical comparison, open two independent PyBullet windows on the same validation scenario. The models come
-from [`experiments/demo_models/2026-10-28__training-ablation-v1.yaml`](../final/robotnik_arm_task/experiments/demo_models/2026-10-28__training-ablation-v1.yaml),
-which pins every terminal model of the training-method ablation by hash. It is written by
-`experiments.ablation.run --stage demo`. The earlier clean and reweighted demo models are archived (see [Archive/README.md](../Archive/README.md)).
-
-```bash
-python -m evaluation.live_compare                          # teacher A vs R4-dart-gate seed 0 on train-0186
-python -m evaluation.live_compare --row R1-baseline        # the same scenario with the baseline row
-python -m evaluation.live_compare --seed 2 --scenario train-0245          # another seed and validation scenario
-python -m evaluation.live_compare --target 0.2 1.1 0.5      # custom world-frame target (meters)
-python -m evaluation.live_compare --start -0.3 0.4 --bearing 3.0 --target 1.8 -1.2 0.9   # custom start (m), yaw (rad) and target
-```
-
-The default scenario `train-0186` puts the target 2.7 m away, behind the robot (it must turn, drive and reach). All three
-R4 seeds hold it on validation. `--target`, `--start` and `--bearing` each replace one part of the selected scenario.
-A scene outside the training ranges prints a warning: start-to-target distance 0.5–3.0 m, target height 0.1–1.25 m,
-start x and y within ±0.5 m. The student has never seen such scenes, so its behaviour there is not covered by the results.
-
-Both simulations keep the original 1 kHz control/physics interface and synchronize every 20 steps.
-Each window shows its controller, simulation time, true end-effector error, torque magnitude and wheel commands;
-the red sphere is the target and the red line joins it to the end effector. SPACE pauses/resumes both, R resets
-both to the identical start, Q closes both, and F toggles camera following in the focused window (mouse orbit/zoom
-remains available). After 40 simulated seconds the scene freezes until R or Q. Use `--speed 0.5` for slow motion,
-`--scenario <validation ID>` to select another frozen validation scene, or `--headless --seconds 0.1` for a two-simulator smoke
-check. `--target X Y Z` replaces the target in both simulators while retaining the selected scenario's initial
-base pose and arm configuration. The run summary is saved to `results/live_compare/comparison.json`;
-demo runs do not enter the evaluation index.
+The live comparison demo (two synchronised PyBullet windows, expert A against a student) is described in the [project pipeline, Section 9](2026-10-30__guide__project-pipeline.md#9-comparison-demo).
 
 Checks: `python -m pytest tests -m "not sim and not realdata"` (fast), `-m realdata` (reads the Clean_253/223 inventories and builds caches), `-m sim` (expert preflight through the student action path in PyBullet).
 
-### Gate and DART datasets
+## Experiment naming
 
-Two additions for teacher A, both independent of the clean pipeline above:
-
-- **Feature definitions** (`core/feature_sets.py`): `features-v1` (21 inputs, unchanged) and `features-v1-gate` (22 inputs: v1 plus `reach_gate`, teacher A's reach-active rule recomputed from deployable inputs). Every exported model records its definition, so `MLPPolicy` builds the same inputs at deployment.
+- **Feature definitions** (`core/feature_sets.py`): `features-v1` (21 inputs) and `features-v1-gate` (22 inputs: v1 plus `reach_gate`, teacher A's reach-active rule recomputed from deployable inputs). Every exported model records its definition, so `MLPPolicy` builds the same inputs at deployment.
 - **DART collection** (`data_collection/collect_dart.py`): the clean episodes with gated OU noise on the executed action, while the labels stay the clean expert action. Each noise protocol is one file in `experiments/configs/dart/`.
+- **DAgger collection** (`data_collection/collect_dagger.py`): the student drives, teacher A labels every visited state (section 7).
+- **Training-ready datasets**: `data/datasets/A/<source>__<definition>/` (features, labels, row offsets, episode list, QA and README; git-ignored), built by `training.datasets.build` (section 5).
+- **Rows**: one file per row in `experiments/configs/datasets/variants/`. v1: `R1-baseline`, `R2-gate`, `R3-dart`, `R4-dart-gate`. v2: `R5-baseline-dagger`, `R6-gate-dagger`, `R7-dart-dagger`, `R8-dart-gate-dagger` (one variant per round, `<row>-r<k>`), plus the R4 controls `R4-dart-gate-s0375`, `-s150`, `-x4` and `-split`.
 
-Raw episodes are turned into training-ready datasets in `data/datasets/A/<source>__<definition>/` (features, labels, row offsets, episode list, QA and README; git-ignored):
-
-```bash
-cd final/robotnik_arm_task
-python -m data_collection.collect_dart --protocol experiments/configs/dart/d2-s075-x2.yaml   # -> data/Markovian/DART/<collection>/
-python -m training.datasets.build --source clean253 --features features-v1                  # build v1 before gate:
-python -m training.datasets.build --source clean253 --features features-v1-gate             # QA compares their first 21 columns
-python -m training.datasets.build --source data/Markovian/DART/<collection> --name dart-d2s075x2 --features features-v1
-python -m training.datasets.build --source data/Markovian/DART/<collection> --name dart-d2s075x2 --features features-v1-gate
-
-# One ablation row per file in experiments/configs/datasets/variants/: R1-baseline, R2-gate, R3-dart, R4-dart-gate
-python -m training.datasets.train --variant R4-dart-gate --set identity.version=v1 --set identity.date=2026-10-28 \
-    --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber \
-    --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5 [--set identity.seed=1] [--dry-run]
-```
-
-Training uses the frozen split: clean datasets keep only fitting scenarios, DART datasets hold fitting scenarios only (checked), and the 32 validation scenarios come from the clean dataset. Architectures use a new registry, `MLP<NN>` numbered in order of first use (`MLP01` = 256×256×256), in place of the clean pipeline's m1–m6. Runs are named `<row>__<architecture>-<shape>__s<seed>__<version>__<date>` and stored in `checkpoints/ablation/<date>__training-ablation-<version>/`, for example `checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/`. The terminal model is also saved there as `<run name>.npz` and `<run name>.pt`, and it loads in `evaluation.evaluate` like any other MLP. Raise the version whenever the recipe, data or features change; reusing a name with a different configuration is refused.
+Training uses the frozen split: clean datasets keep only fitting scenarios, DART datasets hold fitting scenarios only (checked), and the 32 validation scenarios come from the clean dataset. Architectures use a new registry, `MLP<NN>` numbered in order of first use (`MLP01` = 256×256×256; the v2 network-size runs added `MLP02` = 64×64, `MLP03` = 128×128 and `MLP04` = 128×128×128 through `--set`), in place of the clean pipeline's m1–m6. Runs are named `<row>__<architecture>-<shape>__s<seed>__<version>__<date>` and stored in `checkpoints/ablation/<date>__training-ablation-<version>/`, for example `checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/`. The terminal model is also saved there as `<run name>.npz` and `<run name>.pt`, and it loads in `evaluation.evaluate` like any other MLP. Raise the version whenever the recipe, data or features change (v2 added DAgger data, with experiment date 2026-10-30); reusing a name with a different configuration is refused.
 
 A whole ablation runs from one manifest, which fixes rows, seeds, recipe and evaluation rules before any result is seen:
 
@@ -462,12 +427,14 @@ COMP_0245_2026_Final/
 │   ├── training/          common/ (model, engine, policy), baseline/ + jacobian/ (BC and BC+J losses),
 │   │                      datasets/ (build.py: raw -> training-ready datasets; train.py: ablation training)
 │   ├── evaluation/        evaluate.py (closed loop), offline.py, test_sets.py, plots.py, live_compare.py, expert diagnostics
-│   ├── experiments/       configs/ (common, objectives, teachers, dart/, datasets/), splits/, ablation/ (runner + manifests), demo_models/
+│   ├── experiments/       configs/ (common, objectives, teachers, dart/, datasets/), splits/, ablation/ (v1 runner + manifest),
+│   │                      dagger_rounds.py (v2 DAgger runner), demo_models/
+│   ├── tools/             build_a_clean253.py (teacher-A-only Clean_253 when teacher B differs locally)
 │   ├── data/              git-ignored: scenarios/, Markovian/{Clean,Clean_253,DART,…}/ (raw), datasets/A/ (training-ready)
 │   ├── checkpoints/       git-ignored: ablation/<date>__training-ablation-<version>/<run>/
-│   └── results/           results.csv (versioned index); per-run and per-experiment details stay local
+│   └── results/           results.csv (v1 evaluation index); ablation/<date>__training-ablation-<version>/ (summaries tracked)
 ├── tests/                 pytest suite (pytest.ini: testpaths = tests)
-├── docs/                  plans, specs, reports, research, indexes
+├── docs/                  guides, specs, reports, references (index: docs/README.md)
 └── Archive/               retired code (tracked) and pre-ablation models (git-ignored); see Archive/README.md
 ```
 
@@ -475,16 +442,18 @@ Where the splits live: training = the 221 `fitting_ids` and validation = the 32 
 
 ## Outputs
 
-- `results/results.csv`: the compact shared evaluation index, permitted in Git. The target schema includes global run identity, config/split hashes, checkpoint step/path and evaluation split/ID; a training run may have multiple checkpoint evaluations. `evaluation.evaluate` and `experiments.ablation.run` append to it under a file lock and refuse duplicate (run, step, split, evaluation ID) keys.
-- Per-run details and figures stay local under `results/<regime>/<teacher>/<objective>/<run_id>/`; current expert diagnostics may retain their existing result paths. Ablation experiments keep all their results together in `results/ablation/<date>__training-ablation-<version>/`.
-- Raw data, checkpoints, detailed results and figures are not committed. Models are recreated from the committed ablation manifest with `experiments.ablation.run`; every run records its config, data, split and code hashes in `provenance.json`.
+Every number in the report comes from an experiment folder, `results/ablation/<date>__training-ablation-<version>/`:
+
+| Experiment | Summary (tracked in Git) | Details (local only) |
+|---|---|---|
+| v1 (R1–R4) | `summary.md`, `summary.csv`, `generalisation/summary.json` | `runs.csv`, `validation/`, `hold_test/`, `logs/` |
+| v2 (R5–R8 and controls) | `README.md`, `dagger/<row>/summary.csv`, `probes/{far,robust}/<models>/summary.json` | `dagger/<row>/validation/`, `logs/` |
+| Test runs | Not tracked yet | `results/test/<name>/` |
+
+- `.gitignore` keeps `results/` local except `results.csv`, `figures/` and the `summary.*` and `README.md` files under `results/ablation/`.
+- `results/results.csv` is the append-only index of evaluations recorded with `--record` (`evaluation.evaluate`, `experiments.ablation.run`): the v1 validation runs and the archived clean pipeline. It refuses duplicate (run, step, split, evaluation ID) keys. The v2 runner does not write to it, so its folder summaries are the reference. Use the experiment folders, not `results.csv`, as the source of reported numbers.
+- Raw data, checkpoints and per-rollout details are not committed. Every run records its config, data, split and code hashes in `provenance.json`.
 
 ## External code
 
-| Code | Source | Status |
-| --- | --- | --- |
-| `RoboEnv/`, `simulation_and_control` | COMP0245 course | Used as is |
-| `robotnik_arm_task.py`, `robotnik_arm_control.py`, `configs/`, `models/` | COMP0245 final task template | Used as is |
-| `data_collection/expert.py` | Based on `robotnik_arm_control.py` | Modified: made Markovian |
-| `data_collection/template_teacher.py` | Calls `arm_controller`/`base_controller` from `robotnik_arm_control.py` unchanged | Written for this project: wrapper reproducing `robotnik_arm_task.py`'s setup, verified bit-identical |
-| Everything else in `core/`, `data_collection/`, `training/`, `evaluation/` | Written for this project | From scratch |
+The table of external, modified and from-scratch code is in the [project README](../README.md#external-code).

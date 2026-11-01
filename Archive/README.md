@@ -1,6 +1,6 @@
 # Archive
 
-Programs, models, data and documents that are no longer used. They were superseded by the training-method ablation (`checkpoints/ablation/`).
+Programs, models, data and documents that are no longer used. They were superseded by the training-method ablation, versions v1 (R1–R4) and v2 (R5–R8, DAgger), in `checkpoints/ablation/`.
 The current pipeline is described in the [project pipeline](../docs/2026-10-30__guide__project-pipeline.md).
 
 **Every archived file keeps its original relative path:** `Archive/<original path>`. To restore a file, move it back unchanged, using `git mv` for code.
@@ -9,7 +9,7 @@ The current pipeline is described in the [project pipeline](../docs/2026-10-30__
 - Models, data and results are git-ignored (`Archive/final/robotnik_arm_task/{checkpoints,data,results}/`).
 - Tests: `pytest.ini` sets `norecursedirs = Archive`, so archived tests are not collected.
 
-Tracked files under `final/` that stayed in place were not edited, not even comments, because they feed code digests and dataset hashes.
+Files that feed digests or hashes are never edited, not even comments. This covers the collection sources listed in `SOURCE_FILES` in `data_collection/collect.py` (including `settings.yaml`), `core/features.py` and `core/feature_sets.py` (dataset `builder_id`), and `experiments/splits/clean253.json`. Training code and configs (`training/`, `experiments/configs/`) may change: each run records their digest in `provenance.json`, and no check compares it with older runs.
 
 ## Effect on old records
 
@@ -98,6 +98,33 @@ The single-model CLIs in `training/baseline/train.py` and `training/jacobian/tra
 - R1–R3 in `checkpoints/ablation/`: they are the controls of the current ablation, not old versions.
 
 Verification after this archive: `pytest` passes 189 tests (205 before, minus 16 archived). The R4 training `--dry-run`, the imports of every stage's entry point, and loading the 32 validation and 64 test scenarios all work.
+
+## Third archive: 2026-11-01
+
+Goal: after merging the DAgger branch (`feature/dart-ablation`), keep one current document per topic and give the ablation rows one naming scheme (R1–R8).
+
+### Documents (tracked)
+
+| Original path `docs/…` | Reason |
+|---|---|
+| `plans/2026-10-24__roadmap__project-milestones.md`, `plans/2026-10-26__plan__project-overview.md` | 24 October plan exports (T1–T3 test sets, 23 inputs, one coder); the live plan is the Claude Doc |
+| `plans/2026-10-26__plan__ablation-strategy.md` | Its own header marked it as the archived 24 October proposal |
+| `plans/2026-10-26__plan__mlp-baseline-training.md` | Clean M1–M6 baseline plan; the split and success predicate now live in the pipeline document |
+| `research/2026-10-26__research__mlp-training-recipe.md` | Recipe research for M1–M6; the adopted recipe is in pipeline Section 6 |
+| `specs/2026-10-26__design__mlp-training-structure.md` | Pre-implementation design; the implemented layout is in the reproduction reference |
+| Sections "Data (clean collection details)", "Live comparison demo" and the build commands of "Gate and DART datasets" in `2026-10-29__guide__reproduction-details.md` | Duplicates of other sections, the root README and pipeline Section 9 |
+
+### Programs (tracked)
+
+| Original path | Reason |
+|---|---|
+| `final/robotnik_arm_task/experiments/scripts/*.sh` | Shell scripts that ran v2 on a teammate's machine (home-directory paths, legacy row names). Kept as a record; `experiments.dagger_rounds` replaces them |
+
+### Renamed in place (v2)
+
+The DAgger and control variants, the DAgger runner's output paths and the v2 result summaries were renamed to the R5–R8 scheme.
+The legacy-to-current table is in `final/robotnik_arm_task/results/ablation/2026-10-30__training-ablation-v2/README.md`.
+`results/dagger/`, `results/far_probe/` and `results/robust_probe/` moved to `results/ablation/2026-10-30__training-ablation-v2/{dagger,probes/far,probes/robust}/`. The `results/dagger/` archived on 2026-10-28 is the unrelated 27 October DAgger round 1.
 
 ## Restore examples
 

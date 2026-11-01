@@ -1,8 +1,10 @@
 # Expert Dataset Specification
 
+Date: 26 October 2026, status note added 1 November 2026. Status: the data-format contract for every teacher-A collection (clean, DART and DAgger). Collection itself is described in the [clean collection report](../reports/2026-10-26__report__clean-expert-data-collection.md) and the [project pipeline](../2026-10-30__guide__project-pipeline.md).
+
 This document defines two datasets for learning the Robotnik mobile-base and arm reaching task. Dataset A uses the Markovian expert. Dataset B uses the original stateful controller. Both retain complete trajectories and raw observations so that feature and model ablations can reuse the same recordings.
 
-This is a collection specification, not a report of completed collection. The current `collect.py` and `dagger.py` entry points are placeholders. Earlier planning documents contain different draft feature lists and sampling rules; the choices below describe the agreed design for these two datasets.
+This is a collection specification, written before collection. When it was written, `collect.py` and the old `dagger.py` were still placeholders; clean, DART (`collect_dart.py`) and DAgger (`collect_dagger.py`) collection now exist. Earlier planning documents contain different draft feature lists and sampling rules; the choices below describe the agreed design for these two datasets.
 
 ## 1. Purpose and agreed scope
 

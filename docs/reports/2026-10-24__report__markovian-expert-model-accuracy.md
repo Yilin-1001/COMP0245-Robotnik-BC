@@ -1,5 +1,7 @@
 # Making the Markovian expert's model accurate
 
+Date: 24 October 2026. Status: the numbers below use the code default `lead_time = 0.15 s`. Every dataset uses 0.50 s (teacher version `markovian-lt0.50-v1`; see the [teacher A operating envelope](2026-10-29__report__teacher-a-operating-envelope.md)). The two model fixes apply to both.
+
 The Markovian expert (`final/robotnik_arm_task/data_collection/expert.py`) first stopped 34–67 mm short of its targets. The template controller reached the same targets to within about 1 mm. This note explains the cause, the two fixes and how each was checked. With both fixes, the expert's final error is 0.2–3.2 mm, against a 10 mm tolerance.
 
 ## Why model errors matter more for the Markovian expert

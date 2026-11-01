@@ -184,10 +184,10 @@ World x/y starts currently span +/-0.5 m, but relative target distance spans 0.5
 
 ## Sources and local contracts
 
-- [Paired dataset subsets](../reports/2026-10-26__report__paired-clean-dataset-subsets.md)
-- [Clean collection report](../reports/2026-10-26__report__clean-expert-data-collection.md)
-- [Expert dataset specification](../specs/2026-10-26__spec__expert-datasets.md)
-- [Expert operating limits](../reports/2026-10-26__report__expert-operating-limits.md)
-- [Research reference guide](../references/2026-10-26__reference__research-bibliography.md)
+- [Paired dataset subsets](../../../docs/reports/2026-10-26__report__paired-clean-dataset-subsets.md)
+- [Clean collection report](../../../docs/reports/2026-10-26__report__clean-expert-data-collection.md)
+- [Expert dataset specification](../../../docs/specs/2026-10-26__spec__expert-datasets.md)
+- [Expert operating limits](../../../docs/reports/2026-10-26__report__expert-operating-limits.md)
+- [Research reference guide](../../../docs/references/2026-10-26__reference__research-bibliography.md)
 - [PyTorch Huber loss documentation](https://docs.pytorch.org/docs/stable/generated/torch.nn.HuberLoss.html)
 - [PyTorch AdamW documentation](https://docs.pytorch.org/docs/stable/generated/torch.optim.AdamW.html)

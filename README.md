@@ -1,7 +1,11 @@
 # Robotnik: collect, train and test
 
 This tutorial reproduces **R4 (DART + reach gate + BC+J), seed 0**: an MLP that controls the robot's arm and mobile base.
-Use Linux or Windows WSL2, Python 3.10 and [uv](https://docs.astral.sh/uv/getting-started/installation/). Allow about 25 GiB of disk space for the full collection pipeline.
+Use Linux or Windows WSL2, Python 3.10 and [uv](https://docs.astral.sh/uv/getting-started/installation/). Allow about 25 GiB of disk space for the full collection pipeline
+(raw trajectories of both teachers, their paired copies, feature datasets and checkpoints).
+
+**Project status.** Training-method ablation v1 (R1–R4) is complete, and R4 has a test result. Version v2 adds DAgger (rows R5–R8, step 6) and has validation results only. The final model is not chosen yet.
+The method and all results are in the [project pipeline](docs/2026-10-30__guide__project-pipeline.md), and the documentation index is [docs/README.md](docs/README.md).
 
 ## 1. Install
 
@@ -21,6 +25,7 @@ cd final/robotnik_arm_task
 ```
 
 For an NVIDIA GPU with CUDA 12.8 support, use the `/whl/cu128` PyTorch index instead of `/whl/cpu`.
+On a minimal Ubuntu or WSL2 install, Pinocchio also needs the OpenMP runtime: `sudo apt install libgomp1`.
 **Run all remaining commands from `final/robotnik_arm_task/`.** In a new terminal, activate `.venv` again before continuing.
 
 ## 2. Collect and prepare data
@@ -36,6 +41,8 @@ python -m data_collection.collect_dart --protocol experiments/configs/dart/d2-s0
 ```
 
 Both teachers are needed to build the clean subsets. Training uses 221 fitting scenarios; validation uses 32 and testing uses 64.
+Collection is not guaranteed to be bit-identical across machines. If `build_clean_subsets` refuses because teacher B's local
+episodes differ from the recorded ones, run `python tools/build_a_clean253.py` instead: it builds teacher A's `Clean_253` alone and checks its files against the frozen split.
 Keep the versioned split in `experiments/splits/clean253.json` unchanged.
 
 Locate the DART collection and build the training features:
@@ -62,7 +69,6 @@ done
 - `data/Markovian/Clean_253/scenarios_test.csv`
 
 The two feature datasets total about **1.03 GiB**. Keep all their metadata and checksum files.
-Also include `evaluation/test_diagnosis.py` in the source handoff; it may still be a locally untracked file.
 
 ## 3. Train R4
 
@@ -127,5 +133,28 @@ Success means reaching within 10 mm at or after 8 s, continuing for 3 s and stay
 Results are saved in `results/test/r4-seed0/`; use a new output directory when repeating a test.
 This entry point reproduces the existing R4 test diagnosis; report it as such and disclose any later model changes informed by these test results.
 
-For all three seeds, other ablation rows, packaging and historical results, see the [detailed reproduction reference](docs/2026-10-29__guide__reproduction-details.md).
-For where each stage's code, data, models and results live, see the [project pipeline overview](docs/2026-10-30__guide__project-pipeline.md); retired versions are in [Archive/](Archive/README.md).
+## 6. DAgger rows (R5–R8)
+
+Each DAgger row starts from its base row's v1 seed-0 model (R5 from R1, R6 from R2, R7 from R3 and R8 from R4), so train or restore the v1 models first.
+Then run three DAgger rounds and train seeds 1–2 for the best round:
+
+```bash
+python -m experiments.dagger_rounds --row R6-gate-dagger --rounds 3 --date 2026-10-30 --final-seeds 1 2 --workers 4
+```
+
+Models go to `checkpoints/ablation/2026-10-30__training-ablation-v2/`, and results go to `results/ablation/2026-10-30__training-ablation-v2/dagger/<row>/`.
+Evaluate a v2 model on validation exactly as in step 4. Run the test set only after the final model has been chosen on validation.
+Details are in the [DAgger ablation report](docs/reports/2026-10-31__report__dagger-ablation-and-final-model.md).
+
+For all three seeds, the ablation runner, packaging and the test-set details, see the [detailed reproduction reference](docs/2026-10-29__guide__reproduction-details.md).
+Retired versions are in [Archive/](Archive/README.md).
+
+## External code
+
+| Code | Source | Status |
+| --- | --- | --- |
+| `RoboEnv/`, `simulation_and_control` | COMP0245 course | Used as is |
+| `robotnik_arm_task.py`, `robotnik_arm_control.py`, `configs/`, `models/` | COMP0245 final task template | Used as is |
+| `data_collection/expert.py` | Based on `robotnik_arm_control.py` | Modified: made Markovian |
+| `data_collection/template_teacher.py` | Calls `arm_controller`/`base_controller` from `robotnik_arm_control.py` unchanged | Written for this project: wrapper reproducing `robotnik_arm_task.py`'s setup, verified bit-identical |
+| Everything else in `core/`, `data_collection/`, `training/`, `evaluation/`, `experiments/`, `tools/` | Written for this project | From scratch |

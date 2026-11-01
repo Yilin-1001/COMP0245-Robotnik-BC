@@ -32,6 +32,11 @@ final/robotnik_arm_task/results/**
 !final/robotnik_arm_task/results/figures/
 !final/robotnik_arm_task/results/.gitkeep
 !final/robotnik_arm_task/results/figures/.gitkeep
+# Experiment summaries (small; the source of reported numbers) are tracked, per-rollout details stay local.
+!final/robotnik_arm_task/results/ablation/
+!final/robotnik_arm_task/results/ablation/**/
+!final/robotnik_arm_task/results/ablation/**/summary.*
+!final/robotnik_arm_task/results/ablation/**/README.md
 outputs/
 runs/
 wandb/
