@@ -70,7 +70,8 @@ def test_variants_resolve(variant, dim):
     from training.datasets.train import resolve
     config = resolve(variant, {"training.lr": 1e-3})
     assert config["model"]["input_dim"] == dim and config["identity"]["regime"] == "ablation"
-    assert config["model"]["architectures"] == {"MLP01": [256, 256, 256]}  # m1-m6 are not carried over
+    assert config["model"]["architectures"]["MLP01"] == [256, 256, 256]  # m1-m6 are not carried over
+    assert set(config["model"]["architectures"]) == {f"MLP{i:02d}" for i in range(1, 11)}
     assert config["loss"]["jacobian"] is not None  # bcj by default
     assert resolve(variant, {"identity.objective": "bc"})["loss"]["jacobian"] is None
 

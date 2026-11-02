@@ -15,6 +15,15 @@ identity:
 model:
   architectures:             # new registry MLP<NN>, numbered in order of first use; replaces the old m1-m6 names here
     MLP01: [256, 256, 256]
+    MLP02: [32, 32, 32]      # architecture ablation v1 (docs/superpowers/specs/2026-11-02-architecture-ablation-design.md)
+    MLP03: [64, 64]
+    MLP04: [64, 64, 64]
+    MLP05: [64, 64, 64, 64]
+    MLP06: [128, 128, 128]
+    MLP07: [256, 128, 64]
+    MLP08: [256, 256]
+    MLP09: [256, 256, 256, 256]
+    MLP10: [512, 512, 512]
 data:
   dataset_root: data/datasets
   feature_definition: null   # set by the row; every listed dataset must use it

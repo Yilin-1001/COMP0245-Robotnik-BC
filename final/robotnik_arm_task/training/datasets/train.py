@@ -22,6 +22,7 @@ import hashlib
 import json
 import re
 import shutil
+from pathlib import Path
 
 import yaml
 
@@ -121,6 +122,33 @@ def calibrate(config: dict, train, normaliser) -> dict:
         "arm_weight": loss["arm_weight"], "wheel_weight": loss["wheel_weight"]})
 
 
+def copy_calibration(config: dict, normaliser_sha256: str, source) -> tuple[dict, str]:
+    """(record, sha256) of the lambda_J calibration recorded by an earlier bcj run on the same variant, data and scales.
+
+    Used instead of calibrate() when loss.jacobian.calibration names that run's config.yaml, so that runs which differ
+    only in architecture share one objective.
+    """
+    path = Path(source) if Path(source).is_absolute() else TASK_DIR / source
+    text = path.read_bytes()
+    src = yaml.safe_load(text)
+    prov, lam = src.get("provenance") or {}, ((src.get("loss") or {}).get("jacobian") or {}).get("lambda_j")
+    if src["identity"]["objective"] != "bcj" or lam is None:
+        raise ValueError(f"{source}: the calibration source must be a bcj run with a frozen lambda_j")
+    if src.get("variant") != config["variant"]:
+        raise ValueError(f"{source}: source variant {src.get('variant')!r} differs from {config['variant']!r}")
+    if list(src["data"]["datasets"]) != list(config["data"]["datasets"]):
+        raise ValueError(f"{source}: source datasets differ from this run's")
+    if prov.get("normaliser_sha256") != normaliser_sha256:
+        raise ValueError(f"{source}: source normaliser differs from this run's")
+    given = config["loss"]["jacobian"].get("lambda_j")
+    if given is not None and float(given) != float(lam):
+        raise ValueError(f"lambda_j {given} disagrees with the source's {lam}")
+    shown = str(path.relative_to(TASK_DIR)) if path.is_relative_to(TASK_DIR) else str(path)
+    record = {**prov["calibration"], "lambda_j": float(lam), "copied_from": shown,
+              "source_config_sha256": hashlib.sha256(text).hexdigest()}
+    return record, prov["calibration_sha256"]
+
+
 def prepare(config: dict) -> dict:
     """Load and select the datasets, fit scales, calibrate bcj and finalise the run identity."""
     import time
@@ -163,7 +191,13 @@ def prepare(config: dict) -> dict:
                   "normaliser_sha256": normaliser.sha256(), "code_digest": code_digest(),
                   "operational": {"git_head": _git("rev-parse", "HEAD"), "git_dirty": bool(_git("status", "--porcelain")),
                                   "prepared_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}}
-    if config["identity"]["objective"] == "bcj":
+    if config["identity"]["objective"] == "bcj" and isinstance(config["loss"]["jacobian"].get("calibration"), str):
+        record, digest = copy_calibration(config, normaliser.sha256(), config["loss"]["jacobian"]["calibration"])
+        config["loss"]["jacobian"]["lambda_j"] = record["lambda_j"]
+        config["loss"]["jacobian"]["calibration_record"] = {"path": f"fixed from {record['copied_from']}",
+                                                           "lambda_j": record["lambda_j"], "sha256": digest}
+        provenance.update(calibration=record, calibration_sha256=digest)
+    elif config["identity"]["objective"] == "bcj":
         record = calibrate(config, train, normaliser)
         digest = hashlib.sha256(canonical_json(record).encode()).hexdigest()
         config["loss"]["jacobian"]["lambda_j"] = float(record["lambda_j"])
