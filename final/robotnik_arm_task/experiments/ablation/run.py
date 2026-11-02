@@ -39,23 +39,54 @@ def load_manifest(path: Path) -> dict:
     return m
 
 
-def overrides(m: dict, seed: int) -> dict:
-    return {"identity.version": m["version"], "identity.date": m["date"], "identity.architecture": m["architecture"],
-            "identity.seed": seed, "outputs.experiment": m["experiment"], **m["recipe"]}
+def architectures(m: dict) -> list[str]:
+    """The manifest's architectures: a list under 'architectures', or the single 'architecture' of a v1 manifest."""
+    return list(m["architectures"]) if "architectures" in m else [m["architecture"]]
+
+
+def overrides(m: dict, seed: int, architecture: str | None = None, row: str | None = None) -> dict:
+    out = {"identity.version": m["version"], "identity.date": m["date"],
+           "identity.architecture": architecture or architectures(m)[0],
+           "identity.seed": seed, "outputs.experiment": m["experiment"], **m["recipe"]}
+    if row in (m.get("lambda_j_source") or {}):  # copy lambda_J from that run instead of calibrating
+        out["loss.jacobian.calibration"] = m["lambda_j_source"][row]
+    return out
+
+
+def parameters(model: Path) -> int | None:
+    """Weights and biases in an exported .npz (as evaluation.suite_manifest counts them); None while untrained."""
+    if not Path(model).exists():
+        return None
+    with np.load(model) as z:
+        return int(sum(z[k].size for k in z.files if k != "metadata_json" and np.issubdtype(z[k].dtype, np.number)))
 
 
 def runs(m: dict) -> list[dict]:
-    """Every (row, seed) with its name and directory, resolved without loading data."""
+    """Every (row, architecture, seed) with its name and directory, resolved without loading data, then the
+    manifest's reference models (evaluated, never trained)."""
     from training.common.config import run_dir_for
-    from training.datasets.train import resolve, run_name
+    from training.datasets.train import architecture_label, resolve, run_name
     out = []
     for row in m["rows"]:
-        for seed in m["seeds"]:
-            config = resolve(row, overrides(m, seed))
-            config["identity"]["run_id"] = name = run_name(config)
-            config["outputs"]["experiment_dir"] = experiment_dir(m)
-            d = run_dir_for(config)
-            out.append({"row": row, "seed": seed, "name": name, "dir": d, "model": d / f"{name}.npz"})
+        for arch in architectures(m):
+            for seed in m["seeds"]:
+                config = resolve(row, overrides(m, seed, arch, row))
+                config["identity"]["run_id"] = name = run_name(config)
+                config["outputs"]["experiment_dir"] = experiment_dir(m)
+                d = run_dir_for(config)
+                out.append({"row": row, "seed": seed, "name": name, "dir": d, "model": d / f"{name}.npz", "arch": arch,
+                            "architecture": architecture_label(arch, config["model"]["architectures"][arch]),
+                            "parameters": parameters(d / f"{name}.npz"), "reference": False})
+    for row in m["rows"]:
+        template = (m.get("references") or {}).get(row)
+        for seed in m["seeds"] if template else []:
+            model = TASK_DIR / template.format(seed=seed)
+            parts = model.stem.split("__")
+            if len(parts) != 5:
+                raise ValueError(f"reference {model.name} does not follow <row>__<architecture>__s<seed>__<version>__<date>")
+            label = parts[1]
+            out.append({"row": row, "seed": seed, "name": model.stem, "dir": model.parent, "model": model,
+                        "arch": label.split("-")[0], "architecture": label, "parameters": parameters(model), "reference": True})
     return out
 
 
@@ -76,7 +107,10 @@ def results_dir(m: dict) -> Path:
 # ---------------------------------------------------------------- train
 
 def train(m: dict, parallel: int) -> None:
-    pending = [r for r in runs(m) if not r["model"].exists()]
+    missing = [r["name"] for r in runs(m) if r["reference"] and not r["model"].exists()]
+    if missing:
+        raise FileNotFoundError(f"reference models are evaluated, never trained; missing: {missing}")
+    pending = [r for r in runs(m) if not r["reference"] and not r["model"].exists()]
     logs = results_dir(m) / "logs"
     logs.mkdir(parents=True, exist_ok=True)
     print(f"train: {len(pending)} of {len(runs(m))} runs to train, {parallel} at a time", flush=True)
@@ -85,7 +119,7 @@ def train(m: dict, parallel: int) -> None:
         while pending and len(active) < parallel:
             r = pending.pop(0)
             cmd = [sys.executable, "-m", "training.datasets.train", "--variant", r["row"]]
-            for k, v in overrides(m, r["seed"]).items():
+            for k, v in overrides(m, r["seed"], r["arch"], r["row"]).items():
                 cmd += ["--set", f"{k}={v}"]
             if (r["dir"] / "latest.pt").exists():
                 cmd.append("--resume")
@@ -153,7 +187,7 @@ def validate(m: dict, workers: int) -> None:
     split_path = TASK_DIR / "experiments/splits/clean253.json"
     scenarios = get_split("validation", split_path, "A")
     out_dir = results_dir(m) / "validation"
-    todo, configs = [], {}
+    todo, configs, references = [], {}, {str(r["model"]) for r in runs(m) if r["reference"]}
     for r in runs(m):
         if not r["model"].exists():
             raise FileNotFoundError(f"{r['name']} is not trained yet")
@@ -179,12 +213,15 @@ def validate(m: dict, workers: int) -> None:
         with np.load(model) as z:
             meta = json.loads(str(z["metadata_json"]))
         details.append((detail, outcomes))
+        if model in references:  # already indexed by its own experiment; results.csv refuses duplicate keys
+            continue
         rows.append(result_row(dict(config["identity"]), summarise(outcomes), lr=config["training"]["lr"],
                                split_sha256=split_sha, checkpoint_step=meta["source_step"],
                                checkpoint_path=rel(meta["source_checkpoint"]), checkpoint_sha256=meta["source_sha256"],
                                inference_path=rel(model), evaluation_split="validation", evaluation_id=MODES[mode],
                                detail_path=rel(detail)))
-    append_results(TASK_DIR / "results/results.csv", rows)
+    if rows:
+        append_results(TASK_DIR / "results/results.csv", rows)
     for detail, outcomes in details:
         write_details(detail, outcomes)
 
@@ -226,7 +263,8 @@ def summary(m: dict) -> None:
     out = results_dir(m)
     per_run = []
     for r in runs(m):
-        row = {"row": r["row"], "seed": r["seed"], "run": r["name"], "model": rel(r["model"])}
+        row = {"row": r["row"], "architecture": r["architecture"], "parameters": r["parameters"], "seed": r["seed"],
+               "run": r["name"], "model": rel(r["model"])}
         for mode in m["evaluation"]["validation_modes"]:
             with open(out / "validation" / f"{r['name']}__validation-{mode}.csv", newline="") as f:
                 rows = list(csv.DictReader(f))
@@ -244,9 +282,11 @@ def summary(m: dict) -> None:
         w.writeheader()
         w.writerows(per_run)
     table = []
-    for row_name in m["rows"]:
-        rs = [x for x in per_run if x["row"] == row_name]
-        entry = {"row": row_name, "seeds": len(rs)}
+    groups = sorted({(x["row"], x["architecture"], x["parameters"]) for x in per_run},
+                    key=lambda g: (m["rows"].index(g[0]), g[2] or 0))
+    for row_name, arch, params in groups:
+        rs = [x for x in per_run if (x["row"], x["architecture"]) == (row_name, arch)]
+        entry = {"row": row_name, "architecture": arch, "parameters": params, "seeds": len(rs)}
         for mode in m["evaluation"]["validation_modes"]:
             k, n = sum(x[f"{mode}_hold"] for x in rs), sum(x[f"{mode}_n"] for x in rs)
             lo, hi = wilson(k, n)
@@ -263,13 +303,13 @@ def summary(m: dict) -> None:
         w.writeheader()
         w.writerows(table)
     n = per_run[0]["student_n"]
-    lines = [f"# {experiment_dir(m)}", "", f"Manifest: `{Path(m['path']).name}`; architecture {m['architecture']}; "
+    lines = [f"# {experiment_dir(m)}", "", f"Manifest: `{Path(m['path']).name}`; architectures {', '.join(architectures(m))}; "
              f"seeds {m['seeds']}; validation {n} scenarios per model; terminal checkpoint only.", "",
-             "| Row | Full student: hold per seed | Hold rate (Wilson 95%) | Reach per seed | Median final error | "
+             "| Row | Architecture | Parameters | Full student: hold per seed | Hold rate (Wilson 95%) | Reach per seed | Median final error | "
              "Arm only: hold per seed | Hold test (arm, 8 scenarios) per seed | Max stiffness eig (N·m/rad) |",
-             "|---|---|---|---|---|---|---|---|"]
+             "|---|---|---|---|---|---|---|---|---|---|"]
     for e in table:
-        lines.append(f"| {e['row']} | {e['student_hold_per_seed']} (of {n}) | {e['student_hold_rate']:.2f} ({e['student_hold_ci95']}) | "
+        lines.append(f"| {e['row']} | {e['architecture']} | {e['parameters']} | {e['student_hold_per_seed']} (of {n}) | {e['student_hold_rate']:.2f} ({e['student_hold_ci95']}) | "
                      f"{e['student_reach_per_seed']} | {e['student_median_final_err_mm']:.1f} mm | "
                      f"{e.get('arm_hold_per_seed', '')} | {e['hold_test_arm_stayed_per_seed']} | "
                      f"{e['hold_test_median_stiffness_eig_max']:.1f} |")
@@ -303,8 +343,14 @@ def main(argv=None) -> int:
     p.add_argument("--stage", choices=["train", "validate", "hold", "summary", "demo", "all"], default="all")
     p.add_argument("--parallel", type=int, default=3, help="training processes at a time")
     p.add_argument("--workers", type=int, default=22, help="simulation processes")
+    p.add_argument("--rows", nargs="+", help="restrict every stage to these manifest rows")
     args = p.parse_args(argv)
     m = load_manifest(TASK_DIR / args.manifest if not Path(args.manifest).is_absolute() else args.manifest)
+    if args.rows:
+        unknown = [r for r in args.rows if r not in m["rows"]]
+        if unknown:
+            raise SystemExit(f"--rows {unknown} are not rows of {args.manifest}: {m['rows']}")
+        m["rows"] = [r for r in m["rows"] if r in args.rows]
     results_dir(m).mkdir(parents=True, exist_ok=True)
     (results_dir(m) / "manifest.yaml").write_text(Path(m["path"]).read_text())
     for stage, fn in (("train", lambda: train(m, args.parallel)), ("validate", lambda: validate(m, args.workers)),
