@@ -164,3 +164,10 @@ def test_rows_filter_rejects_unknown_row(tmp_path):
     path.write_text(yaml.safe_dump({k: v for k, v in _grid(tmp_path).items() if k != "path"}))
     with pytest.raises(SystemExit, match="R9"):
         main(["--manifest", str(path), "--rows", "R9", "--stage", "summary"])
+
+
+def test_lr_by_architecture_overrides_the_recipe_lr(tmp_path):
+    from experiments.ablation.run import overrides
+    m = _grid(tmp_path, lr_by_architecture={"MLP02": 3.0e-3})
+    assert overrides(m, 0, "MLP02", "R4-dart-gate")["training.lr"] == 3e-3
+    assert overrides(m, 0, "MLP07", "R4-dart-gate")["training.lr"] == 1e-3

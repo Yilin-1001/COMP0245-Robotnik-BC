@@ -48,6 +48,9 @@ def overrides(m: dict, seed: int, architecture: str | None = None, row: str | No
     out = {"identity.version": m["version"], "identity.date": m["date"],
            "identity.architecture": architecture or architectures(m)[0],
            "identity.seed": seed, "outputs.experiment": m["experiment"], **m["recipe"]}
+    arch = out["identity.architecture"]
+    if arch in (m.get("lr_by_architecture") or {}):  # chosen per architecture by the validation lr screen
+        out["training.lr"] = m["lr_by_architecture"][arch]
     if row in (m.get("lambda_j_source") or {}):  # copy lambda_J from that run instead of calibrating
         out["loss.jacobian.calibration"] = m["lambda_j_source"][row]
     return out

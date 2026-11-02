@@ -75,6 +75,12 @@ def lr_decision(holds: dict[str, dict[float, int]], tolerance: int = 2) -> str:
     return "keep" if all(h[1e-3] >= max(h.values()) - tolerance for h in holds.values()) else "screen"
 
 
+def choose_lr(holds: dict[float, int]) -> float:
+    """The lr with the most validation holds; on a tie 1e-3 if it is among the best, else the lowest tied lr."""
+    best = [lr for lr, h in holds.items() if h == max(holds.values())]
+    return 1e-3 if 1e-3 in best else min(best)
+
+
 def recommend(table: list[dict], margin: float = 0.03) -> dict[str, str]:
     """Per row, the smallest architecture whose all-suite rate is within `margin` of the 256x3 reference."""
     out = {}

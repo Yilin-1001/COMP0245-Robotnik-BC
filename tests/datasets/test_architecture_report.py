@@ -113,3 +113,10 @@ def test_cli_end_to_end_on_synthetic_runs(tmp_path):
     for name in ("success_vs_parameters", "success_vs_latency", "width_and_depth_lines", "offline_rmse_vs_test_success"):
         assert (exp / "figures/architecture" / f"{name}.png").stat().st_size > 0
     assert "architecture_summary.md" in (new / "README.md").read_text()
+
+
+def test_choose_lr_takes_most_holds_with_tie_rule():
+    from experiments.ablation.architecture_report import choose_lr
+    assert choose_lr({3e-4: 3, 1e-3: 11, 3e-3: 20, 1e-2: 18}) == 3e-3
+    assert choose_lr({3e-4: 29, 1e-3: 29, 3e-3: 28, 1e-2: 20}) == 1e-3   # a tie including 1e-3 keeps 1e-3
+    assert choose_lr({3e-4: 10, 1e-3: 11, 3e-3: 20, 1e-2: 20}) == 3e-3   # otherwise the lower lr

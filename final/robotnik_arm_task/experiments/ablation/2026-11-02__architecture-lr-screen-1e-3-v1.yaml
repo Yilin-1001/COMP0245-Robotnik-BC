@@ -1,0 +1,27 @@
+# Per-architecture learning-rate screen for the architecture ablation, lr 1e-3 (validation only; never the test set).
+# The lr check (2026-11-02__architecture-lr-check-*) returned 'screen': 32x3 held 3/11/20 of 32 at 3e-4/1e-3/3e-3.
+# User decision 2026-11-02: screen every architecture at {3e-4, 1e-3, 3e-3, 1e-2} on R4 seed 0; 1e-2 is added because the
+# 32x3 optimum sat at the top of the checked range. MLP02/MLP10 at the first three lrs come from the lr-check manifests.
+# Rule: each architecture uses the lr with the most validation holds (ties: 1e-3 if tied, else the lower lr) for all rows.
+# Run with: python -m experiments.ablation.run --manifest experiments/ablation/2026-11-02__architecture-lr-screen-1e-3-v1.yaml --stage train
+#      then the same with --stage validate.
+experiment: architecture-lr-screen-1e-3
+version: v1
+date: 2026-11-02
+architectures: [MLP03, MLP04, MLP05, MLP06, MLP07, MLP08, MLP09]
+rows: [R4-dart-gate]
+seeds: [0]
+recipe:
+  identity.objective: bcj
+  training.lr: 1.0e-3               # written with a decimal point: YAML reads 3e-4 as a string
+  training.updates: 42000
+  loss.action: huber
+  loss.arm_weight: 0.5
+  loss.wheel_weight: 0.5
+lambda_j_source:
+  R4-dart-gate: checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/config.yaml
+evaluation:
+  checkpoint: terminal
+  validation_modes: [student]
+  hold_test_scenarios: []
+  index_results: false            # run names exclude lr and repeat the grid's; keep them out of results/results.csv
