@@ -11,7 +11,7 @@ rows: [R4-dart-gate]
 seeds: [0]
 recipe:
   identity.objective: bcj
-  training.lr: 1e-3
+  training.lr: 1.0e-3               # written with a decimal point: YAML reads 3e-4 as a string
   training.updates: 42000
   loss.action: huber
   loss.arm_weight: 0.5
@@ -22,3 +22,4 @@ evaluation:
   checkpoint: terminal
   validation_modes: [student]
   hold_test_scenarios: []
+  index_results: false            # run names exclude lr and repeat the grid's; keep them out of results/results.csv

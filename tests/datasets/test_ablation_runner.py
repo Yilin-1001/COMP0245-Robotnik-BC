@@ -122,6 +122,41 @@ def test_reference_validation_skips_results_index(tmp_path, monkeypatch):
         assert (tmp_path / "results/validation" / f"{ref.format(seed=seed)}__validation-student.csv").exists()
 
 
+def test_unindexed_manifest_never_appends_to_results_index(tmp_path, monkeypatch):
+    import json
+    import multiprocessing
+    import numpy as np
+    import yaml
+    import evaluation.evaluate as ev
+    import evaluation.test_sets as ts
+    from experiments.ablation import run
+    m = _grid(tmp_path, architectures=["MLP02"], seeds=[0], references={})
+    m["evaluation"]["index_results"] = False
+    (r,) = run.runs(m)
+    monkeypatch.setattr(run, "runs", lambda m: [{**r, "dir": tmp_path / "trained", "model": tmp_path / "trained/m.npz"}])
+    (tmp_path / "trained").mkdir()
+    meta = {"source_step": 42000, "source_checkpoint": "x.pt", "source_sha256": "x"}
+    np.savez(tmp_path / "trained/m.npz", metadata_json=np.array(json.dumps(meta)))
+    (tmp_path / "trained/config.yaml").write_text(yaml.safe_dump({"identity": {"run_id": r["name"]}, "training": {"lr": 3e-4}}))
+
+    class Pool:
+        def __init__(self, *a): pass
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def imap_unordered(self, fn, jobs, chunksize=1): return ((j[0], j[1], {"scenario_id": j[2]}) for j in jobs)
+
+    monkeypatch.setattr(run, "results_dir", lambda m: tmp_path / "results")
+    monkeypatch.setattr(multiprocessing, "get_context", lambda kind: type("C", (), {"Pool": Pool}))
+    monkeypatch.setattr(ts, "get_split", lambda *a: ["val-0"])
+    monkeypatch.setattr(ev, "summarise", lambda outcomes: {})
+    monkeypatch.setattr(ev, "result_row", lambda ident, summary, **kw: {"run_id": ident["run_id"]})
+    monkeypatch.setattr(ev, "write_details", lambda path, outcomes: (path.parent.mkdir(parents=True, exist_ok=True),
+                                                                 path.write_text("scenario_id\n")))
+    monkeypatch.setattr(ev, "append_results", lambda path, rows: pytest.fail("unindexed manifest wrote results.csv"))
+    run.validate(m, 1)
+    assert (tmp_path / "results/validation" / f"{r['name']}__validation-student.csv").exists()
+
+
 def test_rows_filter_rejects_unknown_row(tmp_path):
     import yaml
     from experiments.ablation.run import main

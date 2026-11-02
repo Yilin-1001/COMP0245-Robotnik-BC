@@ -213,8 +213,8 @@ def validate(m: dict, workers: int) -> None:
         with np.load(model) as z:
             meta = json.loads(str(z["metadata_json"]))
         details.append((detail, outcomes))
-        if model in references:  # already indexed by its own experiment; results.csv refuses duplicate keys
-            continue
+        if model in references or not m["evaluation"].get("index_results", True):
+            continue  # references are indexed by their own experiment; results.csv refuses duplicate keys
         rows.append(result_row(dict(config["identity"]), summarise(outcomes), lr=config["training"]["lr"],
                                split_sha256=split_sha, checkpoint_step=meta["source_step"],
                                checkpoint_path=rel(meta["source_checkpoint"]), checkpoint_sha256=meta["source_sha256"],
