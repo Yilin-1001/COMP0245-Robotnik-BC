@@ -29,6 +29,16 @@ recipe:                           # the frozen v1/v2 recipe
   loss.action: huber
   loss.arm_weight: 0.5
   loss.wheel_weight: 0.5
+lr_by_architecture:               # per-architecture lr from the R4 seed-0 validation screen (results/ablation/
+  MLP02: 1.0e-2                   #   2026-11-02__architecture-ablation-v1/lr_screen.md); shared by all rows and seeds;
+  MLP03: 1.0e-2                   #   MLP02/MLP03 sit at the top of the screened range (limitation)
+  MLP04: 1.0e-3
+  MLP05: 1.0e-3
+  MLP06: 1.0e-3
+  MLP07: 3.0e-3
+  MLP08: 1.0e-3
+  MLP09: 3.0e-3
+  MLP10: 1.0e-3
 lambda_j_source:                  # lambda_J copied from these runs (same variant, data and normaliser; checked)
   R4-dart-gate: checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/config.yaml
   R6-gate-dagger-r3: checkpoints/ablation/2026-11-01__training-ablation-v2/R6-gate-dagger-r3__MLP01-256x3__s0__v2__2026-11-01/config.yaml
