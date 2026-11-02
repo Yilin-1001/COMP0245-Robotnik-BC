@@ -1,0 +1,24 @@
+# Learning-rate check for the architecture ablation, lr 1e-3 (validation only; never the test set).
+# Design: docs/superpowers/specs/2026-11-02-architecture-ablation-design.md (section "Learning-rate check").
+# Run with: python -m experiments.ablation.run --manifest experiments/ablation/2026-11-02__architecture-lr-check-1e-3-v1.yaml --stage train
+#      then the same with --stage validate. Rule: keep lr 1e-3 for the grid if, for both 32x3 and 512x3, it is within
+#      2/32 validation holds of the best of {3e-4, 1e-3, 3e-3}; otherwise stop and revise the grid manifest.
+experiment: architecture-lr-check-1e-3
+version: v1
+date: 2026-11-02
+architectures: [MLP02, MLP10]     # the two extremes: 32x3 and 512x3
+rows: [R4-dart-gate]
+seeds: [0]
+recipe:
+  identity.objective: bcj
+  training.lr: 1e-3
+  training.updates: 42000
+  loss.action: huber
+  loss.arm_weight: 0.5
+  loss.wheel_weight: 0.5
+lambda_j_source:
+  R4-dart-gate: checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/config.yaml
+evaluation:
+  checkpoint: terminal
+  validation_modes: [student]
+  hold_test_scenarios: []
