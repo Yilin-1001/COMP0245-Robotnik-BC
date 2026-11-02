@@ -56,7 +56,7 @@ def main(argv=None) -> int:
     p.add_argument("--n", type=int, default=12, help="scenes per distance band")
     p.add_argument("--cap", type=float, default=80.0, help="episode cap in seconds (the task's is 40)")
     p.add_argument("--workers", type=int, default=22)
-    p.add_argument("--out", type=Path, default=TASK_DIR / "results/ablation/2026-10-30__training-ablation-v2/probes/far/default")
+    p.add_argument("--out", type=Path, default=TASK_DIR / "results/ablation/2026-11-01__training-ablation-v2/probes/far/default")
     args = p.parse_args(argv)
     import multiprocessing as mp
     from experiments.ablation.run import _init_worker

@@ -139,10 +139,11 @@ Each DAgger row starts from its base row's v1 seed-0 model (R5 from R1, R6 from 
 Then run three DAgger rounds and train seeds 1–2 for the best round:
 
 ```bash
-python -m experiments.dagger_rounds --row R6-gate-dagger --rounds 3 --date 2026-10-30 --final-seeds 1 2 --workers 4
+python -m experiments.dagger_rounds --row R6-gate-dagger --rounds 3 --date 2026-11-01 --final-seeds 1 2 --workers 4
 ```
 
-Models go to `checkpoints/ablation/2026-10-30__training-ablation-v2/`, and results go to `results/ablation/2026-10-30__training-ablation-v2/dagger/<row>/`.
+Models go to `checkpoints/ablation/2026-11-01__training-ablation-v2/`, and results go to `results/ablation/2026-11-01__training-ablation-v2/dagger/<row>/`.
+Plot the training curves and the per-round validation hold with `python -m evaluation.plot_training_curves --experiments 2026-11-01__training-ablation-v2`.
 Evaluate a v2 model on validation exactly as in step 4. Run the test set only after the final model has been chosen on validation.
 Details are in the [DAgger ablation report](docs/reports/2026-10-31__report__dagger-ablation-and-final-model.md).
 

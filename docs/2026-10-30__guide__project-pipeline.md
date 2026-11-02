@@ -224,7 +224,7 @@ The ablation is a 2 × 2 × 2 factorial design: reach gate × DART × DAgger, wi
 | R8-dart-gate-dagger | v2 | R4 data + DAgger rounds | features-v1-gate (22) | BC+J | Validation done |
 
 A DAgger round is named `<row>-r<k>` (for example `R6-gate-dagger-r3`). The v2 controls keep R4's name with a suffix: `R4-dart-gate-s0375` / `-s150` (DART arm σ halved / doubled), `-x4` (twice the DART episodes) and `-split` (two networks switched by the gate).
-Models of version `vN` are in `checkpoints/ablation/<date>__training-ablation-vN/` and their results in `results/ablation/<date>__training-ablation-vN/`. The v1 date is 2026-10-28 and the v2 date is 2026-10-30.
+Models of version `vN` are in `checkpoints/ablation/<date>__training-ablation-vN/` and their results in `results/ablation/<date>__training-ablation-vN/`. The v1 date is 2026-10-28 and the v2 date is 2026-11-01. A teammate's earlier v2 development run (2026-10-30) is kept as a record in `results/ablation/2026-10-30__training-ablation-v2/`.
 
 ### 7.1 Version v1: gate × DART
 
@@ -258,20 +258,24 @@ Designed from the test diagnosis (Section 8). One runner, `experiments/dagger_ro
 - **The next student** is trained from scratch with the base row's recipe, on the base row's data plus all DAgger rounds so far. It is validated and then drives round k + 1.
 - **The round count** is chosen on seed-0 validation, as described in Section 6. Validation and test scenarios are never collected.
 
-**Validation results** (run on a teammate's machine; 32 scenarios per seed; the test run is still to come):
+**Validation results** (reference run of 1 November 2026 on the reference machine; 32 scenarios per seed; the test run is still to come):
 
 | Row | Seed-0 hold, rounds 0 / 1 / 2 / 3 | Chosen round | Hold per seed | Pooled |
 |---|---|---|---|---|
-| R5-baseline-dagger | 0 / 27 / 29 / 30 | r3 | 30 / 29 / 30 | 89/96 |
-| R6-gate-dagger | 1 / 24 / 27 / 31 | r3 | 31 / 30 / 28 | 89/96 |
-| R7-dart-dagger | 0 / 23 / 26 / 31 | r3 | 31 / 27 / 30 | 88/96 |
-| R8-dart-gate-dagger | 29 / 29 / 31 / 30 | r2 | 31 / 31 / 31 | 93/96 |
+| R5-baseline-dagger | 0 / 15 / 21 / 28 | r3 | 28 / 29 / 29 | 87/96 |
+| R6-gate-dagger | 2 / 27 / 29 / 31 | r3 | 31 / 29 / 30 | 90/96 |
+| R7-dart-dagger | 0 / 24 / 28 / 30 | r3 | 30 / 31 / 30 | 91/96 |
+| R8-dart-gate-dagger | 29 / 28 / 28 / 31 | r3 | 31 / 31 / 31 | 93/96 |
 
-- With DAgger, every row reaches 88–93/96, so neither the gate nor DART is needed any more.
+- With DAgger, every row reaches 87–93/96, so neither the gate nor DART is needed any more. The differences between the four rows are within the noise of 32 validation scenarios, so validation does not rank them.
+- Single rounds vary between runs: the teammate's development run reached similar final rounds (88–93/96) but, for example, R5 round 1 held 27/32 there against 15/32 here. Compare final rounds, not intermediate ones.
+- Offline validation error on the expert's states does not predict closed-loop success: in R8 round 3 it is the highest of all rounds while the closed-loop hold is the best. Training curves: `python -m evaluation.plot_training_curves --experiments 2026-11-01__training-ablation-v2`.
+
+The following two findings come from the teammate's development run (2026-10-30) and have not been repeated on the reference run:
 - The **equal-data control** (`R4-dart-gate-x4`, about as many extra DART episodes as DAgger adds) stays at R4's level (82/96). So the gain comes from where the data is collected, not from how much there is.
 - **Development probes** use fresh development seeds, not test scenes (`evaluation/far_probe.py`, `evaluation/robust_probe.py`). They show that R8 loses far targets (9–12 m) as rounds are added, while R5 and R6 do not.
 
-Details, DART-strength controls, network sizes and probe tables are in the [DAgger ablation report](reports/2026-10-31__report__dagger-ablation-and-final-model.md). The summaries and a table of the earlier names are in `results/ablation/2026-10-30__training-ablation-v2/`.
+Details, DART-strength controls, network sizes and probe tables are in the [DAgger ablation report](reports/2026-10-31__report__dagger-ablation-and-final-model.md). The reference-run summaries are in `results/ablation/2026-11-01__training-ablation-v2/`; the development run's summaries and a table of the earlier names are in `results/ablation/2026-10-30__training-ablation-v2/`.
 
 ---
 

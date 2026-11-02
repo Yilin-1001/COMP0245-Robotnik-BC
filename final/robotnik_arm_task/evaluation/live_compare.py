@@ -167,6 +167,11 @@ def _worker(role, args, artifact, scenario, path, barrier, stopped, paused, rest
                         textSize=1.2, replaceItemUniqueId=text_ids[i])
                 line_id = env.client.addUserDebugLine(env.ee_pos(), scenario.target_ee_pos,
                                                       [1, 0, 0], 2, replaceItemUniqueId=line_id)
+                # The GUI server sporadically fails a draw ("User debug draw failed", id -1) and the item it
+                # should have replaced stays on screen; clear everything so the ghost lasts one frame at most.
+                if min(text_ids) < 0 or line_id < 0:
+                    env.client.removeAllUserDebugItems()
+                    text_ids, line_id = [-1] * 5, -1
                 if follow_camera:
                     camera = env.client.getDebugVisualizerCamera()
                     env.client.resetDebugVisualizerCamera(camera[10], camera[8], camera[9],

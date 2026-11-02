@@ -2,6 +2,7 @@
 
 Date: 31 October 2026, revised 1 November 2026. Status: development results on a teammate's machine (validation and development probes only).
 Revision on 1 November: rows renamed to the R5–R8 scheme (pipeline Section 7; legacy names in `results/ablation/2026-10-30__training-ablation-v2/README.md`), and the informal test-set results of this branch were removed. The 64 test scenarios will be run once under the project protocol after the final model is chosen.
+The reference v2 run was repeated on 1 November on the reference machine (`results/ablation/2026-11-01__training-ablation-v2/`, pipeline Section 7.2); where its numbers differ from this report, the reference run is used.
 
 Originally written on branch `feature/dart-ablation`. All runs on one machine (i9-12950HX, RTX 3070 Ti Laptop, WSL2).
 Teacher A (`markovian-lt0.50-v1`) throughout. Standard predicates unless stated: reach < 10 mm after 8 s, 3 s more,

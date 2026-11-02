@@ -356,7 +356,7 @@ One command runs the whole row: collect, build, train and validate for each roun
 
 ```bash
 for ROW in R5-baseline-dagger R6-gate-dagger R7-dart-dagger R8-dart-gate-dagger; do
-    python -m experiments.dagger_rounds --row "$ROW" --rounds 3 --date 2026-10-30 --final-seeds 1 2 --workers 4
+    python -m experiments.dagger_rounds --row "$ROW" --rounds 3 --date 2026-11-01 --final-seeds 1 2 --workers 4
 done
 ```
 
@@ -365,11 +365,12 @@ done
 | Raw DAgger episodes (one folder per round and student) | `data/Markovian/DAgger/<date>__collection__r<k>-<digest>/` |
 | Feature datasets | `data/datasets/A/dagger-R<n>-v2-r<k>__<features>/` |
 | Variant configs (written by the runner) | `experiments/configs/datasets/variants/<row>-r<k>.yaml` |
-| Models | `checkpoints/ablation/2026-10-30__training-ablation-v2/<row>-r<k>__MLP01-256x3__s<seed>__v2__2026-10-30/` |
-| Per-row summary, validation JSON and logs | `results/ablation/2026-10-30__training-ablation-v2/dagger/<row>/` |
+| Models | `checkpoints/ablation/2026-11-01__training-ablation-v2/<row>-r<k>__MLP01-256x3__s<seed>__v2__2026-11-01/` |
+| Per-row summary, validation JSON and logs | `results/ablation/2026-11-01__training-ablation-v2/dagger/<row>/` |
+| Training-curve figures (`python -m evaluation.plot_training_curves`) | `results/ablation/2026-11-01__training-ablation-v2/figures/training/` |
 
-To hand over v2 models, package `checkpoints/ablation/2026-10-30__training-ablation-v2/` as in section 2. The DAgger feature datasets are only needed for retraining.
-The v2 results recorded so far come from a teammate's machine and use legacy names; the mapping is in `results/ablation/2026-10-30__training-ablation-v2/README.md`.
+To hand over v2 models, package `checkpoints/ablation/2026-11-01__training-ablation-v2/` as in section 2. The DAgger feature datasets are only needed for retraining.
+The reference v2 run (date 2026-11-01) was made on the reference machine at commit `780c476` with `--workers 20`; its summaries are in `results/ablation/2026-11-01__training-ablation-v2/`. A teammate's earlier development run (date 2026-10-30, legacy names) is kept in `results/ablation/2026-10-30__training-ablation-v2/`, with the name mapping in its README.
 
 ## Running
 
@@ -401,7 +402,7 @@ Checks: `python -m pytest tests -m "not sim and not realdata"` (fast), `-m reald
 - **Training-ready datasets**: `data/datasets/A/<source>__<definition>/` (features, labels, row offsets, episode list, QA and README; git-ignored), built by `training.datasets.build` (section 5).
 - **Rows**: one file per row in `experiments/configs/datasets/variants/`. v1: `R1-baseline`, `R2-gate`, `R3-dart`, `R4-dart-gate`. v2: `R5-baseline-dagger`, `R6-gate-dagger`, `R7-dart-dagger`, `R8-dart-gate-dagger` (one variant per round, `<row>-r<k>`), plus the R4 controls `R4-dart-gate-s0375`, `-s150`, `-x4` and `-split`.
 
-Training uses the frozen split: clean datasets keep only fitting scenarios, DART datasets hold fitting scenarios only (checked), and the 32 validation scenarios come from the clean dataset. Architectures use a new registry, `MLP<NN>` numbered in order of first use (`MLP01` = 256×256×256; the v2 network-size runs added `MLP02` = 64×64, `MLP03` = 128×128 and `MLP04` = 128×128×128 through `--set`), in place of the clean pipeline's m1–m6. Runs are named `<row>__<architecture>-<shape>__s<seed>__<version>__<date>` and stored in `checkpoints/ablation/<date>__training-ablation-<version>/`, for example `checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/`. The terminal model is also saved there as `<run name>.npz` and `<run name>.pt`, and it loads in `evaluation.evaluate` like any other MLP. Raise the version whenever the recipe, data or features change (v2 added DAgger data, with experiment date 2026-10-30); reusing a name with a different configuration is refused.
+Training uses the frozen split: clean datasets keep only fitting scenarios, DART datasets hold fitting scenarios only (checked), and the 32 validation scenarios come from the clean dataset. Architectures use a new registry, `MLP<NN>` numbered in order of first use (`MLP01` = 256×256×256; the v2 network-size runs added `MLP02` = 64×64, `MLP03` = 128×128 and `MLP04` = 128×128×128 through `--set`), in place of the clean pipeline's m1–m6. Runs are named `<row>__<architecture>-<shape>__s<seed>__<version>__<date>` and stored in `checkpoints/ablation/<date>__training-ablation-<version>/`, for example `checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/`. The terminal model is also saved there as `<run name>.npz` and `<run name>.pt`, and it loads in `evaluation.evaluate` like any other MLP. Raise the version whenever the recipe, data or features change (v2 added DAgger data, with experiment date 2026-11-01); reusing a name with a different configuration is refused.
 
 A whole ablation runs from one manifest, which fixes rows, seeds, recipe and evaluation rules before any result is seen:
 

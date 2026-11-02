@@ -4,6 +4,7 @@ DAgger rows R5–R8 and the supplementary R4 controls of the training-method abl
 Write-up: [docs/reports/2026-10-31__report__dagger-ablation-and-final-model.md](../../../../../docs/reports/2026-10-31__report__dagger-ablation-and-final-model.md).
 
 **Status.** Development results only, run on a teammate's machine (30–31 Oct, WSL2). Validation numbers below are from that machine.
+The reference v2 run is [`2026-11-01__training-ablation-v2`](../2026-11-01__training-ablation-v2/README.md); use its numbers where the two differ.
 The 64 test scenarios have **not** been run for v2 under the project protocol; that test is still to be done.
 Checkpoints, datasets and per-rollout details are git-ignored. Only the summaries in this folder are tracked.
 

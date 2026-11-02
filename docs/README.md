@@ -8,7 +8,8 @@ For commands, see the [project README](../README.md) (step-by-step reproduction 
 | Experiment | Rows | Validation | Test (64 scenarios) | Results |
 |---|---|---|---|---|
 | Training-method ablation v1 | R1–R4 | Done | R4 only (diagnostic, before DAgger) | `results/ablation/2026-10-28__training-ablation-v1/` |
-| Training-method ablation v2 (DAgger) | R5–R8, plus R4 controls | Done on a teammate's machine | **Not yet run** | `results/ablation/2026-10-30__training-ablation-v2/` |
+| Training-method ablation v2 (DAgger) | R5–R8 | Done (reference run, 2026-11-01) | **Not yet run** | `results/ablation/2026-11-01__training-ablation-v2/` |
+| v2 development run (teammate) | R5–R8, plus R4 controls | Done on a teammate's machine (record only) | Not used | `results/ablation/2026-10-30__training-ablation-v2/` |
 
 The final model has not been chosen yet. Row names are defined in the pipeline document, [Section 7](2026-10-30__guide__project-pipeline.md#7-ablation-experiment-design).
 
@@ -20,7 +21,7 @@ The final model has not been chosen yet. Row names are defined in the pipeline d
 | Datasets and splits | [Paired subsets Clean_253 / Clean_223](reports/2026-10-26__report__paired-clean-dataset-subsets.md) · split and success predicate: pipeline Sections 2–3 |
 | Training | Recipe and loss: pipeline Section 6 · [FK input accuracy](reports/2026-10-27__report__fk-input-accuracy.md) |
 | Ablation v1 (R1–R4) | Pipeline Section 7 · [R4 test-set diagnosis](reports/2026-10-29__report__r4-test-diagnosis.md) |
-| Ablation v2 (R5–R8, DAgger) | [DAgger ablation report](reports/2026-10-31__report__dagger-ablation-and-final-model.md) · [result summaries and legacy names](../final/robotnik_arm_task/results/ablation/2026-10-30__training-ablation-v2/README.md) |
+| Ablation v2 (R5–R8, DAgger) | Pipeline Section 7.2 · [reference-run summaries](../final/robotnik_arm_task/results/ablation/2026-11-01__training-ablation-v2/README.md) · [DAgger ablation report (development run)](reports/2026-10-31__report__dagger-ablation-and-final-model.md) · [development-run summaries and legacy names](../final/robotnik_arm_task/results/ablation/2026-10-30__training-ablation-v2/README.md) |
 | References | [Bibliography](references/2026-10-26__reference__research-bibliography.md) |
 
 Figures used by the pipeline document are in `figures/pipeline/`; regenerate them with `python -m evaluation.plot_pipeline_figures` from `final/robotnik_arm_task/`.
