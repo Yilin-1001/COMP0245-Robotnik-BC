@@ -348,9 +348,10 @@ python -m evaluation.live_compare --seed 2 --scenario train-0245          # 4. a
 python -m evaluation.live_compare --target 0.2 1.1 0.5         # 5. custom world-frame target (m)
 python -m evaluation.live_compare --start -0.3 0.4 --bearing 3.0 --target 1.8 -1.2 0.9   # 6. custom start, yaw and target
 python -m evaluation.live_compare --speed 0.5                  # slow motion (physics stays at 1 kHz)
+python -m evaluation.live_compare --seconds 40                 # optional: freeze after 40 simulated seconds
 ```
 
-**Controls:** `SPACE` pauses or resumes both windows, `R` resets both to the identical start, `F` toggles camera following in the focused window and `Q` closes both. After 40 simulated seconds the scene freezes until `R` or `Q`.
+**Controls:** `SPACE` pauses or resumes both windows, `R` resets both to the identical start, `F` toggles camera following in the focused window and `Q` closes both. By default the simulation keeps running without a time limit, including after reaching the target. Pass `--seconds <duration>` to freeze at a chosen simulation time until `R` or `Q`; `--seconds 0` explicitly selects unlimited duration. For headless runs, pass a positive duration to exit automatically, or use `Ctrl+C` to stop an unlimited run.
 
 **Suggested demo sequence:**
 1. Run 2 to show the full task: turn, drive, reach and hold, with both errors ending below 10 mm.

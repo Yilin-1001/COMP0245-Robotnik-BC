@@ -3,7 +3,8 @@
 Run from final/robotnik_arm_task/: python -m evaluation.live_compare
 SPACE pauses both windows, R resets both, Q closes both. Physics/control remain
 at 1 kHz; a barrier synchronizes the two processes every 20 simulation steps.
-At the duration limit the scene freezes for inspection until R or Q is pressed.
+Runs without a time limit by default. With --seconds > 0, the scene freezes
+at the duration limit for inspection until R or Q is pressed.
 """
 import argparse
 import hashlib
@@ -114,7 +115,7 @@ def _worker(role, args, artifact, scenario, path, barrier, stopped, paused, rest
         line_id = -1
         error = float(np.linalg.norm(scenario.target_ee_pos - env.ee_pos()))
         torque_max = wheel_right = wheel_left = 0.0
-        cap = round(args.seconds * 1000)
+        cap = round(args.seconds * 1000) if args.seconds else float("inf")
         print(f"[{label}] ready: {scenario.scenario_id}; target={scenario.target_ee_pos}", flush=True)
         while not stopped.is_set():
             tick = time.perf_counter()
@@ -212,7 +213,8 @@ def main(argv=None):
     p.add_argument("--start", type=float, nargs=2, metavar=("X", "Y"),
                    help="override the base start position in meters (world frame)")
     p.add_argument("--bearing", type=float, metavar="B", help="override the base start yaw in radians (0 = facing +X)")
-    p.add_argument("--seconds", type=float, default=40.0, help="simulation duration before freezing")
+    p.add_argument("--seconds", type=float, default=0.0,
+                   help="simulation duration before freezing; 0 (default) runs without a time limit")
     p.add_argument("--speed", type=float, default=1.0, help="wall-clock playback speed, physics stays at 1 kHz")
     p.add_argument("--protocol", type=Path,
                    help=f"model manifest (default {DEFAULT_PROTOCOL.relative_to(TASK_DIR)}: teacher-A ablation models)")
@@ -220,9 +222,9 @@ def main(argv=None):
     p.add_argument("--output", type=Path, default=TASK_DIR / "results/live_compare/comparison.json")
     args = p.parse_args(argv)
     import math
-    if not (math.isfinite(args.seconds) and args.seconds >= .001 and
+    if not (math.isfinite(args.seconds) and (args.seconds == 0 or args.seconds >= .001) and
             math.isfinite(args.speed) and args.speed > 0):
-        p.error("seconds must be finite and >= 0.001; speed must be finite and positive")
+        p.error("seconds must be 0 (unlimited) or finite and >= 0.001; speed must be finite and positive")
     if args.target is not None and not all(math.isfinite(v) for v in args.target):
         p.error("target coordinates must be finite")
     if (args.start is not None and not all(math.isfinite(v) for v in args.start)) or \
