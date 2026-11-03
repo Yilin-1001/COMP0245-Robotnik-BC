@@ -9,27 +9,30 @@ import pytest
 import yaml
 
 from conftest import TASK_DIR
+from evaluation.live_compare import DEFAULT_PROTOCOL
 
 
-DEMO_MANIFEST = TASK_DIR / "experiments/demo_models/2026-10-28__training-ablation-v1.yaml"
+DEMO_MANIFEST = DEFAULT_PROTOCOL
 
 
-def require_demo_artifact(row):
-    """Skip when the seed-0 model of this ablation row is absent (checkpoints are git-ignored)."""
+def require_demo_artifact(row, seed=0):
+    """Skip when the selected model is absent (checkpoints are git-ignored)."""
     protocol = yaml.safe_load(DEMO_MANIFEST.read_text())
-    artifact = next(a for a in protocol["decisions"]["final"]["artifacts"] if (a["row"], a["seed"]) == (row, 0))
+    artifact = next(a for a in protocol["decisions"]["final"]["artifacts"] if (a["row"], a["seed"]) == (row, seed))
     if not (TASK_DIR / artifact["inference"]).exists():
         pytest.skip(f"trained checkpoint not present locally: {artifact['inference']}")
     return artifact
 
 
 @pytest.mark.sim
-@pytest.mark.parametrize("row", ["R4-dart-gate", "R1-baseline"])
-def test_live_comparison_uses_two_independent_simulators_at_the_same_time(tmp_path, row):
-    artifact = require_demo_artifact(row)
+@pytest.mark.parametrize("row", ["R1-baseline", "R2-gate", "R3-dart", "R4-dart-gate",
+                                 "R5-baseline-dagger", "R6-gate-dagger", "R7-dart-dagger", "R8-dart-gate-dagger"])
+@pytest.mark.parametrize("seed", [0, 1, 2])
+def test_live_comparison_uses_two_independent_simulators_at_the_same_time(tmp_path, row, seed):
+    artifact = require_demo_artifact(row, seed)
     output = tmp_path / "comparison.json"
     result = subprocess.run(
-        [sys.executable, "-m", "evaluation.live_compare", "--headless", "--row", row,
+        [sys.executable, "-m", "evaluation.live_compare", "--headless", "--row", row, "--seed", str(seed),
          "--seconds", "0.1", "--output", str(output)],
         cwd=TASK_DIR, env={**os.environ, "OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1"},
         capture_output=True, text=True, timeout=45)

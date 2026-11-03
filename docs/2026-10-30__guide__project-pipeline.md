@@ -343,6 +343,7 @@ source ../../.venv/bin/activate
 python -m evaluation.live_compare --headless --seconds 0.1     # 1. smoke test without windows
 python -m evaluation.live_compare                              # 2. expert A vs R4 seed 0 on train-0186 (target 2.7 m away, behind the robot)
 python -m evaluation.live_compare --row R3-dart                # 3. same scene with an ablation row (DART without the gate)
+python -m evaluation.live_compare --row R8-dart-gate-dagger     # selected DAgger round 3; no --protocol needed
 python -m evaluation.live_compare --seed 2 --scenario train-0245          # 4. another seed and validation scenario
 python -m evaluation.live_compare --target 0.2 1.1 0.5         # 5. custom world-frame target (m)
 python -m evaluation.live_compare --start -0.3 0.4 --bearing 3.0 --target 1.8 -1.2 0.9   # 6. custom start, yaw and target
@@ -356,4 +357,6 @@ python -m evaluation.live_compare --speed 0.5                  # slow motion (ph
 2. Switch to R3 (run 3) and R1 to show why the gate and DART are both needed.
 3. Show a custom scene (run 5 or 6).
 
-A scene outside the training ranges prints a warning: start-to-target distance 0.5–3.0 m, target height 0.1–1.25 m, start x and y within ±0.5 m. The models come from the hash-pinned manifest `experiments/demo_models/2026-10-28__training-ablation-v1.yaml`, so only R1–R4 can be shown. A v2 manifest will be added once the v2 checkpoints are on the reference machine. Each run's summary is saved to `results/live_compare/comparison.json`, and demo runs never enter the evaluation index.
+Choose any row with `--row`: `R1-baseline`, `R2-gate`, `R3-dart`, `R4-dart-gate`, `R5-baseline-dagger`, `R6-gate-dagger`, `R7-dart-dagger` or `R8-dart-gate-dagger`. Each supports `--seed 0`, `1` or `2`. The default remains R4, seed 0. R1–R4 use the 2026-10-28 v1 terminal models; R5–R8 use the selected round 3 of the 2026-11-01 v2 run. The default hash-pinned manifest is `experiments/demo_models/training-ablation-v1-v2.yaml`; use `--protocol <path>` to select another manifest. Checkpoint files must be present locally (they are not tracked in Git).
+
+A scene outside the training ranges prints a warning: start-to-target distance 0.5–3.0 m, target height 0.1–1.25 m, start x and y within ±0.5 m. Each run's summary is saved to `results/live_compare/comparison.json`, and demo runs never enter the evaluation index.

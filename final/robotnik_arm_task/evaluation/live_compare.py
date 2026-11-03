@@ -16,8 +16,8 @@ import threading
 import time
 
 TASK_DIR = Path(__file__).resolve().parents[1]
-# Terminal models of the training-method ablation; the default demo is its best row, R4-dart-gate, seed 0.
-DEFAULT_PROTOCOL = TASK_DIR / "experiments/demo_models/2026-10-28__training-ablation-v1.yaml"
+# R1-R4 use v1 terminal models; R5-R8 use the selected v2 DAgger round (r3).
+DEFAULT_PROTOCOL = TASK_DIR / "experiments/demo_models/training-ablation-v1-v2.yaml"
 DEFAULT_ROW = "R4-dart-gate"
 
 
@@ -201,7 +201,8 @@ def _worker(role, args, artifact, scenario, path, barrier, stopped, paused, rest
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--teacher", choices=["A", "B"], default="A")
-    p.add_argument("--row", default=DEFAULT_ROW, help="ablation row in the manifest, e.g. R1-baseline or R4-dart-gate")
+    p.add_argument("--row", default=DEFAULT_ROW,
+                   help="ablation row R1-R8, e.g. R1-baseline, R6-gate-dagger or R8-dart-gate-dagger (default: R4-dart-gate)")
     p.add_argument("--objective", choices=["bc", "bcj"], default="bcj")
     p.add_argument("--seed", type=int, choices=[0, 1, 2], default=0)
     p.add_argument("--scenario", default="train-0186",
