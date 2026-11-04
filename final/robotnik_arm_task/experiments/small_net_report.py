@@ -127,12 +127,13 @@ def main(argv=None) -> int:
         w.writerows(lines)
     cols = [("Network", "arch"), ("Params", "parameters"), ("FLOPs", "flops"), (".npz KB", "npz_kb"),
             ("Latency p50 / p99 (µs)", None), ("Train min / model", "train_min_median"),
-            ("Pipeline min to chosen round", "pipeline_min_to_chosen"), ("Chosen round", "chosen_round"),
+            ("Pipeline min, all rounds", "pipeline_min_all_rounds"), ("Chosen round", "chosen_round"),
+            ("Pipeline min to chosen round", "pipeline_min_to_chosen"),
             ("Validation s0 by round", "validation_by_round_s0"), ("Validation chosen (s0/s1/s2)", "validation_per_seed"),
             ("Validation pooled", "validation_pooled")] + [(f"Test {g}", f"test {g}") for g in GROUPS]
     md = ["# Small-network DART + DAgger (R8 end to end)", "",
-          f"Date {args.date}. Pipeline minutes: seed-0 chain (collect + build + train + validate) from round 0 to the "
-          "chosen round, on this machine. Latency: isolated single-thread NumPy predict(), batch 1. Test: 240-scene "
+          f"Date {args.date}. Pipeline minutes: seed-0 chain (collect + build + train + validate), all rounds (the real "
+          "cost: the chosen round is only known after the last round) and, for reference, up to the chosen round. Latency: isolated single-thread NumPy predict(), batch 1. Test: 240-scene "
           "unified suite, 3 seeds pooled.", "",
           "| " + " | ".join(c for c, _ in cols) + " |", "|" + "---|" * len(cols)]
     for line in lines:
