@@ -52,9 +52,15 @@ This samples the target relative to the robot's starting pose. Varying the start
 
 Distance is **uniform in radius**, not uniform in floor area: equal-width distance intervals have equal probability, so targets are denser per square metre near the robot. This is the chosen task weighting, not a uniform spatial distribution.
 
-![Scenario coverage](figures/scenario_coverage.png)
+![Three-dimensional target coverage by fitting, validation and test split](figures/scenario_coverage.png)
 
-*Fitting, validation and test scenes projected onto three parameter pairs. These plots show sampled geometry, not complete six-dimensional or trajectory-state coverage.*
+*Each point is one target, shown relative to the robot's starting position and heading: x is forward/backward, y is left/right, and z is target world height. The dark square marks the robot and the arrow its forward direction; faint floor projections help judge horizontal position. Fitting (221), validation (32) and test (64) have separate panels with identical limits and viewpoints. The vertical scale is expanded for readability. The pale rings mark the sampled distance and height bounds.*
+
+The horizontal coordinates are `x = d · cos(relative_azimuth)` and `y = d · sin(relative_azimuth)`. Aligning every scenario to the initial robot pose makes front, rear and side targets directly comparable despite different world starting positions and headings. This physical view shows an annular target volume because distance is limited to 0.5–3.0 m.
+
+![Three-dimensional sampling coordinates and validation strata](figures/scenario_parameter_coverage_3d.png)
+
+*A complementary view keeps the original sampling coordinates: distance, relative azimuth (degrees) and height. The lattice shows the actual 2 × 4 × 4 validation strata; validation has exactly one point in each of the 32 cells. Azimuth −180° and +180° are the same direction at the angular boundary. Both figures show three of the six sampled parameters, rather than complete six-dimensional or trajectory-state coverage.*
 
 ### Verify coverage and preserve the split
 
@@ -139,7 +145,7 @@ data_collection/
   data/ou_protocol.yaml        phase-gated noise collection settings
   data/source_inventory.json  source paths and hashes of the 11 copied evidence files
   tables/                     collection, coverage, marginal, stratum and discrepancy counts
-  figures/                    scenario coverage and Sobol comparison, PNG + PDF
+  figures/                    physical 3-D coverage, 3-D strata and Sobol comparison, PNG + PDF
 ```
 
 From `final/robotnik_arm_task/`, in the project environment:
@@ -148,7 +154,7 @@ From `final/robotnik_arm_task/`, in the project environment:
 python report/data_collection/code/build_report.py
 ```
 
-The script uses NumPy, SciPy and Matplotlib. It verifies copied evidence hashes, checks fitting/validation separation and stratum occupancy, checks train/test parameter and seed separation, recomputes the IID discrepancy reference, and regenerates all five tables and both figure pairs. It does not recollect data, train a policy or overwrite the original manifests. Raw `.npz` trajectories remain in the original dataset rather than being duplicated here.
+The script uses NumPy, SciPy and Matplotlib. It verifies copied evidence hashes, checks fitting/validation separation and stratum occupancy, checks train/test parameter and seed separation, verifies the robot-relative coordinate transform against the stored world coordinates, recomputes the IID discrepancy reference, and regenerates all five tables and three figure pairs. It does not recollect data, train a policy or overwrite the original manifests. Raw `.npz` trajectories remain in the original dataset rather than being duplicated here.
 
 **Source implementation:** [`scenarios.py`](../../data_collection/scenarios.py), [`collect.py`](../../data_collection/collect.py), [`qa_clean.py`](../../data_collection/qa_clean.py), [`scenario_coverage.py`](../../data_collection/scenario_coverage.py), [`build_clean_subsets.py`](../../data_collection/build_clean_subsets.py), [`collect_dart.py`](../../data_collection/collect_dart.py), [`collect_dagger.py`](../../data_collection/collect_dagger.py), [`core/env.py`](../../core/env.py), [`training/common/engine.py`](../../training/common/engine.py).
 

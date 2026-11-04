@@ -34,11 +34,94 @@ def unit(rows):
     return np.array([[float(r[f"u_{d}"]) for d in DIMS] for r in rows])
 
 
-def save(fig, name):
-    fig.tight_layout()
+def save(fig, name, three_dimensional=False):
+    padding = {}
+    if three_dimensional:
+        fig.subplots_adjust(left=.02, right=.96, bottom=.16, top=.81, wspace=.16)
+        fig.canvas.draw()
+        labels = list(fig.texts) + [axis.label for ax in fig.axes for axis in (ax.xaxis, ax.yaxis, ax.zaxis)]
+        padding = {"bbox_inches": "tight", "pad_inches": .18, "bbox_extra_artists": labels}
+    else:
+        fig.tight_layout()
     for suffix in ("png", "pdf"):
-        fig.savefig(ROOT / "figures" / f"{name}.{suffix}", dpi=180)
+        fig.savefig(ROOT / "figures" / f"{name}.{suffix}", dpi=180, **padding)
     plt.close(fig)
+
+
+def plot_scene_splits(groups, ranges):
+    """Show the same frozen targets in physical space and in sampling coordinates."""
+    splits = [("fitting221", "#2a78d6", "o", "Fitting", "Used to learn the policy"),
+              ("validation32", "#df6a32", "D", "Validation", "One scene in each of 32 strata"),
+              ("test64", "#258675", "^", "Test", "Separate Sobol design")]
+    fig = plt.figure(figsize=(16, 6.4))
+    parameter_fig = plt.figure(figsize=(16, 6.4))
+    angle = np.linspace(-np.pi, np.pi, 160)
+    d_edges = np.linspace(*ranges["target_dist"], 3)
+    a_edges = np.linspace(-180, 180, 5)
+    z_edges = np.linspace(*ranges["target_z"], 5)
+    for panel, (name, color, marker, label, purpose) in enumerate(splits, 1):
+        rows = groups[name]
+        distance = np.array([float(r["target_dist"]) for r in rows])
+        azimuth = np.array([float(r["rel_azimuth"]) for r in rows])
+        height = np.array([float(r["target_z"]) for r in rows])
+        # Translate to the start base and undo its yaw; z remains world height.
+        x, y = distance * np.cos(azimuth), distance * np.sin(azimuth)
+        yaw = np.array([float(r["start_yaw"]) for r in rows])
+        dx = np.array([float(r["target_x"]) - float(r["start_x"]) for r in rows])
+        dy = np.array([float(r["target_y"]) - float(r["start_y"]) for r in rows])
+        assert np.allclose(x, np.cos(yaw) * dx + np.sin(yaw) * dy)
+        assert np.allclose(y, -np.sin(yaw) * dx + np.cos(yaw) * dy)
+        ax = fig.add_subplot(1, 3, panel, projection="3d", computed_zorder=False)
+        for radius in ranges["target_dist"]:
+            for z in ranges["target_z"]:
+                ax.plot(radius * np.cos(angle), radius * np.sin(angle), np.full_like(angle, z),
+                        color="#bac4ce", lw=.7, alpha=.65, zorder=1)
+        ax.scatter(x, y, np.zeros_like(height), s=13, color=color, alpha=.10, depthshade=False, zorder=2)
+        ax.scatter(x, y, height, s=32, color=color, marker=marker, alpha=.85,
+                   edgecolors="white", linewidths=.35, depthshade=False, zorder=3)
+        ax.scatter([0], [0], [0], s=42, marker="s", color="#263442", zorder=4)
+        ax.quiver(0, 0, 0, 1, 0, 0, color="#263442", arrow_length_ratio=.22, linewidth=1.6, zorder=4)
+        ax.set(xlim=(-3.2, 3.2), ylim=(-3.2, 3.2), zlim=(0, 1.35),
+               xticks=[-3, 0, 3], yticks=[-3, 0, 3], zticks=[0, .5, 1, 1.25],
+               xlabel="Forward / backward (m)", ylabel="Left / right (m)", zlabel="Target height (m)")
+        ax.set_box_aspect((1, 1, .70))
+
+        pa = parameter_fig.add_subplot(1, 3, panel, projection="3d", computed_zorder=False)
+        # The lattice is the actual 2 distance x 4 height x 4 azimuth split rule.
+        for d in d_edges:
+            for a in a_edges:
+                pa.plot([d, d], [a, a], [z_edges[0], z_edges[-1]], color="#b9c2cd", lw=.6, alpha=.45, zorder=1)
+            for z in z_edges:
+                pa.plot([d, d], [-180, 180], [z, z], color="#b9c2cd", lw=.6, alpha=.45, zorder=1)
+        for a in a_edges:
+            for z in z_edges:
+                pa.plot([d_edges[0], d_edges[-1]], [a, a], [z, z], color="#b9c2cd", lw=.6, alpha=.45, zorder=1)
+        pa.scatter(distance, np.degrees(azimuth), height, s=32, color=color, marker=marker,
+                   edgecolors="white", linewidths=.35, alpha=.9, depthshade=False, zorder=3)
+        pa.set(xlim=tuple(d_edges[[0, -1]]), ylim=(-180, 180), zlim=tuple(z_edges[[0, -1]]),
+               xticks=d_edges, yticks=[-180, -90, 0, 90, 180], zticks=[.1, .675, 1.25],
+               xlabel="Target distance (m)", ylabel="Relative azimuth (deg)", zlabel="Target height (m)")
+        pa.set_box_aspect((1, 1, .8))
+        pa.set_xticklabels(["0.5", "1.75", "3.0"])
+        for axis in (ax, pa):
+            axis.view_init(elev=24, azim=-55)
+            axis.set_title(f"{label}  |  n = {len(rows)}", color=color, fontsize=14, fontweight="bold", pad=16)
+            axis.text2D(.5, 1.0, purpose, transform=axis.transAxes, ha="center", color="#526173", fontsize=10)
+            axis.tick_params(labelsize=9, pad=1)
+            axis.xaxis.set_tick_params(pad=6)
+            axis.yaxis.set_tick_params(pad=5)
+            for direction in (axis.xaxis, axis.yaxis, axis.zaxis):
+                direction.pane.fill = False
+    fig.suptitle("Where are the targets relative to the robot at the start?", fontsize=17, y=.97)
+    fig.text(.5, .91, "Each point is one scenario; all panels use the same axes and viewing angle.", ha="center", color="#526173")
+    fig.text(.5, .04, "Robot = dark square at the origin; arrow = forward (+x). Faint dots are floor projections.\n"
+             "Height is in world coordinates; the vertical scale is expanded for readability.", ha="center", fontsize=10, color="#526173")
+    parameter_fig.suptitle("How do the splits cover distance, direction and height?", fontsize=17, y=.97)
+    parameter_fig.text(.5, .91, "Grid: 2 distance bins x 4 azimuth bins x 4 height bins = 32 strata.", ha="center", color="#526173")
+    parameter_fig.text(.5, .04, "Validation has exactly one scene per stratum; fitting and test cover the same parameter ranges.\n"
+                       "These three coordinates do not show the full six-dimensional scenario design.", ha="center", fontsize=10, color="#526173")
+    save(fig, "scenario_coverage", three_dimensional=True)
+    save(parameter_fig, "scenario_parameter_coverage_3d", three_dimensional=True)
 
 
 def main():
@@ -120,22 +203,7 @@ def main():
     write_csv("sobol_vs_iid.csv", comparison)
 
     plt.rcParams.update({"font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
-    fig, axes = plt.subplots(1, 3, figsize=(13, 3.8))
-    for name, color, label in (("fitting221", "#2a78d6", "Fitting (221)"),
-                               ("validation32", "#df6a32", "Validation (32)"),
-                               ("test64", "#258675", "Test (64)")):
-        rows = groups[name]
-        for ax, x, y in zip(axes, ["target_dist", "rel_azimuth", "start_x"],
-                            ["target_z", "start_yaw", "start_y"]):
-            ax.scatter([float(r[x]) for r in rows], [float(r[y]) for r in rows],
-                       s=18, alpha=.75, color=color, label=label)
-    for ax, xlabel, ylabel in zip(axes, ["Target distance (m)", "Relative target azimuth (rad)", "Start x (m)"],
-                                 ["Target height (m)", "Start yaw (rad)", "Start y (m)"]):
-        ax.set(xlabel=xlabel, ylabel=ylabel)
-        ax.grid(alpha=.18)
-    axes[0].legend(frameon=False, fontsize=8)
-    fig.suptitle("Frozen scene splits: projections of six sampled parameters")
-    save(fig, "scenario_coverage")
+    plot_scene_splits(groups, manifest["ranges"])
 
     fig, axes = plt.subplots(1, 3, figsize=(13, 3.8))
     iid = np.random.default_rng(0).random(train.shape)
@@ -155,7 +223,7 @@ def main():
     axes[2].legend(frameon=False, fontsize=8)
     save(fig, "sobol_vs_iid")
     print("Verified 11 evidence hashes, split separation and 32 validation cells;")
-    print("reproduced historical discrepancy audit; wrote 5 tables and 2 PNG/PDF figure pairs.")
+    print("verified 3-D coordinate transforms; wrote 5 tables and 3 PNG/PDF figure pairs.")
 
 
 if __name__ == "__main__":
