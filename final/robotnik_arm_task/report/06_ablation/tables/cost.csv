@@ -1,0 +1,9 @@
+row,report_name,training_episodes,training_rows_M,added_expert_labels_M,added_wall_min,sequential_train_collect_cycles,note
+R1,Baseline,221,2.66,0.0,0.0,0,-
+R2,Baseline + Gate,221,2.66,0.0,0.0,0,-
+R3,OU,662,7.95,5.29,3.3,0,OU collection 3.3 min
+R4,OU + Gate,662,7.95,5.29,3.3,0,OU collection 3.3 min
+R5,DAgger,1076,23.98,21.32,30.3,3,3 DAgger rounds (collect + build + train + validate; seed-0 chain) 30.3 min
+R6,DAgger + Gate,1076,21.28,18.62,28.4,3,3 DAgger rounds (collect + build + train + validate; seed-0 chain) 28.4 min
+R7,f-DAgger,1517,27.24,24.58,33.0,3,OU collection 3.3 + 3 DAgger rounds (collect + build + train + validate; seed-0 chain) 29.7 min
+R8,f-DAgger + Gate,1517,19.18,16.53,26.0,3,OU collection 3.3 + 3 DAgger rounds (collect + build + train + validate; seed-0 chain) 22.7 min

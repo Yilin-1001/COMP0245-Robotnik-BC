@@ -26,6 +26,10 @@ ROWS = {  # row -> (gate, OU noise, DAgger)
     "R1-baseline": (0, 0, 0), "R2-gate": (1, 0, 0), "R3-dart": (0, 1, 0), "R4-dart-gate": (1, 1, 0),
     "R5-baseline-dagger": (0, 0, 1), "R6-gate-dagger": (1, 0, 1), "R7-dart-dagger": (0, 1, 1), "R8-dart-gate-dagger": (1, 1, 1),
 }
+NAMES = {  # report names, as in ../../06_ablation/ ("+ Gate" = the 22nd input reach_gate; "dart" in run ids = OU noise)
+    "R1-baseline": "Baseline", "R2-gate": "Baseline + Gate", "R3-dart": "OU", "R4-dart-gate": "OU + Gate",
+    "R5-baseline-dagger": "DAgger", "R6-gate-dagger": "DAgger + Gate", "R7-dart-dagger": "f-DAgger",
+    "R8-dart-gate-dagger": "f-DAgger + Gate", "teacher A": "Expert A (teacher)"}
 BASE_ROW = {"R1-baseline": "R5-baseline-dagger", "R2-gate": "R6-gate-dagger", "R3-dart": "R7-dart-dagger",
             "R4-dart-gate": "R8-dart-gate-dagger"}  # round-0 model -> the DAgger row it starts
 SUITES = ["T0", "T1", "T2", "T3", "T4", "T5"]
@@ -90,7 +94,7 @@ def dagger_collections():
         collector = m["student"]["run_id"].split("__")[0]
         row = BASE_ROW.get(collector) or collector.rsplit("-r", 1)[0]
         rmse = [float(e["student_teacher_arm_rmse_nm"]) for e in eps if e["student_teacher_arm_rmse_nm"]]
-        rows.append({"row": row, "round": m["round"], "collector": collector, "episodes": m["counts"]["train_episodes"],
+        rows.append({"row": row, "report_name": NAMES[row], "round": m["round"], "collector": collector, "episodes": m["counts"]["train_episodes"],
                      "fitting_student_hold": f"{m['counts']['fitting_student_hold']}/{m['counts']['fitting_episodes']}",
                      "dev_student_hold": f"{m['counts']['development_student_hold']}/{m['counts']['development_episodes']}",
                      "rows": sum(int(e["T_actions"]) for e in eps),
@@ -122,7 +126,7 @@ def factorial_validation(v2):
     for row, rnd, per_seed, n in rows:
         gate, ou, dagger = ROWS[row]
         k = sum(per_seed)
-        table.append({"row": row, "gate": gate, "ou_noise": ou, "dagger": dagger, "round": rnd,
+        table.append({"row": row, "report_name": NAMES[row], "gate": gate, "ou_noise": ou, "dagger": dagger, "round": rnd,
                       "hold_per_seed": "/".join(map(str, per_seed)), "pooled": f"{k}/{3 * n}", "rate": round(k / (3 * n), 3),
                       "wilson95": wilson(k, 3 * n)})
     write_csv("factorial_validation.csv", table)
@@ -133,7 +137,7 @@ def dagger_rounds(v2):
     for row in list(ROWS)[4:]:
         for rnd in range(4):
             cells = {s: v2.get((row, rnd, s)) for s in range(3)}
-            table.append({"row": row, "round": rnd,
+            table.append({"row": row, "report_name": NAMES[row], "round": rnd,
                           **{f"seed{s}": f"{c[0]}/{c[1]}" if c else "" for s, c in cells.items()},
                           "pooled": f"{sum(c[0] for c in cells.values() if c)}/{sum(c[1] for c in cells.values() if c)}"})
     write_csv("dagger_rounds.csv", table)
@@ -146,7 +150,7 @@ def factorial_test():
             cells[(r["row"], r["suite"])] = (int(r["successes"]), int(r["n"]))
     table = []
     for short, full in [("expert", "teacher A")] + [(f"R{i + 1}", name) for i, name in enumerate(ROWS)]:
-        entry = {"row": full, "round": "r3" if short in ("R5", "R6", "R7", "R8") else "-"}
+        entry = {"row": full, "report_name": NAMES[full], "round": "r3" if short in ("R5", "R6", "R7", "R8") else "-"}
         for s in SUITES:
             k, n = cells[(short, s)]
             entry[s] = f"{100 * k / n:.1f}"

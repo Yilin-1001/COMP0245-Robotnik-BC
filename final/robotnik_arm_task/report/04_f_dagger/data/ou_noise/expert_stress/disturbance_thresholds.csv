@@ -1,0 +1,16 @@
+channel,unit,structure,gated,A_completes,A_holds,B_completes,B_holds
+arm,N*m,white,False,>=8,4,>=8,>=8
+arm,N*m,ou_0.05,False,>=8,1,>=8,1
+arm,N*m,ou_0.2,False,>=8,0.5,>=8,0.5
+arm,N*m,ou_1.0,False,4,0.5,>=8,0.5
+arm,N*m,const,False,1,0.5,4,2
+wheel,rad/s,white,False,>=3,>=3,0.3,0.3
+wheel,rad/s,ou_0.05,False,>=3,0.3,0.3,0.1
+wheel,rad/s,ou_0.2,False,1,0.1,0.3,0.1
+wheel,rad/s,ou_1.0,False,1,0.1,0.3,none
+wheel,rad/s,const,False,0.3,0.3,0.1,none
+wheel,rad/s,white,True,>=3,>=3,0.3,0.3
+wheel,rad/s,ou_0.05,True,1,1,0.3,0.3
+wheel,rad/s,ou_0.2,True,1,1,0.3,0.3
+wheel,rad/s,ou_1.0,True,1,1,0.1,0.1
+wheel,rad/s,const,True,0.3,0.3,0.1,0.1

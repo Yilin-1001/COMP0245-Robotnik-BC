@@ -1,0 +1,5 @@
+row,report_name,scenes_per_seed,arm_stayed_per_seed,arm_stayed,full_stayed,median_stiffness_eig_max_nm_per_rad,median_max_real_eig,median_damping_diag,expert_median_max_real_eig
+R1,Baseline,8,1/4/3,8/24,8/24,143.47,0.725,-29.9,0.004
+R2,Baseline + Gate,8,0/2/1,3/24,5/24,112.92,0.915,-29.93,0.004
+R3,OU,8,8/8/8,24/24,24/24,1.42,0.02,-29.85,0.004
+R4,OU + Gate,8,7/8/8,23/24,24/24,1.67,0.027,-29.86,0.004

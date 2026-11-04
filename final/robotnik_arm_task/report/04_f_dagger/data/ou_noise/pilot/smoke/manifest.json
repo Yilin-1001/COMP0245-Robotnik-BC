@@ -1,0 +1,102 @@
+{
+  "arguments": {
+    "out": "/media/yilin/data/ML_Final/ou_validation_20261026/smoke",
+    "n": 0,
+    "seed": 427601,
+    "anchors": true,
+    "workers": 12,
+    "leads": [
+      0.15,
+      0.5
+    ],
+    "noise_scales": [
+      0.0,
+      1.0
+    ],
+    "noise_repeats": 1,
+    "alpha_random": false
+  },
+  "scenarios": [
+    {
+      "id": "anchor_0",
+      "target": [
+        0.0,
+        1.1,
+        0.5
+      ],
+      "start": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "yaw": 0.0
+    },
+    {
+      "id": "anchor_1",
+      "target": [
+        1.5,
+        1.0,
+        0.6
+      ],
+      "start": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "yaw": 0.0
+    },
+    {
+      "id": "anchor_2",
+      "target": [
+        -1.2,
+        1.8,
+        0.3
+      ],
+      "start": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "yaw": 0.0
+    },
+    {
+      "id": "anchor_3",
+      "target": [
+        0.4,
+        -2.2,
+        1.1
+      ],
+      "start": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "yaw": 0.0
+    }
+  ],
+  "protocol": {
+    "dt": 0.001,
+    "tau": 0.2,
+    "max_time": 40.0,
+    "hold_time": 3.0,
+    "tail_noise_off_after": 1.5,
+    "reach_tolerance": 0.01,
+    "min_reach_time": 8.0,
+    "sensor_noise": 0.0,
+    "mass_scale": 1.0,
+    "friction_scale": 1.0,
+    "push": null,
+    "source_stop_recorded_not_enforced": true,
+    "trace_stride": 10,
+    "stationary_sigma": true,
+    "ou_initial_state": 0,
+    "channels_independent": true
+  },
+  "source_sha256": {
+    "core/env.py": "9aab94018236fbb2f2f86d432fada45d384e395aacba118b5fb5ab44cb6789d2",
+    "data_collection/expert.py": "48b5ec45d7ec294b8d7914e09daaeca5a55b1259a05cce02ed36d11be6c46b52",
+    "robotnik_arm_control.py": "1fd0baf658406c142e1dbb02c51f225e30bc60cb22ff0a0a6192f2ba9cc990e9",
+    "robotnik_arm_task.py": "a8de247c79a5aa8ffb80c86e70ae4eb6a0afb4d60da2b89fb584924ea0eea94e",
+    "configs/robotnik_arm.json": "ee65349b469a95257f8e94fc06c22d76629f2b3b6f45ac74521c0e059de9bdf2"
+  }
+}

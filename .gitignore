@@ -41,6 +41,11 @@ outputs/
 runs/
 wandb/
 
+# Report evidence: diagnostic trajectories and frozen training curves/configs are submission sources.
+!final/robotnik_arm_task/report/04_f_dagger/data/ou_noise/pilot/**/traces/*.npz
+!final/robotnik_arm_task/report/05_training_details/data/runs/
+!final/robotnik_arm_task/report/05_training_details/data/runs/**
+
 # Editor / OS
 .vscode/
 .idea/

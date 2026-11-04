@@ -1,0 +1,2 @@
+row,architecture,parameters,seeds,student_hold_per_seed,student_hold_rate,student_hold_ci95,student_reach_per_seed,student_median_final_err_mm,arm_hold_per_seed,arm_hold_rate,arm_hold_ci95,arm_reach_per_seed,arm_median_final_err_mm,hold_test_arm_stayed_per_seed,hold_test_median_stiffness_eig_max,hold_test_median_max_real_eig
+R4-dart-gate-bc,MLP01-256x3,141321,3,24/28/24,0.7916666666666666,0.70-0.86,29/30/26,2.8284638521900747,26/27/24,0.8020833333333334,0.71-0.87,29/29/26,2.754223327613764,7/7/7,2.2187233948997394,0.02192933031941937

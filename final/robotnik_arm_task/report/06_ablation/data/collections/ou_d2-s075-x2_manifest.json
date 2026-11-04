@@ -1,0 +1,168 @@
+{
+  "schema_version": "dart-v1",
+  "dataset_id": "Markovian/DART/2026-10-28__collection__d2-s075-x2-58af5db87875",
+  "dataset_kind": "dart",
+  "teacher_id": "markovian_expert",
+  "teacher_version": "markovian-lt0.50-v1",
+  "teacher_parameters": {
+    "class": "data_collection.expert.MarkovianExpert",
+    "params": {
+      "arm": {
+        "reach_limit": 0.85,
+        "kp": 100.0,
+        "kd": 30.0,
+        "max_joint_vel": 1.0,
+        "max_q_lead": 0.15,
+        "max_torque": 30.0,
+        "cartesian_kp": 1.5,
+        "max_cartesian_speed": 0.25,
+        "min_ik_damping": 0.01,
+        "max_ik_damping": 0.1,
+        "singularity_threshold": 0.15,
+        "limit_margin": 0.05
+      },
+      "base": {
+        "nav_timeout": "inf",
+        "kp_pos": 1.0,
+        "kp_ori": 3.0,
+        "max_lin_vel": 0.25,
+        "min_lin_vel": 0.05,
+        "max_ang_vel": 1.0,
+        "pos_tol": 0.08,
+        "ang_tol": 0.05,
+        "wheel_radius": 0.11,
+        "wheel_base_width": 0.66
+      },
+      "lead_time": 0.5,
+      "drive_heading_tol": 0.3,
+      "reach_tol_scale": 1.5,
+      "base_pitch": 0.0022
+    },
+    "model": "summit_xl_complete_pin.urdf + 1 kg end-effector body (PyBullet default mass), fixed fingers 0.1 rad"
+  },
+  "protocol": {
+    "protocol": "d2-s075-x2",
+    "teacher": "A",
+    "scenarios": {
+      "source": "data/Markovian/Clean_253/scenarios_train.csv",
+      "split_manifest": "experiments/splits/clean253.json",
+      "ids": "fitting_ids.clean253"
+    },
+    "draws_per_scenario": 2,
+    "seed": 20261028,
+    "noise": {
+      "type": "ou",
+      "tau_s": 0.2,
+      "alpha": [
+        0.25,
+        1.0
+      ],
+      "arm_sigma_nm": 0.75,
+      "wheel_sigma_rad_s": 0.15,
+      "wheel_off": "first_reach_active",
+      "all_off_after_reach_s": 1.5
+    }
+  },
+  "protocol_sha256": "827cd1b9ed42687e73e5f40f7cf01b4f9519ef47637ddfa97c832f3f213b614a",
+  "code_digest": "58af5db8787511c2f354dce93f81a9f5f9015630222f42fa21cfa092c905d316",
+  "source": {
+    "git_head": "e78eab559333ec0665a88b8d60718e950ce17c2e",
+    "git_dirty_paths": [
+      "M final/robotnik_arm_task/training/common/dataset.py",
+      " M final/robotnik_arm_task/training/common/engine.py",
+      " M final/robotnik_arm_task/training/common/policies.py",
+      "?? final/robotnik_arm_task/core/feature_sets.py",
+      "?? final/robotnik_arm_task/data_collection/collect_dart.py",
+      "?? final/robotnik_arm_task/experiments/configs/dart/"
+    ],
+    "source_sha256": {
+      "data_collection/expert.py": "48b5ec45d7ec294b8d7914e09daaeca5a55b1259a05cce02ed36d11be6c46b52",
+      "data_collection/template_teacher.py": "23c46487ba4f71a830c06c2dd70800ffef2031eb6b707cc9bca67d9fce468c99",
+      "robotnik_arm_control.py": "1fd0baf658406c142e1dbb02c51f225e30bc60cb22ff0a0a6192f2ba9cc990e9",
+      "robotnik_arm_task.py": "a8de247c79a5aa8ffb80c86e70ae4eb6a0afb4d60da2b89fb584924ea0eea94e",
+      "core/env.py": "9aab94018236fbb2f2f86d432fada45d384e395aacba118b5fb5ab44cb6789d2",
+      "core/interfaces.py": "0ef0b76a6a7e1b893acd6fff2370f8d267e7d372a615574297d22ddcdde3c582",
+      "data_collection/scenarios.py": "d47d300e60757e0b6acaef5a0c6426e9605ae3c237b3b76a9b5356c00b2409d6",
+      "data_collection/collect.py": "2a29b865501166b5640ddd565a1c4a91adb2b824b1e6ec76217c307010eedd17",
+      "settings.yaml": "b5efd38c5d6f8f0788825ea759635ca9915a61d0ce0a6f2238df73f0142176c7",
+      "configs/robotnik_arm.json": "ee65349b469a95257f8e94fc06c22d76629f2b3b6f45ac74521c0e059de9bdf2",
+      "models/summit_xl_arm_description/summit_xl_complete.urdf": "25923594d151ed8fdf953de09072adc41e07ba29374b6bcdf44fa3a90bb1b180",
+      "models/summit_xl_arm_description/summit_xl_complete_pin.urdf": "aea40a17a794e73d1b8058b0308431130f9b055e35a6092c51074406e951f369",
+      "simulation_and_control/sim/pybullet_robot_interface.py": "4635296328b78d8e5c4444ba97dbd4fae2323d1bf722faee67114bcd5705534f",
+      "simulation_and_control/controllers/servo_motor.py": "93608b614caa9440954559e242c8705c776008be89d66f269b682f80477708eb"
+    },
+    "code_digest": "c94ad845072c274f3f5ccb87c873defac5f47d5eb475725d4b658130a8710038",
+    "versions": {
+      "python": "3.10.20",
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "pybullet": "3.2.7 (requirements.txt)",
+      "pinocchio": "4.1.0"
+    }
+  },
+  "collection_configuration": {
+    "sobol_m": {
+      "train": 8,
+      "test": 6
+    },
+    "sobol_seed": {
+      "train": 1026001,
+      "test": 1026002
+    },
+    "env_seed_offset": {
+      "train": 1000000,
+      "test": 1100000
+    },
+    "ranges": {
+      "target_dist": [
+        0.5,
+        3.0
+      ],
+      "rel_azimuth": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "target_z": [
+        0.1,
+        1.25
+      ],
+      "start_x": [
+        -0.5,
+        0.5
+      ],
+      "start_y": [
+        -0.5,
+        0.5
+      ],
+      "start_yaw": [
+        -3.141592653589793,
+        3.141592653589793
+      ]
+    },
+    "markovian_lead_time": 0.5,
+    "episode_cap_s": 40.0,
+    "post_reach_record_s": 3.0,
+    "min_reach_time_s": 8.0,
+    "hold_window_s": 1.0,
+    "exec_torque_limit": 30.0,
+    "exec_wheel_limit": 6.0,
+    "pilot_scenarios": 16
+  },
+  "reach_tolerance_m": 0.01,
+  "counts": {
+    "scenarios": 221,
+    "draws_per_scenario": 2,
+    "train_episodes": 442,
+    "sustained_hold": 441
+  },
+  "fields": {
+    "a_expert": "label: clean teacher output on o_t, as in Clean",
+    "a_executed": "command sent to the simulator: clip(clip(a_expert) + sampled_action_noise)",
+    "sampled_action_noise": "applied noise after gating [T,11]",
+    "clip_flags": "execution limits changed the noisy command",
+    "other fields": "as in Clean (see data/Markovian/Clean/manifest.json)"
+  },
+  "outcome_definitions": "as in Clean; the sustained-hold check runs after the noise has stopped",
+  "collection_command": "python -m data_collection.collect_dart --protocol experiments/configs/dart/d2-s075-x2.yaml",
+  "written": "2026-10-28T17:27:32+00:00"
+}

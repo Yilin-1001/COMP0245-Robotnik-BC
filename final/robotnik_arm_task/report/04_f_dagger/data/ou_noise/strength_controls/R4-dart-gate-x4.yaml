@@ -1,0 +1,5 @@
+# R4-dart-gate-x4 (ablation v2 DART control, 4 draws per scenario): Clean_253 fitting + DART d2-s075-x4, 22 inputs (features-v1 + reach_gate).
+data:
+  feature_definition: features-v1-gate
+  datasets: [clean253__features-v1-gate, dart-d2s075x4__features-v1-gate]
+  validation_dataset: clean253__features-v1-gate

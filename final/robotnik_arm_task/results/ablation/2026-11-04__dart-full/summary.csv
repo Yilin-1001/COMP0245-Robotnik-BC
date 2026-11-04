@@ -1,0 +1,14 @@
+row,round,seed,run,sustained_hold,reach,median_final_err_mm,model
+R9-dart-full,1,0,R9-dart-full-r1__MLP01-256x3__s0__v2__2026-11-04,7/32,13/32,1594.704,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-r1__MLP01-256x3__s0__v2__2026-11-04/step_42000.npz
+R9-dart-full,2,0,R9-dart-full-r2__MLP01-256x3__s0__v2__2026-11-04,6/32,13/32,1109.375,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-r2__MLP01-256x3__s0__v2__2026-11-04/step_42000.npz
+R9-dart-full,3,0,R9-dart-full-r3__MLP01-256x3__s0__v2__2026-11-04,12/32,17/32,140.277,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-r3__MLP01-256x3__s0__v2__2026-11-04/step_42000.npz
+R9-dart-full,1,1,R9-dart-full-r1__MLP01-256x3__s1__v2__2026-11-04,10/32,17/32,212.528,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-r1__MLP01-256x3__s1__v2__2026-11-04/step_42000.npz
+R9-dart-full,a6-1,0,R9-dart-full-a6-r1__MLP01-256x3__s0__v2__2026-11-04,18/32,21/32,1.338,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r1__MLP01-256x3__s0__v2__2026-11-04/step_42000.npz
+R9-dart-full,a6-1,1,R9-dart-full-a6-r1__MLP01-256x3__s1__v2__2026-11-04,21/32,26/32,2.433,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r1__MLP01-256x3__s1__v2__2026-11-04/step_42000.npz
+R9-dart-full,a6-1,2,R9-dart-full-a6-r1__MLP01-256x3__s2__v2__2026-11-04,17/32,22/32,4.258,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r1__MLP01-256x3__s2__v2__2026-11-04/step_42000.npz
+R9-dart-full,a6-2,0,R9-dart-full-a6-r2__MLP01-256x3__s0__v2__2026-11-04,17/32,23/32,1.456,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r2__MLP01-256x3__s0__v2__2026-11-04/step_42000.npz
+R9-dart-full,a6-3,0,R9-dart-full-a6-r3__MLP01-256x3__s0__v2__2026-11-04,23/32,25/32,3.61,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r3__MLP01-256x3__s0__v2__2026-11-04/step_42000.npz
+R9-dart-full,a6-2,1,R9-dart-full-a6-r2__MLP01-256x3__s1__v2__2026-11-04,18/32,22/32,2.609,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r2__MLP01-256x3__s1__v2__2026-11-04/step_42000.npz
+R9-dart-full,a6-2,2,R9-dart-full-a6-r2__MLP01-256x3__s2__v2__2026-11-04,20/32,23/32,2.698,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r2__MLP01-256x3__s2__v2__2026-11-04/step_42000.npz
+R9-dart-full,a6-3,1,R9-dart-full-a6-r3__MLP01-256x3__s1__v2__2026-11-04,22/32,26/32,2.03,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r3__MLP01-256x3__s1__v2__2026-11-04/step_42000.npz
+R9-dart-full,a6-3,2,R9-dart-full-a6-r3__MLP01-256x3__s2__v2__2026-11-04,17/32,21/32,3.727,checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r3__MLP01-256x3__s2__v2__2026-11-04/step_42000.npz

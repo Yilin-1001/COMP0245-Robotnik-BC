@@ -1,0 +1,6 @@
+# R9-dart-full, DART iteration 1: clean253 plus full-DART (learner-fitted Gaussian noise) iterations 1..1,
+# inputs features-v1-gate. Written by experiments/dart_full.py.
+data:
+  feature_definition: features-v1-gate
+  datasets: [clean253__features-v1-gate, dartfull-k1__features-v1-gate]
+  validation_dataset: clean253__features-v1-gate

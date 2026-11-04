@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Circle, Rectangle
 import numpy as np
 
-OUT=Path('/media/yilin/data/ML_Final/outputs/2026-11-04/dagger_report_figure')
+OUT=Path(__file__).resolve().parents[1]/'figures'  # report/04_f_dagger/figures (originally outputs/2026-11-04/dagger_report_figure)
 plt.rcParams.update({'font.family':'DejaVu Sans','font.size':10,'pdf.fonttype':42,'ps.fonttype':42,'svg.fonttype':'none'})
 C={'ink':'#152C42','muted':'#536779','line':'#D6E0E7','teacher':'#18806A','student':'#2868B2','noise':'#BF6A16','purple':'#7351A6'}
 fig,ax=plt.subplots(figsize=(18,14.5))
@@ -31,7 +31,7 @@ def robot(x,y,active):
  else:arrow(x-5,y+9,x+5,y+9,C['teacher'],lw=1.2)
 
 txt(5,5,'Expert labels across the two gate states',21,weight='bold')
-txt(5,10,'Implementation schematic | R4: DART-style + gate   /   R6: DAgger + gate   /   R8: DART-style + DAgger + gate',11,C['muted'])
+txt(5,10,'Implementation schematic | R4: OU + Gate   /   R6: DAgger + Gate   /   R8: f-DAgger + Gate (OU, then DAgger)',11,C['muted'])
 box(5,15,170,12,fc='#F1F5F8')
 txt(8,18.6,r'$g(o_t)=1$ iff $|d_t|<0.12$ m and $|h_t|<0.075$ rad; otherwise $g(o_t)=0$.',12,weight='bold')
 txt(8,23.5,r'$d_t=$ planar target distance $-$ height-dependent standoff; $h_t=$ target heading error.',10,C['muted'])
@@ -43,9 +43,9 @@ arrow(6,30,14,30,C['student']);txt(15,30,'Executed action',9.5)
 arrow(48,30,56,30,C['teacher'],dash=True);txt(57,30,'Teacher supervision (saved label)',9.5)
 txt(110,30,'All collectors label each pre-action state at 1000 Hz.',9.5,C['muted'])
 
-cols=[(33,46,'A  DART-style','R4: teacher-driven noisy collection',C['noise']),
-      (81,46,'B  DAgger','R6: student-driven collection',C['student']),
-      (129,46,'C  DART-style + DAgger','R8: DART-initialised student collection',C['purple'])]
+cols=[(33,46,'A  OU + Gate','R4: teacher-driven noisy collection',C['noise']),
+      (81,46,'B  DAgger + Gate','R6: student-driven collection',C['student']),
+      (129,46,'C  f-DAgger + Gate','R8: OU-initialised student collection',C['purple'])]
 for x,w,title,sub,color in cols:
  box(x,34,w,9,fc=color,ec=color)
  txt(x+2,37.2,title,13,'white',weight='bold');txt(x+2,40.7,sub,9,'white')
@@ -86,12 +86,12 @@ for i,(x,w,_,_,color) in enumerate(cols):
  box(x,115,w,22,fc='white',ec=color,lw=1.1)
  txt(x+2,118,'OFFLINE TRAINING',10,color,weight='bold')
  if i==0:
-  txt(x+2,122.2,r'$D_{\mathrm{Clean}}\ \cup\ D_{\mathrm{DART}}$',13,weight='bold')
+  txt(x+2,122.2,r'$D_{\mathrm{Clean}}\ \cup\ D_{\mathrm{OU}}$',13,weight='bold')
   arrow(x+2,126.5,x+10,126.5,color)
   txt(x+11,126.5,'Train student on clean teacher labels',9.4)
-  txt(x+2,132,'DART data: sustained-hold passes only.\nPerturbations are configured OU noise.',9.1,C['muted'])
+  txt(x+2,132,'OU data: sustained-hold passes only.\nPerturbations are configured OU noise.',9.1,C['muted'])
  else:
-  dat=(r'$D_{\mathrm{Clean}}\ \cup\ \bigcup_{i=1}^{k}D_{\mathrm{DAgger},i}$' if i==1 else r'$D_{\mathrm{Clean}}\ \cup\ D_{\mathrm{DART}}\ \cup\ \bigcup_{i=1}^{k}D_{\mathrm{DAgger},i}$')
+  dat=(r'$D_{\mathrm{Clean}}\ \cup\ \bigcup_{i=1}^{k}D_{\mathrm{DAgger},i}$' if i==1 else r'$D_{\mathrm{Clean}}\ \cup\ D_{\mathrm{OU}}\ \cup\ \bigcup_{i=1}^{k}D_{\mathrm{DAgger},i}$')
   txt(x+2,122.2,dat,12,weight='bold')
   arrow(x+2,126.5,x+10,126.5,color)
   txt(x+11,126.5,r'Train $\pi_{k+1}$ from scratch; collect again',9.3)
@@ -100,12 +100,11 @@ for i,(x,w,_,_,color) in enumerate(cols):
 txt(5,118,'WHEN THE LABEL\nTAKES EFFECT',10,weight='bold')
 txt(5,126.5,'Saved target → loss\n→ updated policy',9.7,C['teacher'])
 txt(5,133.5,'No teacher takeover\nduring DAgger rollout.',9.1,C['muted'])
-txt(5,140.2,'* DART noise: wheels latch off at the first g=1 (even if g later returns to 0); all noise stops 1.5 s after first task reach.',9,C['muted'])
+txt(5,140.2,'* OU noise: wheels latch off at the first g=1 (even if g later returns to 0); all noise stops 1.5 s after first task reach.',9,C['muted'])
 txt(5,143.2,'Gate=1 can include base micro-adjustments. DAgger excludes numerical-failure / empty episodes. Schematic: no measured trajectories or performance claims.',8.5,C['muted'])
 
 stem=OUT/'gate_dart_dagger_comparison'
 fig.savefig(stem.with_suffix('.pdf'))
 fig.savefig(stem.with_suffix('.svg'))
 fig.savefig(stem.with_suffix('.png'),dpi=300)
-fig.savefig('/tmp/dagger_preview.png',dpi=100)
 print(stem)

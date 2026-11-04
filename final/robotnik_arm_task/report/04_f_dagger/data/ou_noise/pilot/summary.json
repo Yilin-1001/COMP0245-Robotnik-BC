@@ -1,0 +1,47 @@
+{
+  "episodes_checked": 376,
+  "results": [
+    {
+      "teacher": "Markovian",
+      "mode": "Clean",
+      "n": 32,
+      "reached": 32,
+      "held": 32
+    },
+    {
+      "teacher": "Markovian",
+      "mode": "OU at fixed maximum",
+      "n": 64,
+      "reached": 64,
+      "held": 62
+    },
+    {
+      "teacher": "Markovian",
+      "mode": "D2 alpha-sampled",
+      "n": 32,
+      "reached": 32,
+      "held": 31
+    },
+    {
+      "teacher": "Stateful",
+      "mode": "Clean",
+      "n": 32,
+      "reached": 31,
+      "held": 31
+    },
+    {
+      "teacher": "Stateful",
+      "mode": "OU at fixed maximum",
+      "n": 64,
+      "reached": 60,
+      "held": 59
+    },
+    {
+      "teacher": "Stateful",
+      "mode": "D2 alpha-sampled",
+      "n": 32,
+      "reached": 31,
+      "held": 31
+    }
+  ]
+}

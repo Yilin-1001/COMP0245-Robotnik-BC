@@ -1,0 +1,6 @@
+# R9-dart-full, alpha = 6 T tr(Sigma_hat), one DART iteration: clean253 plus dartfull-a6-k1,
+# inputs features-v1-gate. Written by experiments/dart_full_alpha.py.
+data:
+  feature_definition: features-v1-gate
+  datasets: [clean253__features-v1-gate, dartfull-a6-k1__features-v1-gate]
+  validation_dataset: clean253__features-v1-gate

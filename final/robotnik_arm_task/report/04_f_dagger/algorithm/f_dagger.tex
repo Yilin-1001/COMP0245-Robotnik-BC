@@ -1,77 +1,106 @@
 \documentclass[10pt]{article}
-\usepackage[a4paper,margin=1.8cm]{geometry}
+\usepackage[a4paper,margin=2cm]{geometry}
 \usepackage{amsmath,amssymb}
+\usepackage{booktabs}
 \usepackage{algorithm}
-\usepackage{algpseudocode}
+\usepackage[noend]{algpseudocode}
+\usepackage{etoolbox}
+\patchcmd{\thebibliography}{\section*{\refname}}{\noindent\textbf{References.}\par\vspace{0.3ex}}{}{}
 \pagestyle{empty}
+
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\clip}{\operatorname{clip}}
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+
 \begin{document}
 
-\begin{algorithm}[H]
+\begin{algorithm}[t]
 \caption{f-DAgger}
 \label{alg:f-dagger}
-\small
 \begin{algorithmic}[1]
-\Require Expert $\pi_E$, clean data $D_{\mathrm{clean}}$, DAgger rounds $K$
-\Ensure Learned policy $\pi^*$
-\Statex \textit{Stage 1: collect expert data with piecewise OU noise}
-\State $D_{\mathrm{OU}}\gets\emptyset$
-\For{each expert episode}
-    \State Reset environment; $z\gets0$; $T_A,T_R\gets\infty$; $B\gets\emptyset$
-    \State Sample one episode scale $\alpha\sim\mathcal U(0.25,1)$
-    \For{each control step $t$}
-        \State Observe $o_t$ and query the expert: $a_t^E\gets\pi_E(o_t)$
-        \State Update the first gate-activation time $T_A$ and first task-reach time $T_R$
-        \State $z\gets\rho z+\sqrt{1-\rho^2}\,(\alpha\sigma\odot\xi)$, where $\xi\sim\mathcal N(0,I)$
-        \State Apply the piecewise rule below to obtain $n_t$ from $z$
-        \State Save $(o_t,a_t^E)$ in $B$ \Comment{clean expert label}
-        \State Execute $\operatorname{clip}(\operatorname{clip}(a_t^E)+n_t)$
-    \EndFor
-    \State Add $B$ to $D_{\mathrm{OU}}$ only if its sustained-hold check passes
+\Require expert $\pi^*$, clean demonstrations $\D_{\mathrm{clean}}$, number of DAgger iterations $N$
+\Ensure best policy $\hat\pi_i$ on validation
+\Statex \textit{Phase 1: expert demonstrations with OU noise}
+\State $\D\gets\D_{\mathrm{clean}}$
+\For{each training scenario, twice}
+  \State $z\gets 0$;\; draw a noise scale $\alpha\sim\mathcal{U}[0.25,1]$
+  \For{each time step $t$}
+    \State $a\gets\pi^*(s_t)$; record $(s_t,a)$ \Comment{clean expert label}
+    \State $z\gets\rho z+\sqrt{1-\rho^2}\,\alpha\sigma\xi$,\; $\xi\sim\mathcal{N}(0,I)$ \Comment{OU noise}
+    \State execute $\clip(a+m_t z)$ \Comment{$m_t$: noise gate, Table~\ref{tab:gate}}
+  \EndFor
+  \State add the episode to $\D$ if the expert holds the target
 \EndFor
-\State $D\gets D_{\mathrm{clean}}\uplus D_{\mathrm{OU}}$
-\State $\pi_0\gets\operatorname{TrainFromScratch}(D)$
-\Statex \textit{Stage 2: DAgger data aggregation}
-\For{$k=1,\ldots,K$}
-    \State Roll out student $\pi_{k-1}$ with no additional OU noise
-    \State Label every visited observation $o$ with $\pi_E(o)$ to obtain $D_{\mathrm{new}}$
-    \State Retain task failures; discard numerical-failure and empty episodes
-    \State $D\gets D\uplus D_{\mathrm{new}}$
-    \State $\pi_k\gets\operatorname{TrainFromScratch}(D)$
-    \State Evaluate $\pi_k$ on the validation scenarios
+\State train $\hat\pi_0$ on $\D$
+\Statex \textit{Phase 2: DAgger}
+\For{$i=1,\dots,N$}
+  \State run $\hat\pi_{i-1}$ on the training and new development scenarios
+  \State get dataset $\D_i=\{(s,\pi^*(s))\}$ of visited states and expert actions
+  \State aggregate datasets: $\D\gets\D\cup\D_i$
+  \State train $\hat\pi_i$ on $\D$
 \EndFor
-\State \Return the best validation policy $\pi^*$ among $\pi_1,\ldots,\pi_K$
+\State \Return the $\hat\pi_i$ ($i\ge1$) with the highest validation success rate
 \end{algorithmic}
 \end{algorithm}
 
-\noindent\textbf{Piecewise OU noise.}
-Write $z=[z^{\mathrm{arm}};z^{\mathrm{wheel}}]$. The applied perturbation is
-\[
-n_t=\begin{cases}
-[z^{\mathrm{arm}};z^{\mathrm{wheel}}], & t\Delta t<T_A,\\
-[z^{\mathrm{arm}};0], & T_A\le t\Delta t<T_R+1.5\ \mathrm{s},\\
-0, & t\Delta t\ge T_R+1.5\ \mathrm{s}.
-\end{cases}
-\]
-$T_A$ is the first reach-gate activation; wheel noise remains off thereafter.
-$T_R$ is the first task reach: gate active, true end-effector error below 10 mm,
-and elapsed time greater than 8 s. An event that never occurs has time $\infty$.
+\noindent\textbf{OU noise.}
+Line~6 is the exact discrete-time Ornstein--Uhlenbeck process~\cite{ou}, with $\rho=e^{-\Delta t/\tau}$.
+Each channel of $z$ has standard deviation $\alpha\sigma$ and correlation time $\tau$.
+As in DART~\cite{dart}, noise only changes the executed action; the recorded label is the clean
+expert action.
+
+\medskip
+\noindent\textbf{Noise gate.}
+$m_t$ switches noise off per channel group as the episode progresses (Table~\ref{tab:gate}).
+Wheel noise stays off once the expert starts reaching. The target counts as reached when the
+end-effector error is below 10\,mm after the first 8\,s.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Noise gate $m_t$.}
+\label{tab:gate}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Episode stage & Arm noise & Wheel noise \\
+\midrule
+before the expert starts reaching & on & on \\
+reaching, until 1.5\,s after the target is first reached & on & off \\
+from 1.5\,s after the target is first reached & off & off \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{DAgger.}
+Lines~11--14 follow Algorithm~3.1 of~\cite{dagger} with $\beta_i=0$: the learner acts alone,
+and Phase~1 replaces DAgger's expert-only first iteration.
+
+\medskip
+\noindent\textbf{Details.}
+An episode ends 3\,s after the target is first reached, or at 40\,s. The expert \emph{holds the
+target} if the error stays below 10\,mm for the last second of these 3\,s; validation success uses
+the same test. DAgger keeps failed tasks and discards numerically failed rollouts. Each training
+run starts from a new network and uses the BC+J objective. Commands are clipped to the robot's limits,
+and $a$ is clipped before noise is added. Ties in validation go to the later iteration.
 
 \medskip
 \noindent\textbf{Defaults.}
-$\Delta t=0.001$ s, $\tau=0.2$ s, $\rho=e^{-\Delta t/\tau}$;
-$\sigma$ contains seven arm scales of $0.75$ N\,m and four wheel scales of
-$0.15$ rad/s. All channels use independent Gaussian innovations. $K=3$.
+$\Delta t=1$\,ms, $\tau=0.2$\,s, $\sigma=0.75$\,N\,m (arm) and $0.15$\,rad/s (wheels), $N=3$.
 
 \medskip
-\noindent\textbf{Collection and training.}
-Episodes end 3 s after the first task reach or at 40 s; numerical failures
-interrupt collection. Sustained-hold success requires the complete 3 s
-post-reach window and error below 10 mm throughout its final second.
-DAgger uses fitting scenarios plus fresh low/near-biased development scenarios;
-the student executes alone ($\beta=0$), with command limits applied.
-$\uplus$ denotes data concatenation. Feature extraction and action-format
-conversion are implicit in the observation--expert-action pairs.
-Training uses the implemented BC+J objective; all previous data are retained.
-Validation uses sustained-hold success, with ties resolved toward later rounds.
+\begin{thebibliography}{3}
+\footnotesize
+\setlength{\itemsep}{0pt}
+\bibitem{ou}
+G.~E. Uhlenbeck and L.~S. Ornstein, ``On the theory of the Brownian motion,''
+\emph{Physical Review}, vol.~36, no.~5, pp.~823--841, 1930.
+\bibitem{dart}
+M.~Laskey, J.~Lee, R.~Fox, A.~Dragan, and K.~Goldberg, ``DART: Noise injection for robust
+imitation learning,'' in \emph{Proc.\ CoRL}, PMLR, vol.~78, 2017, pp.~143--156.
+\bibitem{dagger}
+S.~Ross, G.~J. Gordon, and J.~A. Bagnell, ``A reduction of imitation learning and structured
+prediction to no-regret online learning,'' in \emph{Proc.\ AISTATS}, JMLR W\&CP, vol.~15, 2011, pp.~627--635.
+\end{thebibliography}
 
 \end{document}

@@ -1,0 +1,57 @@
+# Every hyperparameter and path in one place. The report quotes values from here.
+
+control_hz: 1000              # every physics step, as the template; holding torques >= 3 steps destabilises its PD
+train_stride: 10               # training keeps every 10th logged step
+reach_tolerance: 0.01          # m, success threshold
+
+paths:
+  data: data
+  checkpoints: checkpoints
+  results_csv: results/results.csv
+  figures: results/figures
+
+scenarios:
+  # Sobol dimensions in the robot's frame; the world target follows from the start pose
+  target_dist: [0.5, 3.0]      # m
+  target_azimuth: [-3.14159, 3.14159]   # relative to the base heading
+  target_height: [0.1, 1.25]   # m
+
+collect:
+  n_episodes: 512              # powers of 2: 512, 1024, 2048 are prefixes of one Sobol sequence
+  dart_noise_std: null         # set once the expert is verified
+
+# Clean expert collection (docs/clean_collection_report.md). Datasets go to <paths.data>/<Teacher>/Clean/.
+clean_collection:
+  sobol_m: {train: 8, test: 6}                 # random_base2(m): 256 train, 64 test scenarios
+  sobol_seed: {train: 1026001, test: 1026002}  # two separate scrambled engines; the test set is not a train prefix
+  env_seed_offset: {train: 1000000, test: 1100000}   # Scenario.seed = offset + index (away from all dev seeds)
+  ranges:
+    target_dist: [0.5, 3.0]        # m, horizontal, from the initial base (uniform in radius)
+    rel_azimuth: [-3.141592653589793, 3.141592653589793]   # rad, relative to the initial base heading
+    target_z: [0.1, 1.25]          # m, world height
+    start_x: [-0.5, 0.5]           # m
+    start_y: [-0.5, 0.5]           # m
+    start_yaw: [-3.141592653589793, 3.141592653589793]     # rad
+  markovian_lead_time: 0.5         # s, frozen for collection (the code default in expert.py stays 0.15)
+  episode_cap_s: 40.0              # s
+  post_reach_record_s: 3.0         # s recorded after the first task reach
+  min_reach_time_s: 8.0            # s, the original task's StopCriteria.min_time
+  hold_window_s: 1.0               # s, final window for the sustained-hold check
+  exec_torque_limit: 30.0          # N*m, execution limit on arm torques (the controllers' own max_torque)
+  exec_wheel_limit: 6.0            # rad/s, execution limit on wheel speeds (teachers command at most ~5.3)
+  pilot_scenarios: 16              # the first 16 train scenarios are the pilot, kept in the final cohort
+
+dagger:
+  rounds: 4                    # minimum; stop when validation success stops rising
+  episodes_per_round: 100
+  beta_start: 0.5              # decays to 0
+
+mlp:
+  hidden: [256, 256, 256]
+  layer_norm: true
+  loss: huber
+  optimizer: adamw
+  lr: null
+  weight_decay: null
+  epochs: null
+  batch_size: null

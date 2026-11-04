@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-04",
+  "operation": "archive_existing_evidence",
+  "new_simulations_or_training": false,
+  "source_files_recorded": 521,
+  "copied_files": 509,
+  "already_identical_files": 12,
+  "all_source_copy_sha256_match": true,
+  "pilot_cohorts": [
+    {
+      "cohort": "smoke",
+      "episodes": 24,
+      "traces_checked": 24,
+      "finite_values": true,
+      "wheel_gate_zero": true,
+      "all_off_zero": true,
+      "clean_zero_noise": true
+    },
+    {
+      "cohort": "tuning",
+      "episodes": 96,
+      "traces_checked": 96,
+      "finite_values": true,
+      "wheel_gate_zero": true,
+      "all_off_zero": true,
+      "clean_zero_noise": true
+    },
+    {
+      "cohort": "confirmation",
+      "episodes": 192,
+      "traces_checked": 192,
+      "finite_values": true,
+      "wheel_gate_zero": true,
+      "all_off_zero": true,
+      "clean_zero_noise": true
+    },
+    {
+      "cohort": "d2_sampled",
+      "episodes": 64,
+      "traces_checked": 64,
+      "finite_values": true,
+      "wheel_gate_zero": true,
+      "all_off_zero": true,
+      "clean_zero_noise": true
+    }
+  ],
+  "pilot_traces_checked": 376,
+  "stress_total_episodes": 2112,
+  "ou_stress_episodes": 1248,
+  "ou_stress_conditions_per_teacher": 39,
+  "stress_summary_rows": 78,
+  "current_controller_hashes_compared_to_historical_pilot": false,
+  "ou_stress_threshold_comparisons_checked": 36,
+  "original_stress_thresholds_reproduced": true,
+  "existing_flat_pilot_inputs_preserved": true,
+  "local_documentation_links_checked": 49,
+  "all_checked_documentation_links_exist": true
+}

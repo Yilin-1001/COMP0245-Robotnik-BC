@@ -1,0 +1,9 @@
+parameter,current_value,evidence_type,evidence,interpretation
+arm_base_stationary_std,0.75 N*m,pilot_candidate_comparison,ou_pilot.csv,"Compared with 1.5 N*m in the pilot; later student controls also include 0.375 N*m; not a proven global optimum"
+wheel_base_stationary_std,0.15 rad/s,paired_pilot_candidate_comparison,ou_pilot.csv,"Changed together with arm strength; arm/wheel ratio was not separately optimized"
+correlation_time,0.2 s,stress_comparison_with_different_protocol,ou_stress_by_condition.csv,"Stress test compared 0.05/0.2/1.0 s; initialization and gating differ from collection"
+episode_scale_alpha,Uniform(0.25 to 1),single_range_confirmation,ou_pilot.csv,"Sampled once per episode; alternative alpha ranges were not compared in the archived evidence"
+initial_ou_state,zero,fixed_protocol,../data/ou_noise/protocols/d2-s075-x2.yaml,"Pilot and collection start at zero; stress sweep starts from the stationary distribution"
+wheel_noise_off,first reach-gate activation,fixed_protocol_and_related_stress_evidence,../data/ou_noise/protocols/d2-s075-x2.yaml,"Latched off in collection; expert A stress-test gate can reactivate wheel noise"
+all_noise_off_delay,1.5 s after first task reach,fixed_schedule_checked_in_pilot,ou_pilot.csv,"Recovery is assessed after noise removal; alternative delays were not compared"
+control_step,0.001 s,fixed_task_control_rate,../data/ou_noise/protocols/d2-s075-x2.yaml,"Not independently searched as an OU hyperparameter"

@@ -1,0 +1,3 @@
+model,episodes,rows,std_arm0,std_arm1,std_arm2,std_arm3,std_arm4,std_arm5,std_arm6,std_wheel_r,std_wheel_l,arm_std_driving_nm,arm_std_reach_hold_nm,wheel_std_driving_rad_s,wheel_std_reach_hold_rad_s,arm_autocorr_1ms,arm_autocorr_10ms,arm_autocorr_100ms,arm_autocorr_200ms,arm_autocorr_1000ms,arm_offdiag_over_diag
+Baseline + Gate (R2-gate s0),32,387492,0.871,0.614,0.64,0.563,0.585,0.791,0.221,0.046,0.042,0.036,0.908,0.018,0.06,0.63,0.51,0.36,0.26,0.14,1.56
+OU + Gate (R4-dart-gate s0),32,387492,0.794,1.005,0.429,0.693,0.564,0.629,0.11,0.029,0.038,0.029,0.932,0.018,0.044,0.59,0.44,0.31,0.25,0.14,1.85

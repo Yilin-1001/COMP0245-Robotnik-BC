@@ -1,0 +1,314 @@
+[
+ {
+  "scenario_id": "train-0001",
+  "arm": {
+   "switch_t_s": 11.04099999999932,
+   "seconds_until_leaving_10mm": 1.2079999999993305,
+   "final_err_mm": 778.0970837997266,
+   "max_err_mm": 1441.4268785596382,
+   "max_joint_speed_rad_s": 100.0,
+   "stayed_within_10mm": false,
+   "student_seconds": 10.000000000003412
+  },
+  "linearised": {
+   "expert": {
+    "max_real_eig": 0.008437214749666883,
+    "stiffness_eig_min": -8702.960280354862,
+    "stiffness_eig_max": 7557.803948665025,
+    "damping_diag_median": -29.999999999999996
+   },
+   "student": {
+    "max_real_eig": 1.292922215264877,
+    "stiffness_eig_min": -535.8631025610609,
+    "stiffness_eig_max": 542.517874698658,
+    "damping_diag_median": -30.422935924274697
+   }
+  },
+  "on_distribution_arm_rmse_nm": {
+   "approach": 1.0316848305452953,
+   "hold": 0.6999246238865304
+  },
+  "full": {
+   "switch_t_s": 11.046999999999317,
+   "seconds_until_leaving_10mm": 1.224999999999321,
+   "final_err_mm": 885.9299740463904,
+   "max_err_mm": 1534.9518169710861,
+   "max_joint_speed_rad_s": 100.0,
+   "stayed_within_10mm": false,
+   "student_seconds": 10.000000000003423
+  }
+ },
+ {
+  "scenario_id": "train-0035",
+  "arm": {
+   "switch_t_s": 6.915000000000644,
+   "seconds_until_leaving_10mm": 9.29999999999619,
+   "final_err_mm": 11.507659877858135,
+   "max_err_mm": 11.507659877858135,
+   "max_joint_speed_rad_s": 0.014057588143008887,
+   "stayed_within_10mm": false,
+   "student_seconds": 9.999999999997046
+  },
+  "linearised": {
+   "expert": {
+    "max_real_eig": 0.0,
+    "stiffness_eig_min": -120.06021681384127,
+    "stiffness_eig_max": 5.060202156012061e-25,
+    "damping_diag_median": -30.000000000000025
+   },
+   "student": {
+    "max_real_eig": 0.5129289819745165,
+    "stiffness_eig_min": -132.80348670803363,
+    "stiffness_eig_max": 55.276770687931815,
+    "damping_diag_median": -29.849829530471936
+   }
+  },
+  "on_distribution_arm_rmse_nm": {
+   "approach": 0.12522309311166904,
+   "hold": 0.04958217813628077
+  },
+  "full": {
+   "switch_t_s": 6.915000000000644,
+   "seconds_until_leaving_10mm": null,
+   "final_err_mm": 8.940326728871277,
+   "max_err_mm": 8.940326728871277,
+   "max_joint_speed_rad_s": 0.02824409047304563,
+   "stayed_within_10mm": true,
+   "student_seconds": 9.999999999997046
+  }
+ },
+ {
+  "scenario_id": "train-0067",
+  "arm": {
+   "switch_t_s": 5.817000000000277,
+   "seconds_until_leaving_10mm": 3.69499999999989,
+   "final_err_mm": 1116.1056677812892,
+   "max_err_mm": 1292.5817674966472,
+   "max_joint_speed_rad_s": 100.0,
+   "stayed_within_10mm": false,
+   "student_seconds": 9.999999999996396
+  },
+  "linearised": {
+   "expert": {
+    "max_real_eig": 0.004757428063911914,
+    "stiffness_eig_min": -352.98693217358164,
+    "stiffness_eig_max": 0.14275768699078695,
+    "damping_diag_median": -30.000000000000025
+   },
+   "student": {
+    "max_real_eig": 0.9227513893367891,
+    "stiffness_eig_min": -136.06260938605988,
+    "stiffness_eig_max": 56.55401404409719,
+    "damping_diag_median": -30.106732569369335
+   }
+  },
+  "on_distribution_arm_rmse_nm": {
+   "approach": 0.2147249749769526,
+   "hold": 0.09798042075858969
+  },
+  "full": {
+   "switch_t_s": 5.817000000000277,
+   "seconds_until_leaving_10mm": 3.7879999999998386,
+   "final_err_mm": 1126.883785943412,
+   "max_err_mm": 1572.8298060358518,
+   "max_joint_speed_rad_s": 100.0,
+   "stayed_within_10mm": false,
+   "student_seconds": 9.999999999996396
+  }
+ },
+ {
+  "scenario_id": "train-0108",
+  "arm": {
+   "switch_t_s": 4.338999999999784,
+   "seconds_until_leaving_10mm": 8.356999999998619,
+   "final_err_mm": 809.3362163667614,
+   "max_err_mm": 809.3362163667614,
+   "max_joint_speed_rad_s": 100.0,
+   "stayed_within_10mm": false,
+   "student_seconds": 9.999999999997708
+  },
+  "linearised": {
+   "expert": {
+    "max_real_eig": 0.006849837795159597,
+    "stiffness_eig_min": -120.15524238810985,
+    "stiffness_eig_max": 0.20561179246499073,
+    "damping_diag_median": -30.000000000000025
+   },
+   "student": {
+    "max_real_eig": 0.1630621436467981,
+    "stiffness_eig_min": -139.60615601224836,
+    "stiffness_eig_max": 29.975284674195738,
+    "damping_diag_median": -30.05873211370859
+   }
+  },
+  "on_distribution_arm_rmse_nm": {
+   "approach": 0.15515707856222866,
+   "hold": 0.02990846021948986
+  },
+  "full": {
+   "switch_t_s": 4.338999999999784,
+   "seconds_until_leaving_10mm": 8.51699999999853,
+   "final_err_mm": 719.6971560988418,
+   "max_err_mm": 719.6971560988418,
+   "max_joint_speed_rad_s": 100.0,
+   "stayed_within_10mm": false,
+   "student_seconds": 9.999999999997708
+  }
+ },
+ {
+  "scenario_id": "train-0142",
+  "arm": {
+   "switch_t_s": 10.724999999999495,
+   "seconds_until_leaving_10mm": 9.989000000002838,
+   "final_err_mm": 10.043493886709257,
+   "max_err_mm": 10.043493886709257,
+   "max_joint_speed_rad_s": 0.03967747886222363,
+   "stayed_within_10mm": false,
+   "student_seconds": 10.000000000002851
+  },
+  "linearised": {
+   "expert": {
+    "max_real_eig": 0.010834700191488347,
+    "stiffness_eig_min": -120.21833016760259,
+    "stiffness_eig_max": 0.3252976897826796,
+    "damping_diag_median": -29.99999999999999
+   },
+   "student": {
+    "max_real_eig": 0.14255063908597101,
+    "stiffness_eig_min": -253.69323926834818,
+    "stiffness_eig_max": 131.07411524681348,
+    "damping_diag_median": -29.85433338045475
+   }
+  },
+  "on_distribution_arm_rmse_nm": {
+   "approach": 0.0829364799530475,
+   "hold": 0.07708841559666275
+  },
+  "full": {
+   "switch_t_s": 10.724999999999495,
+   "seconds_until_leaving_10mm": 9.343000000002048,
+   "final_err_mm": 12.92946796567463,
+   "max_err_mm": 12.92946796567463,
+   "max_joint_speed_rad_s": 0.04029711236297773,
+   "stayed_within_10mm": false,
+   "student_seconds": 10.000000000002851
+  }
+ },
+ {
+  "scenario_id": "train-0178",
+  "arm": {
+   "switch_t_s": 10.870999999999414,
+   "seconds_until_leaving_10mm": 1.4169999999992147,
+   "final_err_mm": 452.9360952427808,
+   "max_err_mm": 461.3823494679695,
+   "max_joint_speed_rad_s": 0.9738795097486949,
+   "stayed_within_10mm": false,
+   "student_seconds": 10.00000000000311
+  },
+  "linearised": {
+   "expert": {
+    "max_real_eig": 0.003526678610554112,
+    "stiffness_eig_min": -382.5797895321981,
+    "stiffness_eig_max": 161.5349570198489,
+    "damping_diag_median": -30.000000000000025
+   },
+   "student": {
+    "max_real_eig": 2.7524551203376446,
+    "stiffness_eig_min": -655.3660628928593,
+    "stiffness_eig_max": 678.9921224499027,
+    "damping_diag_median": -30.043143085407564
+   }
+  },
+  "on_distribution_arm_rmse_nm": {
+   "approach": 1.0330666449766404,
+   "hold": 0.06085991475736555
+  },
+  "full": {
+   "switch_t_s": 10.870999999999414,
+   "seconds_until_leaving_10mm": 1.3809999999992346,
+   "final_err_mm": 793.7926494611899,
+   "max_err_mm": 793.7926494611899,
+   "max_joint_speed_rad_s": 0.9963646496704648,
+   "stayed_within_10mm": false,
+   "student_seconds": 10.00000000000311
+  }
+ },
+ {
+  "scenario_id": "train-0216",
+  "arm": {
+   "switch_t_s": 2.18699999999987,
+   "seconds_until_leaving_10mm": 6.081000000000987,
+   "final_err_mm": 384.6689910544206,
+   "max_err_mm": 384.6689910544206,
+   "max_joint_speed_rad_s": 2.1715476863162424,
+   "stayed_within_10mm": false,
+   "student_seconds": 9.999999999998815
+  },
+  "linearised": {
+   "expert": {
+    "max_real_eig": 0.0016546778574849904,
+    "stiffness_eig_min": -151.4372093786373,
+    "stiffness_eig_max": 0.049645104552589955,
+    "damping_diag_median": -30.000000000000025
+   },
+   "student": {
+    "max_real_eig": 0.927384325711326,
+    "stiffness_eig_min": -156.2821315348853,
+    "stiffness_eig_max": 73.5117272016281,
+    "damping_diag_median": -29.886911743979283
+   }
+  },
+  "on_distribution_arm_rmse_nm": {
+   "approach": 0.2571404374732988,
+   "hold": 0.06607420729522373
+  },
+  "full": {
+   "switch_t_s": 2.18699999999987,
+   "seconds_until_leaving_10mm": 6.077000000000989,
+   "final_err_mm": 246.8993661000413,
+   "max_err_mm": 247.9341630319376,
+   "max_joint_speed_rad_s": 2.0472381770065184,
+   "stayed_within_10mm": false,
+   "student_seconds": 9.999999999998815
+  }
+ },
+ {
+  "scenario_id": "train-0255",
+  "arm": {
+   "switch_t_s": 4.273999999999762,
+   "seconds_until_leaving_10mm": 1.0680000000003567,
+   "final_err_mm": 442.3168527015702,
+   "max_err_mm": 455.58846008809246,
+   "max_joint_speed_rad_s": 0.9696908064707817,
+   "stayed_within_10mm": false,
+   "student_seconds": 9.999999999997765
+  },
+  "linearised": {
+   "expert": {
+    "max_real_eig": 0.0004445039986644576,
+    "stiffness_eig_min": -385.42073712951753,
+    "stiffness_eig_max": 164.9908457339443,
+    "damping_diag_median": -30.000000000000025
+   },
+   "student": {
+    "max_real_eig": 3.09842106468722,
+    "stiffness_eig_min": -633.8971854177789,
+    "stiffness_eig_max": 672.4805994700844,
+    "damping_diag_median": -29.592217265106413
+   }
+  },
+  "on_distribution_arm_rmse_nm": {
+   "approach": 1.0314232792240334,
+   "hold": 0.12703292208971861
+  },
+  "full": {
+   "switch_t_s": 4.273999999999762,
+   "seconds_until_leaving_10mm": 1.0920000000003647,
+   "final_err_mm": 786.10788101091,
+   "max_err_mm": 786.10788101091,
+   "max_joint_speed_rad_s": 0.9882676600099783,
+   "stayed_within_10mm": false,
+   "student_seconds": 9.999999999997765
+  }
+ }
+]

@@ -1,0 +1,9 @@
+row,report_name,inputs,parameters,float32_weights_kib,latency_p50_us_median,latency_p99_us_median,rollouts
+R1,Baseline,21,141065,551.0,168.2,228.7,720
+R2,Baseline + Gate,22,141321,552.0,183.9,250.3,720
+R3,OU,21,141065,551.0,201.4,240.9,720
+R4,OU + Gate,22,141321,552.0,226.3,267.7,720
+R5,DAgger,21,141065,551.0,201.2,239.3,720
+R6,DAgger + Gate,22,141321,552.0,229.3,270.8,720
+R7,f-DAgger,21,141065,551.0,207.6,243.6,720
+R8,f-DAgger + Gate,22,141321,552.0,228.2,269.8,720

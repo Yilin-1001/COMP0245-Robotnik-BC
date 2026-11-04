@@ -1,0 +1,28 @@
+# Training-method ablation v1: does the reach gate input and/or DART data make teacher-A reaching work?
+# Run with: python -m experiments.ablation.run --manifest experiments/ablation/2026-10-28__training-ablation-v1.yaml
+# Every setting below is fixed before any result is seen; a change means a new manifest with version v2.
+experiment: training-ablation
+version: v1
+date: 2026-10-28
+architecture: MLP01               # 256x256x256 (experiments/configs/datasets/base.yaml)
+rows:                             # experiments/configs/datasets/variants/<row>.yaml
+  - R1-baseline                   # clean data, 21 inputs
+  - R2-gate                       # clean data, 22 inputs (+ reach_gate)
+  - R3-dart                       # clean + DART d2-s075-x2, 21 inputs
+  - R4-dart-gate                  # clean + DART d2-s075-x2, 22 inputs
+seeds: [0, 1, 2]
+recipe:                           # --set overrides shared by every run
+  identity.objective: bcj         # action loss + damping Jacobian; lambda_J calibrated per row at seed-0 init
+  training.lr: 1.0e-3             # the screen's choice for 256x256x256 (old m5) on teacher A
+  training.updates: 42000         # frozen budget of the clean pilot protocol p-0dedccad51dc
+  loss.action: huber              # frozen in p-2a37f68e30af
+  loss.arm_weight: 0.5            # equal action-group weights, as the clean final protocol and the prototype
+  loss.wheel_weight: 0.5
+evaluation:
+  checkpoint: terminal            # only the update-42000 model is evaluated; no checkpoint is chosen on validation
+  validation_modes:               # 32 frozen validation scenarios, standard evaluator predicates
+    - student                     # the student drives base and arm (primary metric: sustained hold)
+    - arm                         # teacher A drives the base, the student the arm (failure attribution)
+  hold_test_scenarios: [train-0001, train-0035, train-0067, train-0108, train-0142, train-0178, train-0216, train-0255]
+  primary_metric: sustained hold of the full student on validation, mean over seeds with a pooled Wilson 95% interval
+  test: the 64 sealed test scenarios run once per model after the training freeze (not part of this manifest)

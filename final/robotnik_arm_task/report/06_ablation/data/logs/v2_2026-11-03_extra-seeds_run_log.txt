@@ -1,0 +1,56 @@
+
+===== R8-dart-gate-dagger round 1 seed 1 (22:33:23) =====
+$ -m training.datasets.train --variant R8-dart-gate-dagger-r1 --set identity.date=2026-11-03 --set identity.seed=1 --set identity.version=v2 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 7.4 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-03__training-ablation-v2/R8-dart-gate-dagger-r1__MLP01-256x3__s1__v2__2026-11-03/R8-dart-gate-dagger-r1__MLP01-256x3__s1__v2__2026-11-03.npz
+  done in 0.4 min
+  R8-dart-gate-dagger round 1 seed 1: validation sustained hold 30/32, reach 32/32, median final error 1.106 mm
+
+===== R8-dart-gate-dagger round 1 seed 2 (22:41:11) =====
+$ -m training.datasets.train --variant R8-dart-gate-dagger-r1 --set identity.date=2026-11-03 --set identity.seed=2 --set identity.version=v2 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-03__training-ablation-v2/R8-dart-gate-dagger-r1__MLP01-256x3__s2__v2__2026-11-03/R8-dart-gate-dagger-r1__MLP01-256x3__s2__v2__2026-11-03.npz
+  done in 0.3 min
+  R8-dart-gate-dagger round 1 seed 2: validation sustained hold 29/32, reach 32/32, median final error 1.345 mm
+
+===== R6-gate-dagger round 1 seed 1 (22:45:25) =====
+$ -m training.datasets.train --variant R6-gate-dagger-r1 --set identity.date=2026-11-03 --set identity.seed=1 --set identity.version=v2 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-03__training-ablation-v2/R6-gate-dagger-r1__MLP01-256x3__s1__v2__2026-11-03/R6-gate-dagger-r1__MLP01-256x3__s1__v2__2026-11-03.npz
+  done in 0.6 min
+  R6-gate-dagger round 1 seed 1: validation sustained hold 23/32, reach 26/32, median final error 4.319 mm
+
+===== R6-gate-dagger round 1 seed 2 (22:49:57) =====
+$ -m training.datasets.train --variant R6-gate-dagger-r1 --set identity.date=2026-11-03 --set identity.seed=2 --set identity.version=v2 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 4.0 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-03__training-ablation-v2/R6-gate-dagger-r1__MLP01-256x3__s2__v2__2026-11-03/R6-gate-dagger-r1__MLP01-256x3__s2__v2__2026-11-03.npz
+  done in 0.4 min
+  R6-gate-dagger round 1 seed 2: validation sustained hold 21/32, reach 28/32, median final error 5.256 mm
+
+===== R8-dart-gate-dagger round 2 seed 1 (22:54:25) =====
+$ -m training.datasets.train --variant R8-dart-gate-dagger-r2 --set identity.date=2026-11-03 --set identity.seed=1 --set identity.version=v2 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 4.1 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-03__training-ablation-v2/R8-dart-gate-dagger-r2__MLP01-256x3__s1__v2__2026-11-03/R8-dart-gate-dagger-r2__MLP01-256x3__s1__v2__2026-11-03.npz
+  done in 0.4 min
+  R8-dart-gate-dagger round 2 seed 1: validation sustained hold 29/32, reach 31/32, median final error 0.886 mm
+
+===== R8-dart-gate-dagger round 2 seed 2 (22:58:53) =====
+$ -m training.datasets.train --variant R8-dart-gate-dagger-r2 --set identity.date=2026-11-03 --set identity.seed=2 --set identity.version=v2 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-03__training-ablation-v2/R8-dart-gate-dagger-r2__MLP01-256x3__s2__v2__2026-11-03/R8-dart-gate-dagger-r2__MLP01-256x3__s2__v2__2026-11-03.npz
+  done in 0.4 min
+  R8-dart-gate-dagger round 2 seed 2: validation sustained hold 28/32, reach 31/32, median final error 1.353 mm
+
+===== R6-gate-dagger round 2 seed 1 (23:03:13) =====
+$ -m training.datasets.train --variant R6-gate-dagger-r2 --set identity.date=2026-11-03 --set identity.seed=1 --set identity.version=v2 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 4.0 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-03__training-ablation-v2/R6-gate-dagger-r2__MLP01-256x3__s1__v2__2026-11-03/R6-gate-dagger-r2__MLP01-256x3__s1__v2__2026-11-03.npz
+  done in 0.5 min
+  R6-gate-dagger round 2 seed 1: validation sustained hold 27/32, reach 31/32, median final error 4.078 mm
+
+===== R6-gate-dagger round 2 seed 2 (23:07:44) =====
+$ -m training.datasets.train --variant R6-gate-dagger-r2 --set identity.date=2026-11-03 --set identity.seed=2 --set identity.version=v2 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-03__training-ablation-v2/R6-gate-dagger-r2__MLP01-256x3__s2__v2__2026-11-03/R6-gate-dagger-r2__MLP01-256x3__s2__v2__2026-11-03.npz
+  done in 0.4 min
+  R6-gate-dagger round 2 seed 2: validation sustained hold 29/32, reach 30/32, median final error 3.369 mm

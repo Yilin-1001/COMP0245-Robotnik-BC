@@ -1,0 +1,4 @@
+noise,collection,episodes_used,noisy_steps_pct,arm_rms_nm,arm_rms_per_joint_min_nm,arm_rms_per_joint_max_nm,arm_impulse_rms_10ms_nms,arm_impulse_rms_100ms_nms,arm_impulse_rms_500ms_nms,wheel_rms_rad_s
+OU (R3/R4 data),2026-10-28__collection__d2-s075-x2-58af5db87875,56,87.2,0.503,0.49,0.52,0.005,0.0464,0.1775,0.076
+DART alpha = 6 (iteration 1),2026-11-04__collection__dartfull-fitting-k1-be4700075424,56,100.0,0.882,0.37,1.11,0.0028,0.0088,0.0199,0.078
+DART alpha = 1 (iteration 1),2026-11-04__collection__dartfull-fitting-k1-c31ef31bc519,56,100.0,0.36,0.15,0.45,0.0011,0.0036,0.0081,0.032

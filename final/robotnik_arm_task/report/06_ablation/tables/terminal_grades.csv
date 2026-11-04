@@ -1,0 +1,10 @@
+row,report_name,n,grade_A,grade_B,grade_C,grade_D,grade_E,grade_F,share_below_10mm_pct,median_final1s_max_err_mm
+expert,Expert A (teacher),240,233,1,3,3,0,0,97.5,0.82
+R1,Baseline,720,1,1,0,3,715,0,0.3,11963.55
+R2,Baseline + Gate,720,0,0,2,7,711,0,0.0,19900.76
+R3,OU,720,1,3,9,14,693,0,0.6,302.59
+R4,OU + Gate,720,165,69,120,194,172,0,32.5,20.48
+R5,DAgger,720,168,115,151,103,183,0,39.3,14.79
+R6,DAgger + Gate,720,199,139,110,112,160,0,46.9,10.71
+R7,f-DAgger,720,116,100,92,155,257,0,30.0,26.67
+R8,f-DAgger + Gate,720,260,89,63,83,225,0,48.5,11.06

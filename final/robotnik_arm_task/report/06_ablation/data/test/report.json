@@ -1,0 +1,12 @@
+{
+  "generated_utc": "2026-11-02T10:00:54.671817+00:00",
+  "bootstrap_seed": 1101031,
+  "bootstrap_resamples": 1000,
+  "source_sha256": {
+    "suite_report.py": "90ac5eaaca72963a81017d9797812c7419c5c01fe0d4ca213fc8bf3a44182a54",
+    "suite_plots.py": "06f6adc9d497ff337ff8ad7340b709f5bd346abae09ffabbfc2caab4eb787705"
+  },
+  "run_hash": "09ca62fb78e6754c7c4ea6e12eeefc3e3d5df7fd6122f77ad1aef6999db42382",
+  "rollouts": 6000,
+  "complete": true
+}

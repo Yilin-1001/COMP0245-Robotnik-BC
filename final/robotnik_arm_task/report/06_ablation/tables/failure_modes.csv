@@ -1,0 +1,64 @@
+row,report_name,suite,n,failures,never_within_10mm,reached_not_held,exceptions,median_min_err_of_failures_mm
+expert,Expert A (teacher),T0,64,0,0,0,0,
+expert,Expert A (teacher),T1,72,0,0,0,0,
+expert,Expert A (teacher),T2,24,0,0,0,0,
+expert,Expert A (teacher),T3,32,6,6,0,0,13.4
+expert,Expert A (teacher),T4,24,0,0,0,0,
+expert,Expert A (teacher),T5,24,0,0,0,0,
+expert,Expert A (teacher),all,240,6,6,0,0,13.4
+R1,Baseline,T0,192,188,175,13,0,50.3
+R1,Baseline,T1,216,216,215,1,0,3830.9
+R1,Baseline,T2,72,70,68,2,0,82.3
+R1,Baseline,T3,96,96,94,2,0,108.9
+R1,Baseline,T4,72,70,69,1,0,48.8
+R1,Baseline,T5,72,72,69,3,0,44.2
+R1,Baseline,all,720,712,690,22,0,106.2
+R2,Baseline + Gate,T0,192,152,91,61,0,14.4
+R2,Baseline + Gate,T1,216,216,216,0,0,2879.4
+R2,Baseline + Gate,T2,72,71,65,6,0,61.2
+R2,Baseline + Gate,T3,96,93,86,7,0,41.5
+R2,Baseline + Gate,T4,72,56,32,24,0,13.5
+R2,Baseline + Gate,T5,72,72,42,30,0,14.0
+R2,Baseline + Gate,all,720,660,532,128,0,71.9
+R3,OU,T0,192,189,189,0,0,276.6
+R3,OU,T1,216,208,204,4,0,266.6
+R3,OU,T2,72,67,64,3,0,177.5
+R3,OU,T3,96,82,67,15,0,664.0
+R3,OU,T4,72,69,69,0,0,205.5
+R3,OU,T5,72,72,71,1,0,262.5
+R3,OU,all,720,687,664,23,0,251.2
+R4,OU + Gate,T0,192,6,2,4,0,5.3
+R4,OU + Gate,T1,216,20,16,4,0,3562.1
+R4,OU + Gate,T2,72,38,30,8,0,16.9
+R4,OU + Gate,T3,96,44,37,7,0,15.5
+R4,OU + Gate,T4,72,4,2,2,0,13.5
+R4,OU + Gate,T5,72,23,2,21,0,1.0
+R4,OU + Gate,all,720,135,89,46,0,14.1
+R5,DAgger,T0,192,7,3,4,0,4.8
+R5,DAgger,T1,216,5,3,2,0,60.3
+R5,DAgger,T2,72,45,32,13,0,15.8
+R5,DAgger,T3,96,84,61,23,0,15.4
+R5,DAgger,T4,72,4,3,1,0,11.8
+R5,DAgger,T5,72,35,2,33,0,1.5
+R5,DAgger,all,720,180,104,76,0,12.4
+R6,DAgger + Gate,T0,192,4,1,3,0,7.2
+R6,DAgger + Gate,T1,216,0,0,0,0,
+R6,DAgger + Gate,T2,72,36,27,9,0,13.8
+R6,DAgger + Gate,T3,96,75,41,34,0,10.3
+R6,DAgger + Gate,T4,72,3,2,1,0,10.2
+R6,DAgger + Gate,T5,72,20,0,20,0,1.1
+R6,DAgger + Gate,all,720,138,71,67,0,10.2
+R7,f-DAgger,T0,192,5,0,5,0,8.1
+R7,f-DAgger,T1,216,24,23,1,0,2737.0
+R7,f-DAgger,T2,72,36,15,21,0,9.1
+R7,f-DAgger,T3,96,72,49,23,0,14.5
+R7,f-DAgger,T4,72,5,1,4,0,9.0
+R7,f-DAgger,T5,72,33,1,32,0,0.7
+R7,f-DAgger,all,720,175,89,86,0,10.2
+R8,f-DAgger + Gate,T0,192,2,0,2,0,5.3
+R8,f-DAgger + Gate,T1,216,120,120,0,0,1674.1
+R8,f-DAgger + Gate,T2,72,13,8,5,0,19.7
+R8,f-DAgger + Gate,T3,96,32,10,22,0,6.3
+R8,f-DAgger + Gate,T4,72,2,0,2,0,5.4
+R8,f-DAgger + Gate,T5,72,9,0,9,0,1.1
+R8,f-DAgger + Gate,all,720,178,138,40,0,963.4

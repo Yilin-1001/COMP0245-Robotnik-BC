@@ -1,0 +1,9 @@
+row,report_name,run_id,method,gate,ou_noise,dagger,inputs,training_data,model_tested
+R1,Baseline,R1-baseline,Baseline,0,0,0,features-v1 (21),221 clean expert episodes,R1-baseline
+R2,Baseline + Gate,R2-gate,Baseline,1,0,0,features-v1-gate (22),221 clean expert episodes,R2-gate
+R3,OU,R3-dart,OU,0,1,0,features-v1 (21),221 clean + 441 OU-noise episodes,R3-dart
+R4,OU + Gate,R4-dart-gate,OU,1,1,0,features-v1-gate (22),221 clean + 441 OU-noise episodes,R4-dart-gate
+R5,DAgger,R5-baseline-dagger,DAgger,0,0,1,features-v1 (21),R1 data + DAgger rounds 1-3,R5-baseline-dagger-r3 (round 3)
+R6,DAgger + Gate,R6-gate-dagger,DAgger,1,0,1,features-v1-gate (22),R2 data + DAgger rounds 1-3,R6-gate-dagger-r3 (round 3)
+R7,f-DAgger,R7-dart-dagger,f-DAgger,0,1,1,features-v1 (21),R3 data + DAgger rounds 1-3,R7-dart-dagger-r3 (round 3)
+R8,f-DAgger + Gate,R8-dart-gate-dagger,f-DAgger,1,1,1,features-v1-gate (22),R4 data + DAgger rounds 1-3,R8-dart-gate-dagger-r3 (round 3)

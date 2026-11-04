@@ -10,7 +10,7 @@ No new data was collected. Seeds 1-2 of rounds 1-2 were trained on the existing 
 ```bash
 python -m experiments.dagger_extra_seeds --date 2026-11-03 --rows R8-dart-gate-dagger R6-gate-dagger --rounds 1 2 --seeds 1 2 --workers 20
 python -m evaluation.test_suite --models <12 step_42000.npz: R6/R8 r1-r2, seeds 0-2> --out results/test/2026-11-03_231207__dart-low-round-dagger --workers 20
-python -m experiments.dagger_low_round_report --tests results/test/2026-11-01_215340__R1-R8 results/test/2026-11-03_231207__dart-low-round-dagger \
+python report/07_training_time_comparison/code/make_comparison.py --tests results/test/2026-11-01_215340__R1-R8 results/test/2026-11-03_231207__dart-low-round-dagger \
     --out results/ablation/2026-11-03__training-ablation-v2/low-round
 ```
 
@@ -49,3 +49,5 @@ DART + DAgger failures on T1 are navigation failures: the base finishes 1-12 m f
 DAgger-only's far success comes from its data. R2's broken round-0 student drove away from the targets (up to 798 m), so the expert's round-1 labels include 3.1 M rows with a base-target distance above 3 m. Those rows stay in every later round.
 
 Every other dataset (clean, DART, R6 r2-r3, R8 r1-r3) stops at 3.10 m. T1 is therefore partly in distribution for R6 but pure extrapolation for R4 and R8. R4's 90.7% is genuine extrapolation. Retraining on the DAgger mixtures makes that extrapolation seed-dependent (e.g. R8-r1 6-10 m: 24 / 0 / 8 of 24 per seed).
+
+The comparison script, formerly `experiments/dagger_low_round_report.py`, now lives at `report/07_training_time_comparison/code/make_comparison.py`. The final figures, tables and data for the report are in [`report/07_training_time_comparison/`](../../../report/07_training_time_comparison/README.md).
