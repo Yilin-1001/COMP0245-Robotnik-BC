@@ -54,13 +54,13 @@ Distance is **uniform in radius**, not uniform in floor area: equal-width distan
 
 ![Three-dimensional target coverage by fitting, validation and test split](figures/scenario_coverage.png)
 
-*Each point is one target, shown relative to the robot's starting position and heading: x is forward/backward, y is left/right, and z is target world height. The dark square marks the robot and the arrow its forward direction; faint floor projections help judge horizontal position. Fitting (221), validation (32) and test (64) have separate panels with identical limits and viewpoints. The vertical scale is expanded for readability. The pale rings mark the sampled distance and height bounds.*
+*Target positions in the initial robot frame: x_rel is forward, y_rel is left, and z is world height. Each point is one scenario. Panels (a–c) show fitting (n = 221), validation (n = 32) and test (n = 64), with identical coordinate limits and viewpoints. The origin is the starting base position. The vertical scale is expanded for readability.*
 
 The horizontal coordinates are `x = d · cos(relative_azimuth)` and `y = d · sin(relative_azimuth)`. Aligning every scenario to the initial robot pose makes front, rear and side targets directly comparable despite different world starting positions and headings. This physical view shows an annular target volume because distance is limited to 0.5–3.0 m.
 
 ![Three-dimensional sampling coordinates and validation strata](figures/scenario_parameter_coverage_3d.png)
 
-*A complementary view keeps the original sampling coordinates: distance, relative azimuth (degrees) and height. The lattice shows the actual 2 × 4 × 4 validation strata; validation has exactly one point in each of the 32 cells. Azimuth −180° and +180° are the same direction at the angular boundary. Both figures show three of the six sampled parameters, rather than complete six-dimensional or trajectory-state coverage.*
+*Sampling coordinates: target distance d, relative azimuth phi (degrees) and world height z. The lattice in panel (b) shows the 2 distance × 4 azimuth × 4 height validation strata, with exactly one validation scene in each of the 32 cells. Azimuth −180° and +180° denote the same direction. Both figures show three of the six sampled parameters, rather than complete six-dimensional or trajectory-state coverage.*
 
 ### Verify coverage and preserve the split
 
