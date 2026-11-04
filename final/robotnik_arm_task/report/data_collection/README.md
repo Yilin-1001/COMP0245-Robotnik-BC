@@ -133,6 +133,29 @@ These numbers are recomputed from the copied frozen manifests and match the hist
 
 We collected expert demonstrations from frozen scrambled Sobol designs spanning target distance, relative direction, height and the robot's initial planar pose. The original design contains 256 training and 64 separately scrambled test scenarios. Each rollout records aligned observation–expert-action pairs at 1 kHz, followed by a post-reach hold window and quality checks. The paired Clean_253 set is divided by scenario into 221 fitting and 32 stratified validation scenes. Fixed seeds and checksummed manifests make scene generation, split selection and noise realisations reproducible, while multiple training seeds expose learning variability. Sobol reduces measured six-dimensional discrepancy relative to independent uniform sampling at the same scene budget. OU perturbations and DAgger complement this geometric coverage with corrective labels away from clean expert trajectories. These choices support generalisation within the declared operating range; robustness beyond that range requires separate evaluation.
 
+## LaTeX figures
+
+Use the vector PDFs [`scenario_coverage.pdf`](figures/scenario_coverage.pdf) and [`scenario_parameter_coverage_3d.pdf`](figures/scenario_parameter_coverage_3d.pdf) in the paper. Their serif and mathematical fonts are embedded as TrueType subsets; the PNG versions are previews.
+
+[`latex/coverage_figures.tex`](latex/coverage_figures.tex) contains ready-to-use figure environments, English captions and reference labels. In the main document, load `graphicx`, set the figure directory and input the snippet (adjust the paths relative to the main `.tex` file):
+
+```latex
+% Preamble
+\usepackage{graphicx}
+\graphicspath{{path/to/data_collection/figures/}}
+
+% Document body
+\input{path/to/data_collection/latex/coverage_figures.tex}
+```
+
+The snippet uses `figure*` and `width=\textwidth` so all three panels span the page width in a two-column paper; it also works in a single-column document. Reference the figures with `\ref{fig:scenario-coverage}` and `\ref{fig:scenario-strata}`. A minimal two-column document is provided in [`latex/example.tex`](latex/example.tex), with its compiled [`example.pdf`](latex/example.pdf).
+
+To compile the example from `report/data_collection/latex/`:
+
+```bash
+pdflatex -interaction=nonstopmode -halt-on-error example.tex
+```
+
 ## Layout and reproduction
 
 ```text
@@ -146,6 +169,7 @@ data_collection/
   data/source_inventory.json  source paths and hashes of the 11 copied evidence files
   tables/                     collection, coverage, marginal, stratum and discrepancy counts
   figures/                    physical 3-D coverage, 3-D strata and Sobol comparison, PNG + PDF
+  latex/                      figure environments, captions and a compiled minimal example
 ```
 
 From `final/robotnik_arm_task/`, in the project environment:
