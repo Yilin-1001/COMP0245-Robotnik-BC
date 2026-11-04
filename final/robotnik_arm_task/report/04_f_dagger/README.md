@@ -111,10 +111,33 @@ Halving σ is clearly worse. Doubling σ or doubling the OU data gives nothing f
 | Setting | Value | Why |
 |---|---|---|
 | Who drives | The student alone (β = 0); no added noise | The states that matter are the ones the student itself reaches |
-| Scenes per round | The 221 fitting scenarios, plus 64 fresh development scenes per round (`dev-r<k>-<i>`): 70% with target height 0.1–0.5 m, 50% at 0.5–1.0 m distance | The R4 test diagnosis found its failures at low and near targets |
+| Scenes per round | The 221 fitting scenarios, plus 64 newly sampled training scenarios per round (`dev-r<k>-<i>`, called development scenes in the code), biased towards low and near targets as detailed below | The R4 test diagnosis found its failures at low and near targets |
 | Labels | The expert's action at every visited 1 ms step, whatever the student does; failed episodes are kept | Failed episodes contain the states DAgger is for. The expert recovers all of them: 13/13 failed R4 episodes were held after the expert took over |
 | Aggregation | The next student is trained **from scratch** on clean + OU + every DAgger round so far, with the same recipe | No warm-start effects; each round differs only in its data |
 | Round selection | Highest seed-0 validation hold among rounds 1..K (tie → later round); seeds 1–2 are then trained for that round | Declared before the run; the test set is never used |
+
+**What the 64 new development scenes mean.** A scene specifies the robot's initial base position and heading, and the target position for the same reaching-and-holding task. Each round samples 64 new configurations within the training ranges. Their student rollouts and expert labels enter training; these scenes are separate from the frozen validation and test sets. Here, "development" names an additional source of training scenes, not a held-out evaluation split.
+
+**Why add new scenes each round?** DAgger can collect corrective labels on the existing 221 fitting scenes alone; adding new configurations is a choice in this experiment, not a requirement of the algorithm. It serves two purposes. First, new combinations of start pose and target position broaden the configurations on which the current student receives corrective supervision, with the aim of improving generalisation beyond the fixed fitting scenes. Second, the low/near bias allocates more collection to the conditions where R4 struggled, so the expert labels the student's approach, stall and drift states under additional configurations. The [R4 diagnosis](../../../../docs/reports/2026-10-29__report__r4-test-diagnosis.md) found all 13 failed runs in seven low or near scenes and recommended oversampling these conditions. It also found that these failures were not simply outside the fitting-scene coverage: the purpose is denser corrective supervision in difficult parts of the training range. As recorded under provenance below, this design was informed by the earlier test diagnosis; the newly generated scene configurations themselves are not taken from validation or test.
+
+Keeping all 221 fitting scenes preserves coverage of the original training conditions, while sampling 64 additional scenes each round supplies new combinations in the difficult regions. These are intended benefits of the sampling design; the reported ablation does not isolate the contribution of fresh scenes from the rest of DAgger.
+
+**Why exactly 64?** This is the configured per-round collection budget (`--dev-scenes 64`), adding about 29% more trajectories than the 221 fitting-scene rollouts alone, for 285 trajectories per round. The experiment records do not establish 64 as an optimal or necessary number, and the reported results do not compare 0, 32, 64 or 128 added scenes. It should therefore be reported as an experimental setting, rather than a theoretically required sample count or a separately validated optimum.
+
+The sampling rule in [`dev_rows`](../../data_collection/collect_dagger.py) is:
+
+| Scene parameter | Sampling rule |
+|---|---|
+| Initial base position | x and y independently uniform in −0.5–0.5 m |
+| Initial heading and target relative azimuth | Independently uniform in −π–π radians |
+| Target height z | With probability 0.7, uniform in 0.1–0.5 m; otherwise uniform in the full 0.1–1.25 m range |
+| Horizontal start-to-target distance d | With probability 0.5, uniform in 0.5–1.0 m; otherwise uniform in the full 0.5–3.0 m range |
+
+These are mixture-selection probabilities, not exact quotas of the 64 scenes. The full ranges also include the low and near bands, so the final fractions within those bands need not equal 70% and 50%. This sampling increases coverage of low and near targets, where the student had struggled.
+
+Each round therefore collects **285 new trajectories: 221 fresh student rollouts on the existing fitting scenes, plus 64 rollouts on newly sampled scenes**. Over three rounds, each method adds 192 scene configurations and 855 trajectories. The 221 fitting configurations are reused; their trajectories change with the student. The new scenes have IDs `dev-r1-0000` through `dev-r1-0063` in round 1, and corresponding `dev-r2-*` and `dev-r3-*` IDs in later rounds. Sampling is reproducible: `default_rng([20261030, round_index, scene_index])` gives R5–R8 the same 64 configurations at a given round, although their students produce different trajectories and labels.
+
+The fixed trajectory count does not imply a fixed number of labelled samples. Each executed 1 ms step contributes one expert-action label; trajectories stop 3 s after the first reach or at the 40 s cap, so their lengths and the total label count vary by method and round. Extra training seeds reuse the existing aggregated datasets without collecting new scenes or labels ([`dagger_extra_seeds.py`](../../experiments/dagger_extra_seeds.py)).
 
 **f-DAgger + Gate's DAgger data are already near-expert** (`tables/dagger_collections.csv`, round 1). The collector is the round-0 student, so it determines what DAgger sees:
 
