@@ -16,10 +16,12 @@ import queue
 import threading
 import time
 
+from core.model_names import legacy_id, report_label, row_id
+
 TASK_DIR = Path(__file__).resolve().parents[1]
 # R1-R4 use v1 terminal models; R5-R8 use the selected v2 DAgger round (r3).
 DEFAULT_PROTOCOL = TASK_DIR / "experiments/demo_models/training-ablation-v1-v2.yaml"
-DEFAULT_ROW = "R4-dart-gate"
+DEFAULT_ROW = "R4-OU-Gate"
 
 
 def resolve_demo(args):
@@ -36,7 +38,10 @@ def resolve_demo(args):
     # Ablation manifests list several rows per (teacher, objective, seed); older manifests have no row field.
     artifact = next(a for a in protocol["decisions"]["final"]["artifacts"]
                     if (a["teacher"], a["objective"], a["seed"]) == (args.teacher, args.objective, args.seed)
-                    and a.get("row", args.row) == args.row)
+                    and legacy_id(a.get("row", args.row)) == legacy_id(args.row))
+    artifact = dict(artifact)
+    if row_id(artifact.get("row", "")):
+        artifact["label"] = f"{report_label(artifact.get('run_id', artifact['row']))} | seed {artifact['seed']}"
     path = TASK_DIR / artifact["inference"]
     if not path.exists():
         raise FileNotFoundError(f"{artifact['inference']} not found: {archived}")
@@ -89,7 +94,7 @@ def _worker(role, args, artifact, scenario, path, barrier, stopped, paused, rest
     steps, failure = 0, None
     initial, obs = None, None
     label = f"EXPERT {args.teacher}" if role == "expert" else \
-        f"{artifact.get('row', args.objective.upper())} {args.teacher} seed {args.seed}"
+        artifact.get('label', f"{report_label(artifact.get('row', args.objective.upper()))} seed {args.seed}")
     color = [0.0, 0.55, 0.15] if role == "expert" else [0.05, 0.3, 0.9]
     try:
         env = RobotEnv(gui=not args.headless)
@@ -203,7 +208,7 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--teacher", choices=["A", "B"], default="A")
     p.add_argument("--row", default=DEFAULT_ROW,
-                   help="ablation row R1-R8, e.g. R1-baseline, R6-gate-dagger or R8-dart-gate-dagger (default: R4-dart-gate)")
+                   help="Report model ID, e.g. R4-OU-Gate or R8-f-DAgger-Gate; historical IDs also work")
     p.add_argument("--objective", choices=["bc", "bcj"], default="bcj")
     p.add_argument("--seed", type=int, choices=[0, 1, 2], default=0)
     p.add_argument("--scenario", default="train-0186",

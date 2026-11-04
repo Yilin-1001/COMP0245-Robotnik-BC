@@ -2,7 +2,7 @@
 
 The 2026-11-01 v2 run (experiments.dagger_rounds) trained seeds 1-2 only for the chosen round (r3). This script trains
 seeds for the earlier rounds k on the same aggregated datasets (dagger-R<n>-v2-r1..rk), with the same recipe, so that
-"DART + k DAgger rounds" (R8-rk) and "DAgger only, k rounds" (R6-rk) can be compared at k = 1, 2 with three seeds.
+"f-DAgger + Gate, round k" (R8-rk) and "DAgger + Gate, round k" (R6-rk) can be compared at k = 1, 2 with three seeds.
 The DAgger data of round k was collected by the 2026-11-01 seed-0 model of round k - 1; that model stays seed 0.
 
 Models: checkpoints/ablation/<date>__training-ablation-v2/; results: results/ablation/<date>__training-ablation-v2/dagger/<row>/.
@@ -31,7 +31,9 @@ def collector(row: str, k: int) -> str:
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--date", required=True, help="date of this supplementary experiment, YYYY-MM-DD")
-    p.add_argument("--rows", nargs="+", choices=list(ROWS), required=True)
+    from core.model_names import legacy_id
+    p.add_argument("--rows", nargs="+", type=legacy_id, choices=list(ROWS), required=True,
+                   help="report model IDs or historical aliases")
     p.add_argument("--rounds", nargs="+", type=int, required=True)
     p.add_argument("--seeds", nargs="+", type=int, required=True)
     p.add_argument("--workers", type=int, default=20)

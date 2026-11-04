@@ -6,6 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
+from core.model_names import report_label
 from evaluation.suite_manifest import digest
 
 BOOTSTRAP_SEED = 1101031
@@ -43,6 +44,7 @@ def summarise(rows,models=None,scenes=None):
                 errors=[r['final1s_max_err_mm'] for r in chosen if r['grade']!='F' and r['final1s_max_err_mm'] is not None]
                 grades=Counter(r['grade'] for r in chosen)
                 output.append({'level':level,'policy':policy,'row':matched[0]['row'],
+                    'report_name':report_label(matched[0]['row']),
                     'seed':matched[0]['seed'] if level=='model' else None,'suite':suite,'band':band,'subset':subset,
                     'n':len(chosen),'n_expected':expected,'n_missing':missing,'expert_pending_scenes':unknown_expert,
                     'coverage_status':'partial' if missing or unknown_expert else 'complete',
@@ -119,7 +121,7 @@ def generate_report(directory):
     byrow=defaultdict(list)
     for m in run['models']:byrow[m['row']].append(m)
     for row,ms in sorted(byrow.items()):
-        lines.append(f"| {row} | {', '.join(str(m['seed']) for m in ms)} | {ms[0].get('round','—')} |")
+        lines.append(f"| {report_label(row)} | {', '.join(str(m['seed']) for m in ms)} | {ms[0].get('round','—')} |")
     if run.get('missing_models'):lines.extend(['','Missing models: `'+json.dumps(run['missing_models'])+'`.'])
     for subset,title in [('all','All frozen scenes'),('expert_success','Expert-success subset')]:
         lines.extend(['','## '+title,'','| Row | Suite/band | Success | Rate [95% interval] | Completion median (successes only), s | Terminal median, mm |',
@@ -129,7 +131,7 @@ def generate_report(directory):
             rate='N/A' if r['success_rate'] is None else f"{100*r['success_rate']:.1f}%"
             if r['ci_low'] is not None:rate+=f" [{100*r['ci_low']:.1f}, {100*r['ci_high']:.1f}]"
             if r['coverage_status']=='partial':rate+=f" PARTIAL ({r['n']}/{r['n_expected']} evaluated; expert pending {r['expert_pending_scenes']})"
-            lines.append(f"| {r['policy']} | {r['suite']}/{r['band']} | {r['successes']}/{r['n']} | {rate} | {show(r['completion_median_s'])} | {show(r['terminal_error_median_mm'])} |")
+            lines.append(f"| {report_label(r['policy'])} | {r['suite']}/{r['band']} | {r['successes']}/{r['n']} | {rate} | {show(r['completion_median_s'])} | {show(r['terminal_error_median_mm'])} |")
     lines.extend(['','## Efficiency and runtime','', '| Model | Parameters | Warmed latency p50 / p95 / p99, µs |', '|---|---:|---|'])
     for m in run['models']:
         bench=run.get('latency_benchmark',{}).get(m['id'],{})

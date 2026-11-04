@@ -130,7 +130,9 @@ def train_and_validate(row, k, seed, date, collector, workers, out_dir, model=No
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    p.add_argument("--row", default="R8-dart-gate-dagger", choices=list(ROWS))
+    from core.model_names import legacy_id
+    p.add_argument("--row", default="R8-dart-gate-dagger", type=legacy_id, choices=list(ROWS),
+                   help="report model ID (e.g. R8-f-DAgger-Gate) or historical alias")
     p.add_argument("--start", help="round-0 student (.npz); default: the base row's seed-0 model of ablation v1")
     p.add_argument("--rounds", type=int, default=3)
     p.add_argument("--date", required=True, help="experiment date YYYY-MM-DD, fixed for the whole experiment")

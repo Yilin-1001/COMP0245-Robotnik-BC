@@ -1,10 +1,13 @@
 # Robotnik: collect, train and test
 
-This tutorial reproduces **R4 (DART + reach gate + BC+J), seed 0**: an MLP that controls the robot's arm and mobile base.
+This tutorial reproduces **R4 (OU + Gate, BC+J), seed 0**: an MLP that controls the robot's arm and mobile base.
 Use Linux or Windows WSL2, Python 3.10 and [uv](https://docs.astral.sh/uv/getting-started/installation/). Allow about 25 GiB of disk space for the full collection pipeline
 (raw trajectories of both teachers, their paired copies, feature datasets and checkpoints).
 
-**Project status.** Training-method ablation v1 (R1–R4) is complete, and R4 has a test result. Version v2 adds DAgger (rows R5–R8, step 6) and has validation results only. The final model is not chosen yet.
+**Final checkpoints (2026-11-04).** The Report-tested R1–R8 models and the full DART comparison are packaged in
+[`checkpoints/2026-11-04final/`](final/robotnik_arm_task/checkpoints/2026-11-04final/README.md).
+Use the [unified model names and submission guide](docs/model-naming.md): Baseline, OU, DAgger and f-DAgger,
+each without/with Gate; R9 is DART + Gate. Historical `dart` aliases in R1–R8 paths mean OU noise.
 The method and all results are in the [project pipeline](docs/2026-10-30__guide__project-pipeline.md), and the documentation index is [docs/README.md](docs/README.md).
 
 ## 1. Install
@@ -30,7 +33,7 @@ On a minimal Ubuntu or WSL2 install, Pinocchio also needs the OpenMP runtime: `s
 
 ## 2. Collect and prepare data
 
-Start with a fresh data directory. Collect clean expert trajectories, build the paired subsets, then collect DART trajectories:
+Start with a fresh data directory. Collect clean expert trajectories, build the paired subsets, then collect OU-perturbed expert trajectories:
 
 ```bash
 python -m data_collection.scenarios
@@ -45,20 +48,20 @@ Collection is not guaranteed to be bit-identical across machines. If `build_clea
 episodes differ from the recorded ones, run `python tools/build_a_clean253.py` instead: it builds teacher A's `Clean_253` alone and checks its files against the frozen split.
 Keep the versioned split in `experiments/splits/clean253.json` unchanged.
 
-Locate the DART collection and build the training features:
+Locate the OU collection (historical directory name `DART`) and build the training features:
 
 ```bash
-DART_DIR=$(python - <<'PY'
+OU_DIR=$(python - <<'PY'
 from pathlib import Path
 paths = list(Path("data/Markovian/DART").glob("*__collection__d2-s075-x2-*"))
-assert len(paths) == 1, "Select the DART directory printed by the collection command"
+assert len(paths) == 1, "Select the OU collection directory printed by the collection command"
 print(paths[0])
 PY
 )
 
 for FEATURES in features-v1 features-v1-gate; do
     python -m training.datasets.build --source clean253 --features "$FEATURES" --workers 4
-    python -m training.datasets.build --source "$DART_DIR" --name dart-d2s075x2 --features "$FEATURES" --workers 4
+    python -m training.datasets.build --source "$OU_DIR" --name dart-d2s075x2 --features "$FEATURES" --workers 4
 done
 ```
 

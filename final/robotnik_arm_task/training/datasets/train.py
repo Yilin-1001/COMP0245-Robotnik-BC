@@ -26,6 +26,7 @@ from pathlib import Path
 
 import yaml
 
+from core.model_names import legacy_id
 from training.common.config import (TASK_DIR, _set_dotted, action_weights, canonical_json, check_interface, merge,
                                     parse_overrides, run_dir_for, scientific_view)
 
@@ -35,14 +36,15 @@ OBJECTIVES = ("bc", "bcj")
 
 def resolve(variant: str, overrides: dict) -> dict:
     load = lambda p: yaml.safe_load(p.read_text()) or {}
-    paths = {"base": CONFIG_DIR / "datasets/base.yaml", "variant": CONFIG_DIR / "datasets/variants" / f"{variant}.yaml"}
+    template_variant = legacy_id(variant)
+    paths = {"base": CONFIG_DIR / "datasets/base.yaml", "variant": CONFIG_DIR / "datasets/variants" / f"{template_variant}.yaml"}
     if not paths["variant"].is_file():
         raise FileNotFoundError(f"unknown variant {variant!r}: {paths['variant']} does not exist")
     objective = overrides.get("identity.objective", merge(load(paths["base"]), load(paths["variant"]))["identity"]["objective"])
     if objective not in OBJECTIVES:
         raise ValueError(f"objective must be one of {OBJECTIVES}, got {objective!r}")
     layers = [("common.yaml", CONFIG_DIR / "common.yaml"), (f"objectives/{objective}.yaml", CONFIG_DIR / "objectives" / f"{objective}.yaml"),
-              ("datasets/base.yaml", paths["base"]), (f"datasets/variants/{variant}.yaml", paths["variant"])]
+              ("datasets/base.yaml", paths["base"]), (f"datasets/variants/{template_variant}.yaml", paths["variant"])]
     config = {}
     for _, p in layers:
         config = merge(config, load(p))

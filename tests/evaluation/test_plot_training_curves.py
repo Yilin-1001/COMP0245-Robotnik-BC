@@ -48,6 +48,6 @@ def test_figures_are_written_as_png_and_pdf(tmp_path):
     summary = tmp_path / "summary.csv"
     summary.write_text("row,round,seed,sustained_hold,n\nR2-gate,0,0,1/32,32\nR2-gate,1,0,24/32,32\nR2-gate,1,1,25/32,32\n")
     paths += plot_rounds({"R6-gate-dagger": read_dagger_summary(summary)}, tmp_path / "out")
-    assert sorted(p.name for p in paths) == ["R6-gate-dagger.pdf", "R6-gate-dagger.png", "dagger_rounds.pdf",
+    assert sorted(p.name for p in paths) == ["R6-DAgger-Gate.pdf", "R6-DAgger-Gate.png", "dagger_rounds.pdf",
                                              "dagger_rounds.png"]
     assert all(p.stat().st_size > 0 for p in paths)

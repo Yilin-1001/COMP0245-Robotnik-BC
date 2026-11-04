@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
 import numpy as np
 
+from core.model_names import report_label
 COLORS = {'A':'#1b7837','B':'#7fbf7b','C':'#fddc7a','D':'#ef8a62','E':'#b2182b','F':'#555555'}
 
 
@@ -51,7 +52,7 @@ def plot_results(directory,rows,summary):
                     ax.scatter(i+np.linspace(-.12,.12,len(seedstats)),[100*x['success_rate'] for x in seedstats],s=15,color='black',zorder=3)
             expert=stat(g,'expert',subset)
             if expert and expert['success_rate'] is not None:ax.axhline(100*expert['success_rate'],color='black',ls='--',label='Markovian expert A')
-            ax.set_xticks(range(len(students)),students);ax.set_ylim(0,105);ax.set_ylabel('Success (%)');ax.set_title('/'.join(g));ax.grid(axis='y',alpha=.2)
+            ax.set_xticks(range(len(students)),[report_label(n) for n in students],rotation=45,ha='right');ax.set_ylim(0,105);ax.set_ylabel('Success (%)');ax.set_title('/'.join(g));ax.grid(axis='y',alpha=.2)
             if expert and expert['success_rate'] is not None:ax.legend(fontsize=7)
         fig.suptitle('Continuous <10 mm task success — '+subset,y=1.01)
         save(fig,'01_success_'+subset)
@@ -63,7 +64,7 @@ def plot_results(directory,rows,summary):
             values=[]
             for n in names:
                 rs=data(g,n);values.append(100*sum(r['grade']==grade for r in rs)/len(rs) if rs else 0)
-            ax.bar(names,values,bottom=bottom,color=COLORS[grade],label=grade);bottom+=values
+            ax.bar([report_label(n) for n in names],values,bottom=bottom,color=COLORS[grade],label=grade);bottom+=values
         ax.set_ylim(0,100);ax.set_title('/'.join(g));ax.set_ylabel('Rollouts (%)');ax.tick_params(axis='x',rotation=45)
     axes[0].legend(ncol=6,fontsize=7);save(fig,'02_terminal_grades')
     # 3. Heatmaps for both denominators.
@@ -75,7 +76,7 @@ def plot_results(directory,rows,summary):
                 if s and s['success_rate'] is not None:values[i,j]=100*s['success_rate']
         fig,ax=plt.subplots(figsize=(max(8,len(groups)*1.2),max(4,len(names)*.5)))
         im=ax.imshow(np.ma.masked_invalid(values),vmin=0,vmax=100,cmap='YlGnBu',aspect='auto')
-        ax.set_xticks(range(len(groups)),['/'.join(g) for g in groups],rotation=45,ha='right');ax.set_yticks(range(len(names)),names)
+        ax.set_xticks(range(len(groups)),['/'.join(g) for g in groups],rotation=45,ha='right');ax.set_yticks(range(len(names)),[report_label(n) for n in names])
         for i in range(len(names)):
             for j in range(len(groups)):ax.text(j,i,'N/A' if np.isnan(values[i,j]) else f'{values[i,j]:.0f}',ha='center',va='center',fontsize=8,color='white' if values[i,j]>65 else 'black')
         fig.colorbar(im,ax=ax,label='Success (%)');ax.set_title('Task success — '+subset);save(fig,'03_heatmap_'+subset)
@@ -84,7 +85,7 @@ def plot_results(directory,rows,summary):
     for ax,g in zip(axes,groups):
         for n in names:
             rs=data(g,n);errors=sorted(max(r['final1s_max_err_mm'],1e-4) for r in rs if r['grade']!='F' and r['final1s_max_err_mm'] is not None)
-            if errors:ax.step(errors,np.arange(1,len(errors)+1)/len(errors),where='post',label=n,color=palette[n])
+            if errors:ax.step(errors,np.arange(1,len(errors)+1)/len(errors),where='post',label=report_label(n),color=palette[n])
         ax.set_xscale('log');ax.axvline(10,color='grey',ls='--');ax.axvline(20,color='grey',ls=':')
         ax.set_xlabel('Final-second maximum error (mm; zeros at 1e-4)');ax.set_ylabel('Conditional ECDF, non-F only')
         ax.set_title('/'.join(g)+f"; F={sum(r['grade']=='F' for r in data(g))}");ax.set_ylim(0,1.02);ax.grid(alpha=.2)
@@ -99,7 +100,7 @@ def plot_results(directory,rows,summary):
             for g in relevant:
                 rs=data(g,n)
                 if rs:xs.append(np.mean([r[key] for r in rs]));ys.append(100*np.mean([r['success'] for r in rs]))
-            if xs:ax.plot(xs,ys,'o--',label=n,color=palette[n])
+            if xs:ax.plot(xs,ys,'o--',label=report_label(n),color=palette[n])
         ax.set_ylim(0,105);ax.set_ylabel('Success (%)');ax.set_xlabel('Distance (m)' if suite=='T1' else 'Height (m)')
         ax.set_title(suite+' — separate frozen bands'+(' (caps 80 / 80 / 120 s)' if suite=='T1' else ' (cap 40 s)'));ax.grid(alpha=.2)
         ax.text(.02,.02,'; '.join(f"{g[1]}: n={len({r['scenario_id'] for r in data(g)})}" for g in relevant),transform=ax.transAxes,fontsize=7)
@@ -121,7 +122,7 @@ def plot_results(directory,rows,summary):
                 y=[r['target_by'] if view=='xy' else r['target_z_m'] for r in points]
                 ax.scatter(x,y,c=['ABCDEF'.index(r['grade']) for r in points],cmap=cmap,norm=norm,s=18,alpha=.85)
                 if view=='xy':ax.plot(0,0,'k+',ms=8);ax.set_aspect('equal',adjustable='datalim')
-                ax.set_title(n+f"; {len({r['model_id'] for r in rs})} controller seed(s)")
+                ax.set_title(report_label(n)+f"; {len({r['model_id'] for r in rs})} controller seed(s)")
                 ax.set_xlabel('Initial forward target x (m)' if view=='xy' else 'Initial horizontal target distance (m)')
                 ax.set_ylabel('Initial left target y (m)' if view=='xy' else 'World target height (m)')
             fig.suptitle(suite+' worst terminal grade across available seeds; A green → E red, F grey',y=1.01)
@@ -134,7 +135,7 @@ def plot_results(directory,rows,summary):
             if not rs:continue
             times=sorted(r['completion_time_s'] for r in rs if r['success'])
             cap=max(r.get('time_limit_s',r['duration_s']) for r in rs)
-            ax.step([0]+times+[cap],[0]+list(100*np.arange(1,len(times)+1)/len(rs))+[100*len(times)/len(rs)],where='post',label=n,color=palette[n])
+            ax.step([0]+times+[cap],[0]+list(100*np.arange(1,len(times)+1)/len(rs))+[100*len(times)/len(rs)],where='post',label=report_label(n),color=palette[n])
         ax.set_ylim(0,105);ax.set_title('/'.join(g));ax.set_xlabel('Simulation time (s), including hold');ax.set_ylabel('All-scene completion (%)');ax.grid(alpha=.2)
     if axes[0].get_legend_handles_labels()[0]:axes[0].legend(fontsize=7,ncol=3)
     save(fig,'07_completion_efficiency')
@@ -146,7 +147,7 @@ def plot_results(directory,rows,summary):
             candidates=[r for r in longs if r['row']==n]
             if candidates:
                 r=max(candidates,key=lambda r:float('inf') if r.get('final1s_max_err_mm') is None else r['final1s_max_err_mm'])
-                h=np.array(r['history']);ax.plot(h[:,0],h[:,1],color=palette[n]);ax.set_title(n+' / '+r['scenario_id'])
+                h=np.array(r['history']);ax.plot(h[:,0],h[:,1],color=palette[n]);ax.set_title(report_label(n)+' / '+r['scenario_id'])
                 ax.set_yscale('symlog',linthresh=1);ax.axhline(10,color='grey',ls='--');ax.set_xlabel('Time (s)');ax.set_ylabel('EE error (mm)')
         fig.suptitle('T5 worst terminal outcome per row — full error history',y=1.01);save(fig,'08_long_hold_error_traces')
     # T4 paired shift directly compares the same relative task in different absolute map locations.
@@ -160,6 +161,6 @@ def plot_results(directory,rows,summary):
         for ax,n in zip(axes,names):
             valid=[(a,b) for a,b in pairs if b['row']==n and a['grade']!='F' and b['grade']!='F']
             ax.scatter([max(a['final1s_max_err_mm'],1e-4) for a,b in valid],[max(b['final1s_max_err_mm'],1e-4) for a,b in valid],s=15,color=palette[n])
-            ax.plot([1e-4,1e5],[1e-4,1e5],color='grey',ls='--');ax.set_xscale('log');ax.set_yscale('log');ax.set_title(n)
+            ax.plot([1e-4,1e5],[1e-4,1e5],color='grey',ls='--');ax.set_xscale('log');ax.set_yscale('log');ax.set_title(report_label(n))
             ax.set_xlabel('T0 parent terminal error (mm)');ax.set_ylabel('T4 translated terminal error (mm)')
         save(fig,'09_paired_translation')

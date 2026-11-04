@@ -52,7 +52,7 @@ What the curves show (`tables/terminal_metrics.csv` has every run):
 3. **The learned damping reaches −30 within about 5,000 updates and stays there**, in all 40 runs: the terminal median diagonal is −29.9 to −30.1 N·m·s/rad.
 4. **The offline validation error rises while the training loss keeps falling.** It is measured on the *expert's* states in the 32 validation episodes. The best arm RMSE comes early (R4 at 6,000–11,500 updates, 0.54–0.55 N·m; R8-r3 at 2,500–3,500 updates, 0.64–0.76 N·m) and then rises (terminal R4 0.61–0.66, R8-r3 1.27–2.41 N·m). This is not overfitting to the fitting episodes: R8-r3 has the worst terminal offline error of the two, but the best closed-loop result (validation 93/96 against R4's 83/96; test T0 99.0% against 96.9%). Its capacity goes to the states the student actually reaches, not to reproducing the expert's nominal path. So offline error on expert states is a diagnostic, not a selection metric. The terminal checkpoint is used and closed-loop success is the measure.
 
-The curves of every row (training losses on top, offline validation on the bottom; DAgger rows overlay rounds 0–3) are in `figures/per_row/`.
+The curves of every row (training losses on top, offline validation on the bottom; DAgger rows overlay rounds 0–3) are in `figures/per_row/`, with canonical filenames `R1-Baseline.png` through `R8-f-DAgger-Gate.png` and Report names in the titles and legends.
 
 ## What the Jacobian loss does
 

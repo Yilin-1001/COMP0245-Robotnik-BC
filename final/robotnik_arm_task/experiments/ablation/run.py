@@ -24,6 +24,8 @@ from pathlib import Path
 import numpy as np
 import yaml
 
+from core.model_names import report_label
+
 TASK_DIR = Path(__file__).resolve().parents[2]
 MODES = {"student": "rollout-v1", "arm": "rollout-v1-arm"}  # evaluation_id in results.csv
 
@@ -327,7 +329,7 @@ def demo(m: dict) -> Path:
     for r in runs(m):
         with open(results_dir(m) / "validation" / f"{r['name']}__validation-student.csv", newline="") as f:
             outcomes = list(csv.DictReader(f))
-        artifacts.append({"label": r["name"], "row": r["row"], "teacher": "A", "objective": m["recipe"]["identity.objective"],
+        artifacts.append({"label": f"{report_label(r['row'])} | seed {r['seed']}", "row": r["row"], "teacher": "A", "objective": m["recipe"]["identity.objective"],
                           "seed": r["seed"], "run_id": r["name"], "inference": rel(r["model"]),
                           "inference_sha256": hashlib.sha256(r["model"].read_bytes()).hexdigest(),
                           "validation_full_student_hold": f"{sum(o['sustained_hold_pass'] == 'True' for o in outcomes)}/{len(outcomes)}"})

@@ -21,6 +21,8 @@ from pathlib import Path
 
 import numpy as np
 
+from core.model_names import canonical_id, legacy_id, report_label
+
 TASK_DIR = Path(__file__).resolve().parents[1]
 RUN = re.compile(r"^(?P<variant>.+?)__(?P<arch>[^_]+)__s(?P<seed>\d+)__(?P<version>v\d+)__(?P<date>\d{4}-\d{2}-\d{2})$")
 ROUND = re.compile(r"^(?P<row>.+)-r(?P<round>\d+)$")
@@ -73,7 +75,7 @@ def discover(experiment: Path) -> list[dict]:
         if m is None:
             continue
         variant, r = m["variant"], ROUND.match(m["variant"])
-        row, rnd = (r["row"], int(r["round"])) if r and "dagger" in r["row"] else (variant, None)
+        row, rnd = (r["row"], int(r["round"])) if r and "dagger" in r["row"].lower() else (variant, None)
         runs.append({"dir": d, "name": d.name, "row": row, "round": rnd, "seed": int(m["seed"]), "arch": m["arch"]})
     return runs
 
@@ -81,6 +83,7 @@ def discover(experiment: Path) -> list[dict]:
 def round_zero(row: str) -> Path | None:
     """The base row's v1 seed-0 run directory (round 0 of a DAgger row), if this machine has it."""
     from experiments.dagger_rounds import ROWS, V1_DIR, V1_RUN
+    row = legacy_id(row)
     if row not in ROWS:
         return None
     d = TASK_DIR / V1_DIR / V1_RUN.format(row=ROWS[row][0])
@@ -94,7 +97,7 @@ def series_for_row(row: str, runs: list[dict]) -> list[dict]:
     if dagger:
         base = round_zero(row)
         if base is not None:
-            series.append({"label": f"round 0 = {base.name.split('__')[0]} (v1) s0", "colour": ROUND_STYLE[0][0],
+            series.append({"label": f"round 0 = {report_label(base.name.split('__')[0])} (v1) s0", "colour": ROUND_STYLE[0][0],
                            "marker": ROUND_STYLE[0][1], "dash": "-", "metrics": read_metrics(base / "metrics.csv")})
     for r in sorted(runs, key=lambda r: (r["round"] or 0, r["seed"])):
         colour, marker = ROUND_STYLE[r["round"]] if dagger else (ROUND_STYLE[1][0], None)
@@ -149,12 +152,12 @@ def plot_row(row: str, series: list[dict], out: Path) -> list[Path]:
     for ax in axes[1]:
         ax.set_xlabel("update", fontsize=7.5, color=MUTED)
     handles, labels = axes[0, 0].get_legend_handles_labels()
-    fig.suptitle(f"{row}: training losses (top) and offline validation metrics on the expert's states (bottom)",
+    fig.suptitle(f"{report_label(row)}: training losses (top) and offline validation metrics on the expert's states (bottom)",
                  fontsize=10, color=INK, x=0.01, y=0.99, ha="left")
     fig.legend(handles, labels, loc="upper left", ncol=min(len(labels), 8), frameon=False, fontsize=8,
                bbox_to_anchor=(0.005, 0.965), labelcolor=INK, handlelength=2.6)
     fig.tight_layout(rect=(0, 0, 1, 0.925))
-    return _save(fig, out / row)
+    return _save(fig, out / canonical_id(row))
 
 
 def read_dagger_summary(path: Path) -> list[dict]:
@@ -188,7 +191,7 @@ def plot_rounds(summaries: dict[str, list[dict]], out: Path) -> list[Path]:
         ax.axhline(n, color=MUTED, linewidth=0.8, linestyle=(0, (4, 3)))
         ax.annotate(f"all {n}", (0, n), xycoords=("axes fraction", "data"), xytext=(3, 3),
                     textcoords="offset points", ha="left", fontsize=7, color=MUTED)
-        _style(ax, row, "validation sustained hold" if ax is axes[0, 0] else "", False)
+        _style(ax, report_label(row), "validation sustained hold" if ax is axes[0, 0] else "", False)
         ax.xaxis.set_major_formatter(lambda x, _: f"{x:g}")
         ax.set_xticks(range(0, max(e["round"] for e in entries) + 1))
         ax.set_xlabel("DAgger round (0 = v1 base model)", fontsize=7.5, color=MUTED)
@@ -215,19 +218,19 @@ def _save(fig, stem: Path) -> list[Path]:
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--experiments", nargs="*", help="names in checkpoints/ablation/ (default: all of them)")
-    p.add_argument("--rows", nargs="*", help="only these rows, e.g. R4-dart-gate R6-gate-dagger (default: all)")
+    p.add_argument("--rows", nargs="*", type=legacy_id, help="report model IDs or historical aliases, e.g. R4-OU-Gate R6-DAgger-Gate")
     args = p.parse_args(argv)
     root = TASK_DIR / "checkpoints/ablation"
     names = args.experiments or sorted(d.name for d in root.iterdir() if d.is_dir())
     for name in names:
-        runs = [r for r in discover(root / name) if not args.rows or r["row"] in args.rows]
+        runs = [r for r in discover(root / name) if not args.rows or legacy_id(r["row"]) in args.rows]
         out = TASK_DIR / "results/ablation" / name / "figures/training"
         written = []
         for row in sorted({r["row"] for r in runs}):
             written += plot_row(row, series_for_row(row, [r for r in runs if r["row"] == row]), out)
         dagger_dir = TASK_DIR / "results/ablation" / name / "dagger"
         summaries = {d.name: read_dagger_summary(d / "summary.csv") for d in sorted(dagger_dir.glob("*"))
-                     if (d / "summary.csv").is_file() and (not args.rows or d.name in args.rows)}
+                     if (d / "summary.csv").is_file() and (not args.rows or legacy_id(d.name) in args.rows)}
         if summaries:
             written += plot_rounds(summaries, out)
         print(f"{name}: {len(runs)} runs, {len(written) // 2} figures -> {out.relative_to(TASK_DIR)}")

@@ -1,5 +1,9 @@
 # Report evidence
 
+The upload weights use these Report names in filenames, checkpoint metadata and configs:
+[`../checkpoints/2026-11-04final/`](../checkpoints/2026-11-04final/README.md).
+See the [canonical model IDs and historical aliases](../../../docs/model-naming.md).
+
 Each folder backs one part of the written report with its figures, tables, code and data.
 
 | Section | Folder | Contents |

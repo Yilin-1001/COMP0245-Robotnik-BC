@@ -1,12 +1,15 @@
 # Robotnik task entry point
 
+Final upload weights: [`checkpoints/2026-11-04final/`](checkpoints/2026-11-04final/README.md).
+The [model naming guide](../../docs/model-naming.md) maps every Report name to its canonical ID and historical alias.
+
 Run every project command from this directory. Follow the [project README](../../README.md) to install the environment, collect data, train R4, evaluate it and run the DAgger rows.
 Test-set commands are in [step 5: Test on all 64 test scenarios](../../README.md#5-test-on-all-64-test-scenarios). The method and results are in the [project pipeline](../../docs/2026-10-30__guide__project-pipeline.md).
 
 | Folder | Contents |
 |---|---|
 | `core/` | Interfaces, environment, features and the reach gate |
-| `data_collection/` | Teacher A (`expert.py`), teacher B wrapper, scenarios, clean, DART and DAgger collection, QA |
+| `data_collection/` | Teacher A (`expert.py`), teacher B wrapper, scenarios, clean, OU, full DART and DAgger collection, QA |
 | `training/` | Model, engine, losses, dataset build and the training entry point |
 | `evaluation/` | Closed-loop evaluation, test diagnosis, probes, hold test and live comparison |
 | `experiments/` | Configs, frozen split, ablation v1 runner and manifest, DAgger runner (v2), demo manifests |
