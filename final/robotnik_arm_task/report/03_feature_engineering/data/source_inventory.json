@@ -126,7 +126,7 @@
     "gzip": false
   },
   {
-    "source": "final/robotnik_arm_task/report/ablation/data/validation/v1_R1-R4_summary.csv",
+    "source": "final/robotnik_arm_task/report/06_ablation/data/validation/v1_R1-R4_summary.csv",
     "copy": "data/validation_v1_summary.csv",
     "sha256": "3c13bcc983b470bd0697d10ba8253384ea42b9db4c228552e0fce03cd3cae691",
     "source_sha256": "3c13bcc983b470bd0697d10ba8253384ea42b9db4c228552e0fce03cd3cae691",

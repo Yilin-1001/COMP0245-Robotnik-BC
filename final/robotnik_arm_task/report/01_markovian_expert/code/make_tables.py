@@ -8,7 +8,7 @@ No simulation runs here; the rollouts were produced by the scripts listed in ../
   physics_push.csv           changed physics and pushes (20 scenes per condition): A (lead 0.50 and 0.15) vs B
 
 Usage (from final/robotnik_arm_task/):
-    python report/markovian_expert/code/make_tables.py
+    python report/01_markovian_expert/code/make_tables.py
 """
 import csv
 import json
@@ -16,7 +16,7 @@ import statistics
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]  # report/markovian_expert
+ROOT = Path(__file__).resolve().parents[1]  # report/01_markovian_expert
 DATA, OUT = ROOT / "data", ROOT / "tables"
 PASS = 15  # of 16 scenes per disturbance condition, as in docs/reports/2026-10-26__report__expert-operating-limits.md
 

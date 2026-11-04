@@ -1,4 +1,4 @@
-# Markovian expert A vs the course template controller B
+# 01. Memoryless Markovian expert
 
 This folder holds the evidence for the report's expert section: why the project needs a memoryless (Markovian) expert, how it differs from the controller the course provides, and what that change costs. It contains the figures, the tables, the code that produced them and the data behind every number.
 
@@ -121,7 +121,7 @@ All results are from development scenes with seeds disjoint from the training, v
 ## Layout
 
 ```
-markovian_expert/
+01_markovian_expert/
   README.md
   figures/   expert_operating_boundaries.png   height and far-distance sweeps, A vs B (and B without its timeout)
              near_comparison.png               near targets: first arrival, terminal error, base path
@@ -157,7 +157,7 @@ The pipeline code stays at its module paths:
 All commands run from `final/robotnik_arm_task/`. Every number in this folder is already in `data/` and `tables/`.
 
 ```bash
-python report/markovian_expert/code/make_tables.py        # tables/ from data/ (no simulation)
+python report/01_markovian_expert/code/make_tables.py        # tables/ from data/ (no simulation)
 ```
 
 Regenerating `data/` (simulation; outputs go to the original results paths, which are git-ignored):
@@ -168,8 +168,8 @@ python -m evaluation.expert_workspace --teacher B         # -> results/diagnosti
 python -m evaluation.expert_noise_robustness --n 16 --workers 22 --out results/expert_noise_robustness_rerun.csv
 python -m evaluation.expert_t3_dev --controllers expert --lead-time 0.5 --out results/expert_t3_dev_lead050.csv
 python -m evaluation.expert_t3_dev --controllers expert template --out results/expert_t3_dev_rerun.csv   # lead 0.15 s and B
-python report/markovian_expert/code/compare_expert_boundaries.py
-python report/markovian_expert/code/compare_experts_near.py
+python report/01_markovian_expert/code/compare_expert_boundaries.py
+python report/01_markovian_expert/code/compare_experts_near.py
 ```
 
 ## Provenance and caveats

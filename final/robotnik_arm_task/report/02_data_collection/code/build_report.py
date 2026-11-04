@@ -1,6 +1,6 @@
 """Rebuild tables and figures from this report's copied evidence; no simulation.
 
-Run from final/robotnik_arm_task/: python report/data_collection/code/build_report.py
+Run from final/robotnik_arm_task/: python report/02_data_collection/code/build_report.py
 """
 import csv
 import hashlib

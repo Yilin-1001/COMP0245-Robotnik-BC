@@ -10,7 +10,7 @@ No simulation or training runs here; the inputs were produced by the pipeline co
   noise_strength_controls.csv R4 noise-scale and data-volume controls (teammate's run, transcribed; see README)
 
 Usage (from final/robotnik_arm_task/):
-    python report/f_dagger/code/make_tables.py
+    python report/04_f_dagger/code/make_tables.py
 """
 import csv
 import glob
@@ -20,7 +20,7 @@ import statistics
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]  # report/f_dagger
+ROOT = Path(__file__).resolve().parents[1]  # report/04_f_dagger
 DATA, OUT = ROOT / "data", ROOT / "tables"
 ROWS = {  # row -> (gate, OU noise, DAgger)
     "R1-baseline": (0, 0, 0), "R2-gate": (1, 0, 0), "R3-dart": (0, 1, 0), "R4-dart-gate": (1, 1, 0),

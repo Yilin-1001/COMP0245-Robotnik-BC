@@ -1,4 +1,4 @@
-# Data collection: coverage, reproducibility and Sobol sampling
+# 02. Data collection
 
 This folder supports the report's data-collection section: how demonstrations were recorded, how the dataset covers different task conditions, why seeds are fixed, and why the scenarios use scrambled Sobol sampling. It follows the other report folders with copied evidence, derived tables, figures and a script that rebuilds them without running the simulator.
 
@@ -14,7 +14,7 @@ The task is mobile manipulation: a four-wheel base and a seven-joint arm must br
 4. **Record the hold.** The task's first reach requires error below 10 mm, active reaching and time greater than 8 s. Continue for 3 s after that event, with a 40 s episode cap. The sustained-hold check also requires a complete recording window and every error sample in the final second below 10 mm. A navigation `done` flag alone is not success.
 5. **Audit and select.** Check finite values, shapes, timestamps, action alignment, execution limits, outcome flags, label replay and scenario identity. Preserve failed recordings and their exclusion reasons. Do not replace difficult scenes with newly sampled easy ones.
 
-Two teachers were collected on the **same 256 training and 64 test scenarios**: Markovian expert A and course-template controller B. All student methods in this report use **A's labels**; B supplies the original paired comparison. A uses `lead_time = 0.50 s`. Its action depends only on the current observation, so it can also label states visited by a noisy expert or a student. The rationale is in [`markovian_expert/`](../markovian_expert/README.md).
+Two teachers were collected on the **same 256 training and 64 test scenarios**: Markovian expert A and course-template controller B. All student methods in this report use **A's labels**; B supplies the original paired comparison. A uses `lead_time = 0.50 s`. Its action depends only on the current observation, so it can also label states visited by a noisy expert or a student. The rationale is in [`01_markovian_expert/`](../01_markovian_expert/README.md).
 
 | Teacher | Training episodes | Training sustained holds | Test episodes | Test sustained holds |
 |---|---:|---:|---:|---:|
@@ -80,9 +80,9 @@ Clean trajectories contain navigation, approach and holding, but a learned polic
 | Phase-gated OU collection | A plus temporally correlated action noise | A's **clean** action at the actual visited state | Nearby deviations and corrective actions |
 | DAgger | Current student, labelled by A | A's action at each student-visited state | Errors and recovery states specific to the learned policy |
 
-The phase-gated OU protocol records **two noise draws for each of the 221 fitting scenarios**: 442 attempts, of which 441 passed the sustained hold and entered the selected OU dataset. DAgger additionally collects on fitting scenes and fresh development scenes; its failed student episodes are retained for corrective labels. These sources broaden visited states rather than changing the six-dimensional clean scenario definition. Detailed schedules and collection evidence are in [`f_dagger/`](../f_dagger/README.md).
+The phase-gated OU protocol records **two noise draws for each of the 221 fitting scenarios**: 442 attempts, of which 441 passed the sustained hold and entered the selected OU dataset. DAgger additionally collects on fitting scenes and fresh development scenes; its failed student episodes are retained for corrective labels. These sources broaden visited states rather than changing the six-dimensional clean scenario definition. Detailed schedules and collection evidence are in [`04_f_dagger/`](../04_f_dagger/README.md).
 
-**Limits.** The clean design fixes the initial arm pose, robot model, masses, friction and ground conditions. It does not demonstrate robustness to arbitrary arm starts, model mismatch, delays, obstacles or real-world sensing. Sobol samples do not deliberately include exact range endpoints. In the original audit's **16** extreme combinations (near/far × low/high × four directions), four test combinations are empty. A separate boundary or out-of-range suite is needed for such claims; good marginals do not establish full joint coverage. The test suite is discussed in [`ablation/`](../ablation/README.md).
+**Limits.** The clean design fixes the initial arm pose, robot model, masses, friction and ground conditions. It does not demonstrate robustness to arbitrary arm starts, model mismatch, delays, obstacles or real-world sensing. Sobol samples do not deliberately include exact range endpoints. In the original audit's **16** extreme combinations (near/far × low/high × four directions), four test combinations are empty. A separate boundary or out-of-range suite is needed for such claims; good marginals do not establish full joint coverage. The test suite is discussed in [`06_ablation/`](../06_ablation/README.md).
 
 **Evaluation history.** The original 64-scene test set was inspected diagnostically before the DAgger design, as disclosed in the [pipeline report](../../../../docs/2026-10-30__guide__project-pipeline.md). It should not be described as untouched throughout development. The split rules above describe data-use boundaries; a seed does not remove this historical exposure.
 
@@ -150,7 +150,7 @@ Use the vector PDFs [`scenario_coverage.pdf`](figures/scenario_coverage.pdf) and
 
 The snippet uses `figure*` and `width=\textwidth` so all three panels span the page width in a two-column paper; it also works in a single-column document. Reference the figures with `\ref{fig:scenario-coverage}` and `\ref{fig:scenario-strata}`. A minimal two-column document is provided in [`latex/example.tex`](latex/example.tex), with its compiled [`example.pdf`](latex/example.pdf).
 
-To compile the example from `report/data_collection/latex/`:
+To compile the example from `report/02_data_collection/latex/`:
 
 ```bash
 pdflatex -interaction=nonstopmode -halt-on-error example.tex
@@ -159,7 +159,7 @@ pdflatex -interaction=nonstopmode -halt-on-error example.tex
 ## Layout and reproduction
 
 ```text
-data_collection/
+02_data_collection/
   README.md
   code/build_report.py          rebuild and verify the derived evidence
   data/scenarios/              original frozen scene CSVs, manifest and coverage audit
@@ -175,7 +175,7 @@ data_collection/
 From `final/robotnik_arm_task/`, in the project environment:
 
 ```bash
-python report/data_collection/code/build_report.py
+python report/02_data_collection/code/build_report.py
 ```
 
 The script uses NumPy, SciPy and Matplotlib. It verifies copied evidence hashes, checks fitting/validation separation and stratum occupancy, checks train/test parameter and seed separation, verifies the robot-relative coordinate transform against the stored world coordinates, recomputes the IID discrepancy reference, and regenerates all five tables and three figure pairs. It does not recollect data, train a policy or overwrite the original manifests. Raw `.npz` trajectories remain in the original dataset rather than being duplicated here.

@@ -1,14 +1,14 @@
-# f-DAgger: OU noise injection followed by DAgger
+# 04. f-DAgger Algorithm
 
 This folder holds the evidence for the report's method section: the f-DAgger algorithm, its two components (phase-gated OU noise injection and DAgger), the evidence for each design choice and the ablation that isolates each component. It contains the algorithm in LaTeX, the figures, the tables, the code that produced them and the data behind every number.
 
 **Question.** What exactly is f-DAgger, why is each part designed the way it is, and what does each part contribute?
 
-The training-time comparison against DAgger alone and full DART is in [`../training_time_comparison/`](../training_time_comparison/README.md). It is linked here, not repeated.
+The training-time comparison against DAgger alone and full DART is in [`../07_training_time_comparison/`](../07_training_time_comparison/README.md). It is linked here, not repeated.
 
 ## The name
 
-**f-DAgger = fast DAgger.** The OU-noise stage needs no trained student, so it can run alongside the clean collection and costs one 3.3 min collection. It gives a round-0 student that already holds 96.9% of the T0 test scenes. DAgger alone needs three train→collect rounds to reach that level (37.6 vs 12.5 min of pipeline time; [`../training_time_comparison/`](../training_time_comparison/README.md)). The DAgger rounds that follow therefore start from a student that is already close to the expert.
+**f-DAgger = fast DAgger.** The OU-noise stage needs no trained student, so it can run alongside the clean collection and costs one 3.3 min collection. It gives a round-0 student that already holds 96.9% of the T0 test scenes. DAgger alone needs three train→collect rounds to reach that level (37.6 vs 12.5 min of pipeline time; [`../07_training_time_comparison/`](../07_training_time_comparison/README.md)). The DAgger rounds that follow therefore start from a student that is already close to the expert.
 
 | Report name | Run ids |
 |---|---|
@@ -19,7 +19,7 @@ The training-time comparison against DAgger alone and full DART is in [`../train
 
 Behaviour cloning fits the expert's action on the expert's own states. Small errors then take the student to states the expert never visited, and the errors compound [1, 2]. We observed this directly. Clean-data students had small offline errors, but their closed loop was unstable at the hold pose: the largest position-stiffness eigenvalue was about 140 N·m/rad, against about 0 for the expert. They held 1/96 (R1) and 10/96 (R2) validation targets. The clean data never show how the expert corrects a deviation.
 
-Both components of f-DAgger add **corrective labels**: states off the expert's path, each labelled with the expert's action at that state. Both require an expert that can label any state, which is why the expert was made Markovian ([`../markovian_expert/`](../markovian_expert/README.md)).
+Both components of f-DAgger add **corrective labels**: states off the expert's path, each labelled with the expert's action at that state. Both require an expert that can label any state, which is why the expert was made Markovian ([`../01_markovian_expert/`](../01_markovian_expert/README.md)).
 
 ## Algorithm
 
@@ -65,9 +65,9 @@ Every statement in both `.tex` files was checked against the code below.
 | Setting | Value | Why |
 |---|---|---|
 | Where the noise goes | Added to the **executed** command, while the stored label is the clean expert action at the state actually visited | The student learns the expert's *correction*, never the noise |
-| Process | Ornstein–Uhlenbeck, τ = 0.2 s, independent per channel, zero initial value, exact discrete update at 1 kHz | Correlated noise moves the arm; white noise at 1 kHz is filtered out by the dynamics. For the same per-step size, OU gives a 5–9× larger impulse over 100–500 ms than the learner-fitted white noise of full DART ([`../training_time_comparison/data/noise/applied_noise.csv`](../training_time_comparison/README.md)). The expert stress test also found white noise far milder than OU at equal σ |
+| Process | Ornstein–Uhlenbeck, τ = 0.2 s, independent per channel, zero initial value, exact discrete update at 1 kHz | Correlated noise moves the arm; white noise at 1 kHz is filtered out by the dynamics. For the same per-step size, OU gives a 5–9× larger impulse over 100–500 ms than the learner-fitted white noise of full DART ([`../07_training_time_comparison/data/noise/applied_noise.csv`](../07_training_time_comparison/README.md)). The expert stress test also found white noise far milder than OU at equal σ |
 | Scale | Arm σ = 0.75 N·m, wheels σ = 0.15 rad/s (stationary std), × α ~ U[0.25, 1] drawn once per episode | Chosen with the pilot below. The per-episode α spreads the deviations from small to the full scale |
-| Wheel gating | Wheel noise is latched off at the first step the reach gate opens | The expert cannot hold the 10 mm target while the base is pushed around. Its ungated wheel-OU hold limit is 0.1 rad/s, against 1 rad/s when wheel noise stops at the gate ([`../markovian_expert/tables/disturbance_thresholds.csv`](../markovian_expert/README.md)) |
+| Wheel gating | Wheel noise is latched off at the first step the reach gate opens | The expert cannot hold the 10 mm target while the base is pushed around. Its ungated wheel-OU hold limit is 0.1 rad/s, against 1 rad/s when wheel noise stops at the gate ([`../01_markovian_expert/tables/disturbance_thresholds.csv`](../01_markovian_expert/README.md)) |
 | End of noise | All noise stops 1.5 s after the first task reach; the episode ends 3 s after it | Every episode ends with a clean hold, so the sustained-hold filter checks that the expert recovered |
 | Scenarios | The 221 fitting scenarios only, 2 draws each (442 episodes); never validation or test (checked in code) | No held-out scene, or a noisy version of one, enters training |
 | Episode filter | Only sustained-hold episodes are kept: 441 of 442 | No label from an episode the expert itself failed |
@@ -160,12 +160,12 @@ What the ablation shows:
 
 1. **Without DAgger, OU noise and the gate work only together.** Either alone gives at most 10/96; both give 83/96 and 96.9% on T0.
 2. **f-DAgger is the best row in range.** R8 r3 has the highest validation hold (93/96, 31 on every seed) and the best test results on T0, T2, T3, T4 and T5. The largest gains over DAgger alone (R6) are at the range edges: near targets 81.9 vs 50.0% and height edges 66.7 vs 21.9%.
-3. **f-DAgger loses far targets (T1).** R8 r3 holds 44.4% on T1, against 90.7% for its own round 0 and 100% for R6. Its failures are navigation failures. R6's T1 advantage is confounded: its round-1 collector (R2) drove up to 798 m away, so R6's data contain 3.1 M rows beyond 3 m, and every other dataset stops at 3.1 m. This analysis is in [`../training_time_comparison/`](../training_time_comparison/README.md) (`data/analysis/`).
-4. **Over all 240 scenes, round 0 is f-DAgger's best point** (81.2%, against 69.7 / 76.9 / 75.3% for rounds 1–3), because the T1 loss outweighs the in-range gains. Validation (in range only) picks round 3. Per-round test results for rounds 1–2 are in [`../training_time_comparison/tables/success_by_round.csv`](../training_time_comparison/README.md).
+3. **f-DAgger loses far targets (T1).** R8 r3 holds 44.4% on T1, against 90.7% for its own round 0 and 100% for R6. Its failures are navigation failures. R6's T1 advantage is confounded: its round-1 collector (R2) drove up to 798 m away, so R6's data contain 3.1 M rows beyond 3 m, and every other dataset stops at 3.1 m. This analysis is in [`../07_training_time_comparison/`](../07_training_time_comparison/README.md) (`data/analysis/`).
+4. **Over all 240 scenes, round 0 is f-DAgger's best point** (81.2%, against 69.7 / 76.9 / 75.3% for rounds 1–3), because the T1 loss outweighs the in-range gains. Validation (in range only) picks round 3. Per-round test results for rounds 1–2 are in [`../07_training_time_comparison/tables/success_by_round.csv`](../07_training_time_comparison/README.md).
 
 ## Relation to prior work
 
-- **DART** [3] injects noise into the expert's executed actions and labels the visited states with the clean expert action. Our Stage 1 follows that principle with a *fixed*, temporally correlated, phase-gated OU process chosen by a pilot. It does not use DART's iterative fitting of the noise to the learner's error, so it is "DART-style". Full DART with α = 6 was run as a baseline ([`../training_time_comparison/`](../training_time_comparison/README.md)).
+- **DART** [3] injects noise into the expert's executed actions and labels the visited states with the clean expert action. Our Stage 1 follows that principle with a *fixed*, temporally correlated, phase-gated OU process chosen by a pilot. It does not use DART's iterative fitting of the noise to the learner's error, so it is "DART-style". Full DART with α = 6 was run as a baseline ([`../07_training_time_comparison/`](../07_training_time_comparison/README.md)).
 - **DAgger** [4] is used as published, with β = 0 and aggregation of all rounds.
 - **Combination.** A targeted literature search (`literature/overlap_review.md`, 2026-11-04) found prior work combining perturbed expert demonstrations with DAgger. Examples are temporally correlated steering noise with DAgger (Abeysirigoonawardena et al., ICRA 2019), adversarial disturbances with DAgger (SAFE-GIL, ICRA 2025) and OU noise on *observations* in DAgger distillation (HuB, CoRL 2025). It found no paper with this exact recipe: phase-gated OU noise on the expert's commands, clean labels, keeping the noisy dataset, then β = 0 DAgger without added noise. The absence of a match is not proof of novelty. The defensible claim is an evaluation of this task-specific combination, not "the first combination of OU noise and DAgger".
 
@@ -174,7 +174,7 @@ References: [1] Ross & Bagnell, AISTATS 2010. [2] Osa et al., Found. Trends Robo
 ## Layout
 
 ```
-f_dagger/
+04_f_dagger/
   README.md
   algorithm/   f_dagger.tex, f_dagger.pdf (compact), f_dagger_detailed.tex (every interface spelled out)
   figures/     gate_dart_dagger_comparison.{png,pdf,svg}   schematic: labels in the OU, DAgger and f-DAgger collectors
@@ -199,7 +199,7 @@ f_dagger/
 All commands run from `final/robotnik_arm_task/`. Every number in this folder is already in `data/` and `tables/`.
 
 ```bash
-python report/f_dagger/code/make_tables.py        # tables/ from data/ (no simulation)
+python report/04_f_dagger/code/make_tables.py        # tables/ from data/ (no simulation)
 ```
 
 The pipeline (simulation and training; outputs are git-ignored; full instructions in the project README and `docs/2026-10-29__guide__reproduction-details.md`):

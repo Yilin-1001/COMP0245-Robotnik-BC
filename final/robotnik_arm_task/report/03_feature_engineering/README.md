@@ -1,4 +1,4 @@
-# Feature engineering: deployable geometry and an explicit reach gate
+# 03. Feature engineering
 
 This folder supports the report's feature-engineering section. It includes the project's feature-construction code, explains the representation and its implementation, and collects the FK accuracy, feature QA and gate-comparison evidence. Figures follow the report's academic style and are provided as vector PDFs for LaTeX.
 
@@ -32,7 +32,7 @@ The main work has four parts:
 
 The exact names are taken from `FEATURE_NAMES_A` and the feature registry, and exported in [`tables/feature_schema.csv`](tables/feature_schema.csv). `features-v1-gate` preserves the first 21 columns exactly and adds the gate last.
 
-**Joint state stays explicit.** Joint angles are needed for configuration-dependent arm control. Joint velocities expose the damping state: away from torque clipping, the expert's joint damping contributes `−30 · qd`. The current implementation keeps measured joint angles directly; it does not replace them with sine/cosine pairs. The damping-Jacobian training term is described separately in [`training_details/`](../training_details/README.md).
+**Joint state stays explicit.** Joint angles are needed for configuration-dependent arm control. Joint velocities expose the damping state: away from torque clipping, the expert's joint damping contributes `−30 · qd`. The current implementation keeps measured joint angles directly; it does not replace them with sine/cosine pairs. The damping-Jacobian training term is described separately in [`05_training_details/`](../05_training_details/README.md).
 
 **Height is kept in the world frame.** The expert's standoff rule depends on world target height. Keeping `target_z_world` preserves that task context while horizontal geometry is expressed relative to the base. With a fixed base height, this scalar can be redundant with `target_bz`; it is an explicit task variable, not a claim of additional independent information.
 
@@ -126,7 +126,7 @@ The complete implementation is in [`core/feature_sets.py`](code/source_snapshot/
 | Clean | R1 Baseline | 1/96 (1.0%) | R2 Baseline + Gate | 10/96 (10.4%) |
 | Clean + OU | R3 OU | 1/96 (1.0%) | R4 OU + Gate | 83/96 (86.5%) |
 
-The denominators pool **three training seeds on the same 32 validation scenes**, not 96 distinct scenes. Source counts are retained in [`tables/gate_validation.csv`](tables/gate_validation.csv). The gate's benefit is much larger with OU-augmented states; the gate alone is insufficient. The project does not contain a matched ablation removing each geometric block separately, so it does not quantify an isolated success-rate gain for base-frame coordinates or FK error. Later DAgger and test results remain in [`ablation/`](../ablation/README.md).
+The denominators pool **three training seeds on the same 32 validation scenes**, not 96 distinct scenes. Source counts are retained in [`tables/gate_validation.csv`](tables/gate_validation.csv). The gate's benefit is much larger with OU-augmented states; the gate alone is insufficient. The project does not contain a matched ablation removing each geometric block separately, so it does not quantify an isolated success-rate gain for base-frame coordinates or FK error. Later DAgger and test results remain in [`06_ablation/`](../06_ablation/README.md).
 
 ![Feature evidence](figures/feature_evidence.png)
 
@@ -183,7 +183,7 @@ The source snapshot supports the report's FK and feature probes; it is not a cop
 From `final/robotnik_arm_task/`, in the project environment:
 
 ```bash
-python report/feature_engineering/code/build_report.py
+python report/03_feature_engineering/code/build_report.py
 ```
 
 The script imports the frozen code snapshot, verifies source/evidence hashes, rebuilds five CSV tables and three PNG/vector-PDF figures, and writes the numerical consistency results. It uses NumPy, Pinocchio and Matplotlib; no new rollout, training run or test-set trajectory is used. The historical FK JSON is losslessly gzip-compressed, with both original and compressed hashes recorded.
@@ -201,7 +201,7 @@ python -m pytest tests/datasets/test_feature_sets.py \
 [`latex/feature_figures.tex`](latex/feature_figures.tex) contains figure environments with English captions and reference labels. The figures use embedded serif/math fonts. A minimal LaTeX document is in [`latex/example.tex`](latex/example.tex), with the compiled [`example.pdf`](latex/example.pdf). Configure `graphicx` and the figure path as shown there; the figure environments span both columns of a two-column paper.
 
 ```text
-feature_engineering/
+03_feature_engineering/
   README.md
   code/build_report.py         rebuild tables, figures and numerical checks
   code/source_snapshot/       original feature and integration code, plus FK URDF

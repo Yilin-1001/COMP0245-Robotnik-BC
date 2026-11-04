@@ -1,6 +1,6 @@
 """Rebuild feature-engineering evidence from frozen source and data snapshots.
 
-Run from final/robotnik_arm_task/: python report/feature_engineering/code/build_report.py
+Run from final/robotnik_arm_task/: python report/03_feature_engineering/code/build_report.py
 No training, simulator rollout or test-set trajectory is used.
 """
 import csv
