@@ -1,0 +1,149 @@
+[
+  {
+    "source": "final/robotnik_arm_task/core/__init__.py",
+    "copy": "code/source_snapshot/core/__init__.py",
+    "sha256": "c7e8a05faf5a6feb2dbb108142bb4189754b2e49834271c0aa3b8d4a73e6399a",
+    "source_sha256": "c7e8a05faf5a6feb2dbb108142bb4189754b2e49834271c0aa3b8d4a73e6399a",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/core/features.py",
+    "copy": "code/source_snapshot/core/features.py",
+    "sha256": "e826665938d536a27afc3ee0b5bb43d71cdee93a68988603f4ff6c20ee59df58",
+    "source_sha256": "e826665938d536a27afc3ee0b5bb43d71cdee93a68988603f4ff6c20ee59df58",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/core/feature_sets.py",
+    "copy": "code/source_snapshot/core/feature_sets.py",
+    "sha256": "21d0b9f0daea66ff3e845e1c89caa9734703ebd8c2ca83991bf9809bd68d334e",
+    "source_sha256": "21d0b9f0daea66ff3e845e1c89caa9734703ebd8c2ca83991bf9809bd68d334e",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/core/interfaces.py",
+    "copy": "code/source_snapshot/core/interfaces.py",
+    "sha256": "0ef0b76a6a7e1b893acd6fff2370f8d267e7d372a615574297d22ddcdde3c582",
+    "source_sha256": "0ef0b76a6a7e1b893acd6fff2370f8d267e7d372a615574297d22ddcdde3c582",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/training/__init__.py",
+    "copy": "code/source_snapshot/training/__init__.py",
+    "sha256": "f25ae576be7d863f0f559b0c626f465f20dfa25d3b548e12b638c2ca7ac41c78",
+    "source_sha256": "f25ae576be7d863f0f559b0c626f465f20dfa25d3b548e12b638c2ca7ac41c78",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/training/common/__init__.py",
+    "copy": "code/source_snapshot/training/common/__init__.py",
+    "sha256": "29695ad307214a41e60946059af88990030f1dc93b835a3a93254a22d274511c",
+    "source_sha256": "29695ad307214a41e60946059af88990030f1dc93b835a3a93254a22d274511c",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/training/common/dataset.py",
+    "copy": "code/source_snapshot/training/common/dataset.py",
+    "sha256": "c013ea1801858cb8abe6d5ce923956fd3445d9fc154e5eb00b4c12db5dd126bb",
+    "source_sha256": "c013ea1801858cb8abe6d5ce923956fd3445d9fc154e5eb00b4c12db5dd126bb",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/training/common/normalisation.py",
+    "copy": "code/source_snapshot/training/common/normalisation.py",
+    "sha256": "eb3e08ce4f058350c6a52a5c55f94f62feda49d3a30320e96923d91cc2624911",
+    "source_sha256": "eb3e08ce4f058350c6a52a5c55f94f62feda49d3a30320e96923d91cc2624911",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/training/common/policies.py",
+    "copy": "code/source_snapshot/training/common/policies.py",
+    "sha256": "b7cf145319fb314202195a856420ed3c034d7f738784e0734e77dbb53464c02f",
+    "source_sha256": "b7cf145319fb314202195a856420ed3c034d7f738784e0734e77dbb53464c02f",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/training/datasets/__init__.py",
+    "copy": "code/source_snapshot/training/datasets/__init__.py",
+    "sha256": "a173ddf883741bad99ccac6fc84aeb341036455242656e8d0d90407942edc0ba",
+    "source_sha256": "a173ddf883741bad99ccac6fc84aeb341036455242656e8d0d90407942edc0ba",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/training/datasets/build.py",
+    "copy": "code/source_snapshot/training/datasets/build.py",
+    "sha256": "b1582e5c26cfc8b22b6a860bab34990ac380a3d6be0d0a3cc34bb28a42be34eb",
+    "source_sha256": "b1582e5c26cfc8b22b6a860bab34990ac380a3d6be0d0a3cc34bb28a42be34eb",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/models/summit_xl_arm_description/summit_xl_complete_pin.urdf",
+    "copy": "code/source_snapshot/models/summit_xl_arm_description/summit_xl_complete_pin.urdf",
+    "sha256": "aea40a17a794e73d1b8058b0308431130f9b055e35a6092c51074406e951f369",
+    "source_sha256": "aea40a17a794e73d1b8058b0308431130f9b055e35a6092c51074406e951f369",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/data/datasets/A/clean253__features-v1/qa.json",
+    "copy": "data/dataset_qa/clean253__features-v1.json",
+    "sha256": "6073b0eba7ffd7711cdb49566522d5124d855eff935288d637a272af48e7cc7d",
+    "source_sha256": "6073b0eba7ffd7711cdb49566522d5124d855eff935288d637a272af48e7cc7d",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/data/datasets/A/clean253__features-v1-gate/qa.json",
+    "copy": "data/dataset_qa/clean253__features-v1-gate.json",
+    "sha256": "969f92c89aaa2383bd6fccc46788968f29beacfdc155f0c4c5b580a246aa36ee",
+    "source_sha256": "969f92c89aaa2383bd6fccc46788968f29beacfdc155f0c4c5b580a246aa36ee",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/data/datasets/A/dart-d2s075x2__features-v1/qa.json",
+    "copy": "data/dataset_qa/dart-d2s075x2__features-v1.json",
+    "sha256": "eef22102775934ec12a24b5a148f2e180e429f4e6c7a75206cd6328cdc84fdd3",
+    "source_sha256": "eef22102775934ec12a24b5a148f2e180e429f4e6c7a75206cd6328cdc84fdd3",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/data/datasets/A/dart-d2s075x2__features-v1-gate/qa.json",
+    "copy": "data/dataset_qa/dart-d2s075x2__features-v1-gate.json",
+    "sha256": "f637597de72cbcb01df46e807ecf7b04419a4823b0cb8cc3019d8f56babb7278",
+    "source_sha256": "f637597de72cbcb01df46e807ecf7b04419a4823b0cb8cc3019d8f56babb7278",
+    "gzip": false
+  },
+  {
+    "source": "Archive/final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/fk_accuracy.json",
+    "copy": "data/fk/fk_accuracy.json.gz",
+    "sha256": "6bd135970c095e2b03f45d87bc530d1e906bcf152000641ccf3582116b037e50",
+    "source_sha256": "dea36bd9083eb93b527837ed6f393320346cfe5fa02f8ed117661418495107a9",
+    "gzip": true
+  },
+  {
+    "source": "Archive/final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/fk_accuracy_contract.json",
+    "copy": "data/fk/fk_accuracy_contract.json",
+    "sha256": "66c32f4677079317e546df1c0ebbe41928b8742e6d9d93c1f8d9ac01558f76e9",
+    "source_sha256": "66c32f4677079317e546df1c0ebbe41928b8742e6d9d93c1f8d9ac01558f76e9",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/report/ablation/data/validation/v1_R1-R4_summary.csv",
+    "copy": "data/validation_v1_summary.csv",
+    "sha256": "3c13bcc983b470bd0697d10ba8253384ea42b9db4c228552e0fce03cd3cae691",
+    "source_sha256": "3c13bcc983b470bd0697d10ba8253384ea42b9db4c228552e0fce03cd3cae691",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/experiments/configs/common.yaml",
+    "copy": "data/training_defaults.yaml",
+    "sha256": "6d1d0cdc47b68463e34888a2fa9b239da9fb41550969540327b28394144c3391",
+    "source_sha256": "6d1d0cdc47b68463e34888a2fa9b239da9fb41550969540327b28394144c3391",
+    "gzip": false
+  },
+  {
+    "source": "final/robotnik_arm_task/training/datasets/train.py",
+    "copy": "code/source_snapshot/training/datasets/train.py",
+    "sha256": "216c544270f43908b0a0727dc48e0403c1d1be5a142aa2472e727b1dfc034a8f",
+    "source_sha256": "216c544270f43908b0a0727dc48e0403c1d1be5a142aa2472e727b1dfc034a8f",
+    "gzip": false
+  }
+]

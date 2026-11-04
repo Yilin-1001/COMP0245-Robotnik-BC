@@ -1,0 +1,5 @@
+row,data,gate,holds,rollouts,hold_rate,hold_per_seed
+R1-baseline,Clean,False,1,96,0.010416666666666666,0/1/0
+R2-gate,Clean,True,10,96,0.10416666666666667,2/3/5
+R3-dart,OU,False,1,96,0.010416666666666666,0/1/0
+R4-dart-gate,OU,True,83,96,0.8645833333333334,29/27/27

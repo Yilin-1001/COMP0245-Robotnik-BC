@@ -1,0 +1,18 @@
+{
+ "episodes": 253,
+ "rows": 3045616,
+ "finite": true,
+ "feature_dim": 22,
+ "expected_dim": 22,
+ "source_hashes": "verified",
+ "observation_alignment": "T+1 observations per T actions, checked per episode",
+ "reach_gate_vs_teacher_flag": {
+  "mismatched_rows": 0,
+  "active_fraction": 0.5000591013443586
+ },
+ "v1_prefix_equal_to_sibling": {
+  "sibling": "clean253__features-v1",
+  "equal": true
+ },
+ "passed": true
+}

@@ -1,0 +1,12 @@
+{
+ "episodes": 441,
+ "rows": 5289586,
+ "finite": true,
+ "feature_dim": 21,
+ "expected_dim": 21,
+ "source_hashes": "verified",
+ "observation_alignment": "T+1 observations per T actions, checked per episode",
+ "v1_prefix_equal_to_sibling": "not checked (no features-v1 sibling yet)",
+ "validation_scenarios_present": [],
+ "passed": true
+}

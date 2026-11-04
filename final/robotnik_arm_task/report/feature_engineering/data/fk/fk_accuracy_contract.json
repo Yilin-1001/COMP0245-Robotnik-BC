@@ -1,0 +1,32 @@
+{
+  "FK_CONFIG": {
+    "base_pitch": 0.0022,
+    "base_roll": 0.0,
+    "ee_frame": "robot_j2s7s300_end_effector",
+    "fixed_finger_angles": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1
+    ],
+    "inputs": "obs base_pos (3), base_yaw, q_mes (7)",
+    "pitch_source": "median flat-ground pitch, docs/expert_model_accuracy.md (same value as MarkovianExpertParams.base_pitch)",
+    "urdf": "models/summit_xl_arm_description/summit_xl_complete_pin.urdf",
+    "version": "fk-v1"
+  },
+  "env_sha256": "9aab94018236fbb2f2f86d432fada45d384e395aacba118b5fb5ab44cb6789d2",
+  "features_sha256": "e826665938d536a27afc3ee0b5bb43d71cdee93a68988603f4ff6c20ee59df58",
+  "reference": "PyBullet getLinkState(...)[4]: EE world link frame origin; also check full-pose Pinocchio FK.",
+  "sample_every_steps": 10,
+  "scenarios": [
+    "train-0001",
+    "train-0035",
+    "train-0067",
+    "train-0108"
+  ],
+  "selection": "First four of the previously frozen eight recovery fitting probes; no outcome-based selection.",
+  "source_sha256": "22f8ec71807c9d28ca1a84580ac9665519a3006de606bb5d5338146333c58c27",
+  "student_inference_sha256": "fb4fc4c9095de1e208d25ecffa82db643160658f79d5e0a52b64a36798e52f95"
+}
