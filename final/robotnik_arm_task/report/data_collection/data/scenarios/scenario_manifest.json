@@ -1,0 +1,81 @@
+{
+  "description": "Frozen clean-collection scenario manifests (scrambled Sobol, robot-relative target sampling)",
+  "dimensions": [
+    "target_dist",
+    "rel_azimuth",
+    "target_z",
+    "start_x",
+    "start_y",
+    "start_yaw"
+  ],
+  "ranges": {
+    "target_dist": [
+      0.5,
+      3.0
+    ],
+    "rel_azimuth": [
+      -3.141592653589793,
+      3.141592653589793
+    ],
+    "target_z": [
+      0.1,
+      1.25
+    ],
+    "start_x": [
+      -0.5,
+      0.5
+    ],
+    "start_y": [
+      -0.5,
+      0.5
+    ],
+    "start_yaw": [
+      -3.141592653589793,
+      3.141592653589793
+    ]
+  },
+  "distance_distribution": "uniform in radius (not uniform in planar area); near targets are denser per m^2",
+  "target_mapping": "target_xy = start_xy + target_dist * [cos(start_yaw + rel_azimuth), sin(start_yaw + rel_azimuth)], target_z = sampled height",
+  "sobol": {
+    "train": {
+      "engine": "scipy.stats.qmc.Sobol(d=6, scramble=True)",
+      "seed": 1026001,
+      "call": "random_base2(m=8)"
+    },
+    "test": {
+      "engine": "scipy.stats.qmc.Sobol(d=6, scramble=True)",
+      "seed": 1026002,
+      "call": "random_base2(m=6)"
+    }
+  },
+  "env_seed": {
+    "train": "1000000 + index",
+    "test": "1100000 + index"
+  },
+  "fixed_conditions": {
+    "initial_arm_and_fingers": "fixed (configs/robotnik_arm.json, fingers 0.1 rad)",
+    "physics": "nominal masses and friction",
+    "sensor_noise": 0.0,
+    "action_noise": 0.0,
+    "external_push": null,
+    "measurement_delay": null
+  },
+  "scipy_version": "1.15.3",
+  "checks": {
+    "train_count": 256,
+    "test_count": 64,
+    "train_duplicate_tuples": 0,
+    "test_duplicate_tuples": 0,
+    "train_test_identical_tuples": 0,
+    "train_test_shared_ids": 0,
+    "train_test_shared_seeds": 0,
+    "min_unit_distance_train_train": 0.2088075179329409,
+    "min_unit_distance_test_test": 0.1673263486248605,
+    "min_unit_distance_test_to_train": 0.16148501846344698,
+    "median_unit_distance_test_to_nearest_train": 0.29647612211558505
+  },
+  "files": {
+    "scenarios_train.csv": "4b1114ff416eee1e4277668449528ac5316e48138bf16d4569715bc83b267770",
+    "scenarios_test.csv": "4e27ba1d2b3610bd9cf560498183af242e5d9695299bef74073bff56b1fe7d2f"
+  }
+}

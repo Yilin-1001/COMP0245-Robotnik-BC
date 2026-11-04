@@ -1,0 +1,483 @@
+{
+  "note": "Marginal and pairwise coverage do not prove six-dimensional coverage. Sobol does not place points exactly on range endpoints.",
+  "train": {
+    "n": 256,
+    "histograms": {
+      "target_dist": [
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32
+      ],
+      "rel_azimuth": [
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32
+      ],
+      "target_z": [
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32
+      ],
+      "start_x": [
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32
+      ],
+      "start_y": [
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32
+      ],
+      "start_yaw": [
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    "cells": {
+      "dist[0.50,1.33) x front x z[0.10,0.48)": 7,
+      "dist[0.50,1.33) x left x z[0.10,0.48)": 7,
+      "dist[0.50,1.33) x right x z[0.10,0.48)": 7,
+      "dist[0.50,1.33) x rear x z[0.10,0.48)": 6,
+      "dist[0.50,1.33) x front x z[0.48,0.87)": 6,
+      "dist[0.50,1.33) x left x z[0.48,0.87)": 8,
+      "dist[0.50,1.33) x right x z[0.48,0.87)": 8,
+      "dist[0.50,1.33) x rear x z[0.48,0.87)": 7,
+      "dist[0.50,1.33) x front x z[0.87,1.25)": 9,
+      "dist[0.50,1.33) x left x z[0.87,1.25)": 7,
+      "dist[0.50,1.33) x right x z[0.87,1.25)": 6,
+      "dist[0.50,1.33) x rear x z[0.87,1.25)": 7,
+      "dist[1.33,2.17) x front x z[0.10,0.48)": 8,
+      "dist[1.33,2.17) x left x z[0.10,0.48)": 7,
+      "dist[1.33,2.17) x right x z[0.10,0.48)": 7,
+      "dist[1.33,2.17) x rear x z[0.10,0.48)": 8,
+      "dist[1.33,2.17) x front x z[0.48,0.87)": 8,
+      "dist[1.33,2.17) x left x z[0.48,0.87)": 6,
+      "dist[1.33,2.17) x right x z[0.48,0.87)": 7,
+      "dist[1.33,2.17) x rear x z[0.48,0.87)": 8,
+      "dist[1.33,2.17) x front x z[0.87,1.25)": 4,
+      "dist[1.33,2.17) x left x z[0.87,1.25)": 8,
+      "dist[1.33,2.17) x right x z[0.87,1.25)": 8,
+      "dist[1.33,2.17) x rear x z[0.87,1.25)": 6,
+      "dist[2.17,3.00) x front x z[0.10,0.48)": 6,
+      "dist[2.17,3.00) x left x z[0.10,0.48)": 8,
+      "dist[2.17,3.00) x right x z[0.10,0.48)": 7,
+      "dist[2.17,3.00) x rear x z[0.10,0.48)": 7,
+      "dist[2.17,3.00) x front x z[0.48,0.87)": 8,
+      "dist[2.17,3.00) x left x z[0.48,0.87)": 6,
+      "dist[2.17,3.00) x right x z[0.48,0.87)": 7,
+      "dist[2.17,3.00) x rear x z[0.48,0.87)": 7,
+      "dist[2.17,3.00) x front x z[0.87,1.25)": 8,
+      "dist[2.17,3.00) x left x z[0.87,1.25)": 7,
+      "dist[2.17,3.00) x right x z[0.87,1.25)": 7,
+      "dist[2.17,3.00) x rear x z[0.87,1.25)": 8
+    },
+    "combinations": {
+      "near<1.0m & low<0.4m & front": 3,
+      "near<1.0m & low<0.4m & left": 4,
+      "near<1.0m & low<0.4m & right": 4,
+      "near<1.0m & low<0.4m & rear": 2,
+      "near<1.0m & high>1.0m & front": 3,
+      "near<1.0m & high>1.0m & left": 2,
+      "near<1.0m & high>1.0m & right": 3,
+      "near<1.0m & high>1.0m & rear": 3,
+      "far>2.5m & low<0.4m & front": 3,
+      "far>2.5m & low<0.4m & left": 4,
+      "far>2.5m & low<0.4m & right": 4,
+      "far>2.5m & low<0.4m & rear": 2,
+      "far>2.5m & high>1.0m & front": 4,
+      "far>2.5m & high>1.0m & left": 1,
+      "far>2.5m & high>1.0m & right": 2,
+      "far>2.5m & high>1.0m & rear": 4
+    },
+    "boundary": {
+      "target_dist": {
+        "range": [
+          0.5,
+          3.0
+        ],
+        "min": 0.5006247707642615,
+        "max": 2.995071431621909,
+        "gap_to_lower_frac": 0.00024990830570459366,
+        "gap_to_upper_frac": 0.0019714273512363434,
+        "within_5pct_of_lower": 13,
+        "within_5pct_of_upper": 13
+      },
+      "rel_azimuth": {
+        "range": [
+          -3.141592653589793,
+          3.141592653589793
+        ],
+        "min": -3.1366029150500117,
+        "max": 3.1170727831416256,
+        "gap_to_lower_frac": 0.0007941415533423557,
+        "gap_to_upper_frac": 0.003902458585798745,
+        "within_5pct_of_lower": 12,
+        "within_5pct_of_upper": 13
+      },
+      "target_z": {
+        "range": [
+          0.1,
+          1.25
+        ],
+        "min": 0.1001379924826324,
+        "max": 1.2490494517609476,
+        "gap_to_lower_frac": 0.00011999346315860508,
+        "gap_to_upper_frac": 0.0008265636861325083,
+        "within_5pct_of_lower": 13,
+        "within_5pct_of_upper": 13
+      },
+      "start_x": {
+        "range": [
+          -0.5,
+          0.5
+        ],
+        "min": -0.4990905933082104,
+        "max": 0.4985613124445081,
+        "gap_to_lower_frac": 0.0009094066917896271,
+        "gap_to_upper_frac": 0.0014386875554919243,
+        "within_5pct_of_lower": 13,
+        "within_5pct_of_upper": 13
+      },
+      "start_y": {
+        "range": [
+          -0.5,
+          0.5
+        ],
+        "min": -0.497670934535563,
+        "max": 0.4984024250879884,
+        "gap_to_lower_frac": 0.002329065464437008,
+        "gap_to_upper_frac": 0.0015975749120116234,
+        "within_5pct_of_lower": 13,
+        "within_5pct_of_upper": 12
+      },
+      "start_yaw": {
+        "range": [
+          -3.141592653589793,
+          3.141592653589793
+        ],
+        "min": -3.127159222939472,
+        "max": 3.1403774543547245,
+        "gap_to_lower_frac": 0.0022971518337726727,
+        "gap_to_upper_frac": 0.00019340496510266276,
+        "within_5pct_of_lower": 13,
+        "within_5pct_of_upper": 13
+      }
+    },
+    "discrepancy": {
+      "sobol_CD": 0.0005516669129570495,
+      "iid_uniform_CD_median": 0.00803839898391534,
+      "iid_uniform_CD_p05": 0.005916386086913905,
+      "iid_uniform_CD_p95": 0.013267095096464515,
+      "n_ref_sets": 200
+    },
+    "rel_azimuth_sectors": {
+      "front": 64,
+      "left": 64,
+      "right": 64,
+      "rear": 64
+    },
+    "large_initial_heading_error": {
+      "|rel_azimuth|>2.36 rad (rear sector)": 64,
+      "|rel_azimuth|>2.8 rad": 27
+    },
+    "start_quadrants": {
+      "x>0,y>0": 64,
+      "x>0,y<0": 64,
+      "x<0,y>0": 64,
+      "x<0,y<0": 64
+    },
+    "template_B_geometry": {
+      "start_to_goal_m": {
+        "min": 0.05038655250531799,
+        "median": 1.104261866761754,
+        "max": 2.5722336741004854
+      },
+      "initial_turn_to_goal_rad": {
+        "min": 0.009373766178579324,
+        "median": 1.5647181789827878,
+        "max": 3.1395599597682944
+      },
+      "final_heading_change_rad": {
+        "min": 0.0037140641736534974,
+        "median": 1.5480588871866,
+        "max": 3.1392581047965216
+      },
+      "target_xy_from_origin_m": {
+        "min": 0.27061194978297154,
+        "median": 1.8026070130492151,
+        "max": 3.4289267721800902
+      },
+      "initial_turn_to_goal>2.36rad": 62,
+      "start_to_goal<0.08m (already within pos_tol)": 1,
+      "target_xy_within_0.8m_of_origin": 37
+    },
+    "development_overlap": {
+      "n_dev_scenarios": 107,
+      "dev_sources": [
+        "compare_controllers 900000+",
+        "expert_noise_robustness 870000+",
+        "expert_t3_dev 800000+"
+      ],
+      "identical_tuples": 0,
+      "min_unit_distance_to_dev": 0.1784518325531941,
+      "median_unit_distance_to_nearest_dev": 0.4192228646770571
+    },
+    "cell_summary": {
+      "cells": 36,
+      "expected_per_cell": 7.111111111111111,
+      "empty": 0,
+      "min": 4,
+      "max": 9,
+      "cells_with_<=2": 0
+    }
+  },
+  "test": {
+    "n": 64,
+    "histograms": {
+      "target_dist": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "rel_azimuth": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "target_z": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "start_x": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "start_y": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "start_yaw": [
+        16,
+        16,
+        16,
+        16
+      ]
+    },
+    "cells": {
+      "dist[0.50,1.75) x front x z[0.10,0.67)": 4,
+      "dist[0.50,1.75) x left x z[0.10,0.67)": 4,
+      "dist[0.50,1.75) x right x z[0.10,0.67)": 4,
+      "dist[0.50,1.75) x rear x z[0.10,0.67)": 4,
+      "dist[0.50,1.75) x front x z[0.67,1.25)": 4,
+      "dist[0.50,1.75) x left x z[0.67,1.25)": 4,
+      "dist[0.50,1.75) x right x z[0.67,1.25)": 4,
+      "dist[0.50,1.75) x rear x z[0.67,1.25)": 4,
+      "dist[1.75,3.00) x front x z[0.10,0.67)": 4,
+      "dist[1.75,3.00) x left x z[0.10,0.67)": 4,
+      "dist[1.75,3.00) x right x z[0.10,0.67)": 4,
+      "dist[1.75,3.00) x rear x z[0.10,0.67)": 4,
+      "dist[1.75,3.00) x front x z[0.67,1.25)": 4,
+      "dist[1.75,3.00) x left x z[0.67,1.25)": 4,
+      "dist[1.75,3.00) x right x z[0.67,1.25)": 4,
+      "dist[1.75,3.00) x rear x z[0.67,1.25)": 4
+    },
+    "combinations": {
+      "near<1.0m & low<0.4m & front": 0,
+      "near<1.0m & low<0.4m & left": 1,
+      "near<1.0m & low<0.4m & right": 1,
+      "near<1.0m & low<0.4m & rear": 1,
+      "near<1.0m & high>1.0m & front": 1,
+      "near<1.0m & high>1.0m & left": 0,
+      "near<1.0m & high>1.0m & right": 1,
+      "near<1.0m & high>1.0m & rear": 1,
+      "far>2.5m & low<0.4m & front": 2,
+      "far>2.5m & low<0.4m & left": 1,
+      "far>2.5m & low<0.4m & right": 1,
+      "far>2.5m & low<0.4m & rear": 0,
+      "far>2.5m & high>1.0m & front": 1,
+      "far>2.5m & high>1.0m & left": 0,
+      "far>2.5m & high>1.0m & right": 1,
+      "far>2.5m & high>1.0m & rear": 1
+    },
+    "boundary": {
+      "target_dist": {
+        "range": [
+          0.5,
+          3.0
+        ],
+        "min": 0.5352963455952704,
+        "max": 2.961756090633571,
+        "gap_to_lower_frac": 0.014118538238108158,
+        "gap_to_upper_frac": 0.01529756374657154,
+        "within_5pct_of_lower": 3,
+        "within_5pct_of_upper": 3
+      },
+      "rel_azimuth": {
+        "range": [
+          -3.141592653589793,
+          3.141592653589793
+        ],
+        "min": -3.1258512278847994,
+        "max": 3.080055999369714,
+        "gap_to_lower_frac": 0.0025053257122635716,
+        "gap_to_upper_frac": 0.009793862700462355,
+        "within_5pct_of_lower": 3,
+        "within_5pct_of_upper": 4
+      },
+      "target_z": {
+        "range": [
+          0.1,
+          1.25
+        ],
+        "min": 0.10788016631267966,
+        "max": 1.2369031422771513,
+        "gap_to_lower_frac": 0.006852318532764917,
+        "gap_to_upper_frac": 0.011388571932911951,
+        "within_5pct_of_lower": 4,
+        "within_5pct_of_upper": 3
+      },
+      "start_x": {
+        "range": [
+          -0.5,
+          0.5
+        ],
+        "min": -0.4929525814950466,
+        "max": 0.4933313922956586,
+        "gap_to_lower_frac": 0.007047418504953384,
+        "gap_to_upper_frac": 0.006668607704341412,
+        "within_5pct_of_lower": 3,
+        "within_5pct_of_upper": 3
+      },
+      "start_y": {
+        "range": [
+          -0.5,
+          0.5
+        ],
+        "min": -0.49330060090869665,
+        "max": 0.49851284082978964,
+        "gap_to_lower_frac": 0.0066993990913033485,
+        "gap_to_upper_frac": 0.0014871591702103615,
+        "within_5pct_of_lower": 3,
+        "within_5pct_of_upper": 3
+      },
+      "start_yaw": {
+        "range": [
+          -3.141592653589793,
+          3.141592653589793
+        ],
+        "min": -3.111110742432985,
+        "max": 3.117710287730536,
+        "gap_to_lower_frac": 0.00485134683549402,
+        "gap_to_upper_frac": 0.0038009965792298833,
+        "within_5pct_of_lower": 3,
+        "within_5pct_of_upper": 4
+      }
+    },
+    "discrepancy": {
+      "sobol_CD": 0.0053060967290228245,
+      "iid_uniform_CD_median": 0.03382945015369099,
+      "iid_uniform_CD_p05": 0.022357519903097554,
+      "iid_uniform_CD_p95": 0.04850053263467377,
+      "n_ref_sets": 200
+    },
+    "rel_azimuth_sectors": {
+      "front": 16,
+      "left": 16,
+      "right": 16,
+      "rear": 16
+    },
+    "large_initial_heading_error": {
+      "|rel_azimuth|>2.36 rad (rear sector)": 16,
+      "|rel_azimuth|>2.8 rad": 7
+    },
+    "start_quadrants": {
+      "x>0,y>0": 16,
+      "x>0,y<0": 16,
+      "x<0,y>0": 16,
+      "x<0,y<0": 16
+    },
+    "template_B_geometry": {
+      "start_to_goal_m": {
+        "min": 0.0826960959946334,
+        "median": 1.1130802505219888,
+        "max": 2.3228076101223354
+      },
+      "initial_turn_to_goal_rad": {
+        "min": 0.05193256367337451,
+        "median": 1.5806540293675595,
+        "max": 3.1386993083705583
+      },
+      "final_heading_change_rad": {
+        "min": 0.009567476301870492,
+        "median": 1.5860167973627273,
+        "max": 3.087214922421679
+      },
+      "target_xy_from_origin_m": {
+        "min": 0.40782665680463237,
+        "median": 1.9795994492253428,
+        "max": 3.173444443863822
+      },
+      "initial_turn_to_goal>2.36rad": 16,
+      "start_to_goal<0.08m (already within pos_tol)": 0,
+      "target_xy_within_0.8m_of_origin": 4
+    },
+    "development_overlap": {
+      "n_dev_scenarios": 107,
+      "dev_sources": [
+        "compare_controllers 900000+",
+        "expert_noise_robustness 870000+",
+        "expert_t3_dev 800000+"
+      ],
+      "identical_tuples": 0,
+      "min_unit_distance_to_dev": 0.23565187413737776,
+      "median_unit_distance_to_nearest_dev": 0.423285170760076
+    },
+    "cell_summary": {
+      "cells": 16,
+      "expected_per_cell": 4.0,
+      "empty": 0,
+      "min": 4,
+      "max": 4,
+      "cells_with_<=2": 0
+    }
+  }
+}

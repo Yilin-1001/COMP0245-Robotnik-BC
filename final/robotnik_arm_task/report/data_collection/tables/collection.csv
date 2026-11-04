@@ -1,0 +1,5 @@
+teacher,split,episodes,sustained_holds,actions_1khz,execution_clip_steps
+markovian,train,256,256,3078616,0
+markovian,test,64,64,768695,0
+stateful,train,256,253,3476970,0
+stateful,test,64,64,841494,0

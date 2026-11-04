@@ -1,0 +1,57 @@
+[
+  {
+    "source": "data/scenarios/scenarios_train.csv",
+    "copy": "data/scenarios/scenarios_train.csv",
+    "sha256": "4b1114ff416eee1e4277668449528ac5316e48138bf16d4569715bc83b267770"
+  },
+  {
+    "source": "data/scenarios/scenarios_test.csv",
+    "copy": "data/scenarios/scenarios_test.csv",
+    "sha256": "4e27ba1d2b3610bd9cf560498183af242e5d9695299bef74073bff56b1fe7d2f"
+  },
+  {
+    "source": "data/scenarios/scenario_manifest.json",
+    "copy": "data/scenarios/scenario_manifest.json",
+    "sha256": "43265ad32a1a349c727bff7183b566d3d5f2fe3546e0d2a75e3c1493026d2c6a"
+  },
+  {
+    "source": "data/scenarios/coverage/coverage.json",
+    "copy": "data/scenarios/coverage/coverage.json",
+    "sha256": "f0ff424baddcaa77b4bd415eba2e8315643cbd20f624b7c61d2c3b5f1eb0faf8"
+  },
+  {
+    "source": "data/scenarios/coverage/coverage_report.md",
+    "copy": "data/scenarios/coverage/coverage_report.md",
+    "sha256": "0722557d62cfd640837af0647a3d34f8cc3344e0d71200481890f25fb3cd57cd"
+  },
+  {
+    "source": "experiments/splits/clean253.json",
+    "copy": "data/clean253_split.json",
+    "sha256": "2743e14393408f1084b214ce6762447576da479f06d5afe45831a05d13f100e0"
+  },
+  {
+    "source": "experiments/configs/dart/d2-s075-x2.yaml",
+    "copy": "data/ou_protocol.yaml",
+    "sha256": "827cd1b9ed42687e73e5f40f7cf01b4f9519ef47637ddfa97c832f3f213b614a"
+  },
+  {
+    "source": "data/Markovian/Clean/episodes.csv",
+    "copy": "data/clean/markovian_episodes.csv",
+    "sha256": "caef57413905e9f42666d3f173d2192b40a7cea01240a9a0151d71ca2014cfb9"
+  },
+  {
+    "source": "data/Markovian/Clean/qa/qa_report.json",
+    "copy": "data/clean/markovian_qa_report.json",
+    "sha256": "b303423e061b4162ef25293a5c9a349032e5198c3c5ac98073e822fb5f463fa7"
+  },
+  {
+    "source": "data/Stateful/Clean/episodes.csv",
+    "copy": "data/clean/stateful_episodes.csv",
+    "sha256": "23ba42ead88e7fa94786490a3b3224606d54dce9fa13325ce1e6107406ba8ec0"
+  },
+  {
+    "source": "data/Stateful/Clean/qa/qa_report.json",
+    "copy": "data/clean/stateful_qa_report.json",
+    "sha256": "b7b19da8a1aa5342c0435c145a5f405961c146626aed046df9a6f4f407ef6937"
+  }
+]

@@ -1,0 +1,18 @@
+# DART noise protocol: the validated D2 OU scheme (outputs/2026-10-26/validation/ou-noise), teacher A at lead 0.50.
+# One file per protocol; a noise-strength ablation adds a sibling file and never edits this one.
+protocol: d2-s075-x2
+teacher: A
+scenarios:
+  source: data/Markovian/Clean_253/scenarios_train.csv
+  split_manifest: experiments/splits/clean253.json
+  ids: fitting_ids.clean253     # the 221 fitting scenarios only; validation and test are never collected with noise
+draws_per_scenario: 2           # independent noise draws per scenario (episode suffix -d0, -d1)
+seed: 20261028                  # noise RNG = default_rng([seed, scenario index, draw])
+noise:
+  type: ou                      # independent channel per action dimension, exact discrete update, zero initial value
+  tau_s: 0.2
+  alpha: [0.25, 1.0]            # per-episode scale ~ U[alpha]; sigma = alpha * the values below (stationary std)
+  arm_sigma_nm: 0.75
+  wheel_sigma_rad_s: 0.15
+  wheel_off: first_reach_active # wheel noise latched off at the first step the teacher's reach gate is active
+  all_off_after_reach_s: 1.5    # all noise off this long after the first task reach; the episode ends 3 s after it

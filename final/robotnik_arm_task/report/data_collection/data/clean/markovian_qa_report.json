@@ -1,0 +1,422 @@
+{
+  "teacher": "markovian",
+  "expect": "full",
+  "tolerances": {
+    "requery_replay_recompute": 0.0,
+    "timestamps_s": 1e-09,
+    "truth_ee_alignment_m": 1e-12
+  },
+  "inventory": {
+    "expected": 320,
+    "found": 320,
+    "missing": [],
+    "unexpected": [],
+    "split_mismatch": [],
+    "one_recording_per_scenario": true,
+    "code_digests": [
+      "c94ad845072c274f3f5ccb87c873defac5f47d5eb475725d4b658130a8710038"
+    ],
+    "single_code_digest": true,
+    "manifest_code_digest_matches": true,
+    "current_code_digest_matches": true,
+    "scenario_files_match_frozen": true,
+    "train_test_overlap": 0,
+    "superseded_attempts": 0
+  },
+  "reexecution": [
+    {
+      "episode_id": "markovian-clean-train-0000",
+      "arrays": 26,
+      "max_abs_diff": 0.0,
+      "worst_field": "obs_time",
+      "bitwise_identical": true
+    },
+    {
+      "episode_id": "markovian-clean-train-0127",
+      "arrays": 26,
+      "max_abs_diff": 0.0,
+      "worst_field": "obs_time",
+      "bitwise_identical": true
+    },
+    {
+      "episode_id": "markovian-clean-train-0255",
+      "arrays": 26,
+      "max_abs_diff": 0.0,
+      "worst_field": "obs_time",
+      "bitwise_identical": true
+    },
+    {
+      "episode_id": "markovian-clean-test-0000",
+      "arrays": 26,
+      "max_abs_diff": 0.0,
+      "worst_field": "obs_time",
+      "bitwise_identical": true
+    },
+    {
+      "episode_id": "markovian-clean-test-0031",
+      "arrays": 26,
+      "max_abs_diff": 0.0,
+      "worst_field": "obs_time",
+      "bitwise_identical": true
+    },
+    {
+      "episode_id": "markovian-clean-test-0063",
+      "arrays": 26,
+      "max_abs_diff": 0.0,
+      "worst_field": "obs_time",
+      "bitwise_identical": true
+    }
+  ],
+  "checks": {
+    "failing_file_matches_id": 0,
+    "failing_shapes_ok": 0,
+    "failing_finite_ok": 0,
+    "failing_time_ok": 0,
+    "failing_noise_zero": 0,
+    "failing_executed_equals_expert": 0,
+    "failing_end_flags_ok": 0,
+    "failing_outcome_recomputed_ok": 0,
+    "failing_teacher_ok": 0,
+    "failing_align_ok": 0,
+    "failing_features_finite": 0,
+    "failing_integrity_ok": 0
+  },
+  "max_values": {
+    "time_max_dev_s": 3.4283687000424834e-12,
+    "dt_max_dev_s": 1.2221126888256606e-15,
+    "ee_err_consistent": 0.0,
+    "requery_max_action_diff": 0.0,
+    "requery_reach_flag_mismatch": 0,
+    "requery_teacher_ee_diff": 0.0,
+    "align_truth_ee_maxdiff": 0.0
+  },
+  "clip_steps_total": 0,
+  "feature_dims": [
+    21
+  ],
+  "fk_vs_truth_mm": {
+    "median_of_medians": 0.4137931516579778,
+    "max": 7.746737432287326
+  },
+  "alignment_negative_control_median_shift_mm": 0.17302183708842178,
+  "outcomes": {
+    "train": {
+      "episodes": 256,
+      "categories": {
+        "success_sustained_hold": 256
+      },
+      "sustained_hold_pass": 256,
+      "wilson95": [
+        0.9852,
+        1.0
+      ],
+      "eligible_initial_bc": 256,
+      "offline_test_subset": 0
+    },
+    "test": {
+      "episodes": 64,
+      "categories": {
+        "success_sustained_hold": 64
+      },
+      "sustained_hold_pass": 64,
+      "wilson95": [
+        0.9434,
+        1.0
+      ],
+      "eligible_initial_bc": 0,
+      "offline_test_subset": 64
+    }
+  },
+  "label_quality": {
+    "hold_chatter_rule": "median arm joint-speed norm after the first task reach > 0.5 rad/s",
+    "hold_chatter_episodes": {
+      "train": 28,
+      "test": 7
+    },
+    "hold_chatter_eligible_initial_bc": 28,
+    "hold_chatter_dominant_freq_hz": [
+      500.0
+    ],
+    "hold_chatter_dominant_joints": {
+      "3": 35
+    },
+    "hold_chatter_sat_frac_median": 0.5,
+    "hold_chatter_ee_peak_dev_mm_max": 7.608028801894651,
+    "other_holds_joint_speed_median": 0.008117328285162194,
+    "note": "Flag only; the initial-BC selection rule is unchanged. Stored for a later, explicit selection decision."
+  },
+  "coverage": {
+    "train": {
+      "episodes": 256,
+      "steps_total": 3078616,
+      "steps_by_segment": {
+        "navigate": 1533366,
+        "approach": 777250,
+        "hold": 768000
+      },
+      "steps_by_base_mode": {
+        "turn_in_place": 301440,
+        "drive": 1308176,
+        "orient": 23775,
+        "stopped": 1445225
+      },
+      "episodes_with_reach_active_toggles": 0,
+      "ee_err_at_reach_activation_mm": {
+        "min": 58.1391062786828,
+        "median": 294.1950764047738,
+        "max": 685.5567986514511
+      },
+      "arm_joint_range_rad": {
+        "q0": [
+          -0.6409646519962808,
+          0.7675396114579522
+        ],
+        "q1": [
+          0.8221663558689402,
+          2.3842948556525605
+        ],
+        "q2": [
+          -1.3903448667559775,
+          0.9262576941388809
+        ],
+        "q3": [
+          0.5646659407519576,
+          1.9597206436986767
+        ],
+        "q4": [
+          -1.2852702432817462,
+          0.48434602990544334
+        ],
+        "q5": [
+          0.9999999999649675,
+          1.8703967468059646
+        ],
+        "q6": [
+          -0.05722979496693559,
+          0.08926383700755118
+        ]
+      },
+      "failures_by_bin": {
+        "target_dist": [
+          {
+            "bin": "[0.50,1.33)",
+            "episodes": 85,
+            "failures": 0
+          },
+          {
+            "bin": "[1.33,2.17)",
+            "episodes": 86,
+            "failures": 0
+          },
+          {
+            "bin": "[2.17,3.00)",
+            "episodes": 85,
+            "failures": 0
+          }
+        ],
+        "target_z": [
+          {
+            "bin": "[0.10,0.48)",
+            "episodes": 84,
+            "failures": 0
+          },
+          {
+            "bin": "[0.48,0.87)",
+            "episodes": 88,
+            "failures": 0
+          },
+          {
+            "bin": "[0.87,1.25)",
+            "episodes": 84,
+            "failures": 0
+          }
+        ],
+        "rel_azimuth": [
+          {
+            "bin": "[-3.14,-2.36)",
+            "episodes": 32,
+            "failures": 0
+          },
+          {
+            "bin": "[-2.36,-0.79)",
+            "episodes": 64,
+            "failures": 0
+          },
+          {
+            "bin": "[-0.79,0.79)",
+            "episodes": 64,
+            "failures": 0
+          },
+          {
+            "bin": "[0.79,2.36)",
+            "episodes": 64,
+            "failures": 0
+          },
+          {
+            "bin": "[2.36,3.14)",
+            "episodes": 32,
+            "failures": 0
+          }
+        ],
+        "start_yaw": [
+          {
+            "bin": "[-3.14,-1.57)",
+            "episodes": 64,
+            "failures": 0
+          },
+          {
+            "bin": "[-1.57,0.00)",
+            "episodes": 64,
+            "failures": 0
+          },
+          {
+            "bin": "[0.00,1.57)",
+            "episodes": 64,
+            "failures": 0
+          },
+          {
+            "bin": "[1.57,3.14)",
+            "episodes": 64,
+            "failures": 0
+          }
+        ]
+      }
+    },
+    "test": {
+      "episodes": 64,
+      "steps_total": 768695,
+      "steps_by_segment": {
+        "navigate": 382970,
+        "approach": 193725,
+        "hold": 192000
+      },
+      "steps_by_base_mode": {
+        "turn_in_place": 75292,
+        "drive": 326716,
+        "orient": 6195,
+        "stopped": 360492
+      },
+      "episodes_with_reach_active_toggles": 0,
+      "ee_err_at_reach_activation_mm": {
+        "min": 59.973294286421336,
+        "median": 293.3061727693534,
+        "max": 678.2000362919223
+      },
+      "arm_joint_range_rad": {
+        "q0": [
+          -0.380762335342481,
+          0.6469582439547309
+        ],
+        "q1": [
+          0.8230620590160406,
+          2.3509651935652687
+        ],
+        "q2": [
+          -1.233710141920505,
+          1.0845532800997975
+        ],
+        "q3": [
+          0.5724470886063172,
+          1.9363955718393626
+        ],
+        "q4": [
+          -0.6903428897348106,
+          0.25137980942848837
+        ],
+        "q5": [
+          0.9999999999811877,
+          1.8508223415510248
+        ],
+        "q6": [
+          -0.055150413828813034,
+          0.08101744266545209
+        ]
+      },
+      "failures_by_bin": {
+        "target_dist": [
+          {
+            "bin": "[0.50,1.33)",
+            "episodes": 21,
+            "failures": 0
+          },
+          {
+            "bin": "[1.33,2.17)",
+            "episodes": 22,
+            "failures": 0
+          },
+          {
+            "bin": "[2.17,3.00)",
+            "episodes": 21,
+            "failures": 0
+          }
+        ],
+        "target_z": [
+          {
+            "bin": "[0.10,0.48)",
+            "episodes": 22,
+            "failures": 0
+          },
+          {
+            "bin": "[0.48,0.87)",
+            "episodes": 21,
+            "failures": 0
+          },
+          {
+            "bin": "[0.87,1.25)",
+            "episodes": 21,
+            "failures": 0
+          }
+        ],
+        "rel_azimuth": [
+          {
+            "bin": "[-3.14,-2.36)",
+            "episodes": 8,
+            "failures": 0
+          },
+          {
+            "bin": "[-2.36,-0.79)",
+            "episodes": 16,
+            "failures": 0
+          },
+          {
+            "bin": "[-0.79,0.79)",
+            "episodes": 16,
+            "failures": 0
+          },
+          {
+            "bin": "[0.79,2.36)",
+            "episodes": 16,
+            "failures": 0
+          },
+          {
+            "bin": "[2.36,3.14)",
+            "episodes": 8,
+            "failures": 0
+          }
+        ],
+        "start_yaw": [
+          {
+            "bin": "[-3.14,-1.57)",
+            "episodes": 16,
+            "failures": 0
+          },
+          {
+            "bin": "[-1.57,0.00)",
+            "episodes": 16,
+            "failures": 0
+          },
+          {
+            "bin": "[0.00,1.57)",
+            "episodes": 16,
+            "failures": 0
+          },
+          {
+            "bin": "[1.57,3.14)",
+            "episodes": 16,
+            "failures": 0
+          }
+        ]
+      }
+    }
+  }
+}
