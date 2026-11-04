@@ -1,0 +1,6 @@
+probe,q_des_offset_rad,nav_done,torque_j1_nm,torque_j2_nm,torque_j3_nm,torque_j4_nm,torque_j5_nm,torque_j6_nm,torque_j7_nm,wheel_fr_rad_s,wheel_fl_rad_s,wheel_bl_rad_s,wheel_br_rad_s
+reference_probe,-0.01,True,-6.2866,6.9745,2.959,18.4263,-2.0029,27.6721,0.0106,0.0,0.0,0.0,0.0
+reference_probe,0.01,True,-4.2866,6.9745,2.959,18.4263,-2.0029,27.6721,0.0106,0.0,0.0,0.0,0.0
+navigation_probe,0.0,False,-0.0,12.6119,0.2888,1.4601,-0.0058,1.9622,0.0106,3.1169,1.3403,1.3403,3.1169
+navigation_probe,0.0,True,-5.2866,6.9745,2.959,18.4263,-2.0029,27.6721,0.0106,0.0,0.0,0.0,0.0
+A_requery,,,0.0,,,,,,,0.0,,,

@@ -1,0 +1,15 @@
+condition,A_lead050_held,A_lead050_median_err_mm,B_template_held,B_template_median_err_mm,A_lead015_held,A_lead015_median_err_mm
+nominal,20/20,0.8,20/20,0.6,20/20,1.2
+friction x0.5,20/20,0.8,20/20,1.2,20/20,1.1
+friction x1.5,20/20,0.8,20/20,0.6,20/20,1.1
+mass x0.75,0/20,27.3,20/20,0.6,0/20,47.5
+mass x1.25,7/20,20.6,20/20,0.7,1/20,33.8
+sensor noise x2,20/20,0.8,20/20,0.6,20/20,1.1
+"push base, driving",11/20,4.7,1/20,9734.4,11/20,4.5
+"push base, at target",16/20,1.2,7/20,149.1,16/20,1.5
+"push hand, at target",20/20,0.8,20/20,1.1,20/20,1.1
+far targets 3-3.5 m,20/20,0.7,20/20,0.6,20/20,1.0
+unreachable (high),0/10,543.4,0/10,550.7,0/10,543.3
+sensor noise x20,20/20,1.1,20/20,0.7,20/20,1.5
+sensor noise x100,20/20,1.5,20/20,1.1,20/20,2.2
+"combined: fr x0.5, mass x1.25, noise x2",7/20,18.5,20/20,1.5,1/20,33.9

@@ -1,0 +1,86 @@
+{
+  "protocol": "Controlled memory interventions at identical observation, target, t=10 s, base quaternion and motor angles. This tests interface dependence, not natural-history aliasing frequency.",
+  "reference_probe": [
+    {
+      "reference_offset_rad": -0.01,
+      "done_before": true,
+      "torque_arm": [
+        -6.286625235672207,
+        6.974473685302601,
+        2.9590011464618144,
+        18.426332376683092,
+        -2.0028591554605972,
+        27.67214979558731,
+        0.010648167511623998
+      ],
+      "wheel_cmds": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "reference_offset_rad": 0.01,
+      "done_before": true,
+      "torque_arm": [
+        -4.286625235672207,
+        6.974473685302601,
+        2.9590011464618144,
+        18.426332376683092,
+        -2.0028591554605972,
+        27.67214979558731,
+        0.010648167511623998
+      ],
+      "wheel_cmds": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "joint0_torque_difference_nm": 2.0,
+  "navigation_probe": [
+    {
+      "reference_offset_rad": 0.0,
+      "done_before": false,
+      "torque_arm": [
+        -3.3273228999659365e-17,
+        12.611901658460221,
+        0.28881877156448554,
+        1.4600727252427137,
+        -0.005816236968299196,
+        1.9622057002592326,
+        0.010648167511623844
+      ],
+      "wheel_cmds": [
+        3.1168724640765553,
+        1.340312425427627,
+        1.340312425427627,
+        3.1168724640765553
+      ]
+    },
+    {
+      "reference_offset_rad": 0.0,
+      "done_before": true,
+      "torque_arm": [
+        -5.286625235672207,
+        6.974473685302601,
+        2.9590011464618144,
+        18.426332376683092,
+        -2.0028591554605972,
+        27.67214979558731,
+        0.010648167511623998
+      ],
+      "wheel_cmds": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "A_requery_max_torque_difference_nm": 0.0,
+  "A_requery_max_wheel_difference_rad_s": 0.0
+}

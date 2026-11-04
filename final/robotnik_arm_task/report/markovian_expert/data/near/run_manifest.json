@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-03",
+  "seed": [
+    20261103,
+    4401
+  ],
+  "A_lead_time_s": 0.5,
+  "cap_s": 40,
+  "n_contexts_per_distance": 8,
+  "distance_grid_m": [
+    0.0,
+    0.01,
+    0.03,
+    0.05,
+    0.1,
+    0.3,
+    0.5
+  ],
+  "heights_m": [
+    0.2,
+    0.5,
+    0.8,
+    1.2
+  ],
+  "paired_contexts_across_teachers_and_distances": true,
+  "sources_sha256": {
+    "data_collection/expert.py": "48b5ec45d7ec294b8d7914e09daaeca5a55b1259a05cce02ed36d11be6c46b52",
+    "data_collection/template_teacher.py": "23c46487ba4f71a830c06c2dd70800ffef2031eb6b707cc9bca67d9fce468c99",
+    "robotnik_arm_control.py": "1fd0baf658406c142e1dbb02c51f225e30bc60cb22ff0a0a6192f2ba9cc990e9",
+    "evaluation/evaluate.py": "4e284c7e59c1ea04e0f2fed989340d92afd557d9b14d3bfe280a6ba14b49ee43",
+    "core/env.py": "9aab94018236fbb2f2f86d432fada45d384e395aacba118b5fb5ab44cb6789d2"
+  }
+}
