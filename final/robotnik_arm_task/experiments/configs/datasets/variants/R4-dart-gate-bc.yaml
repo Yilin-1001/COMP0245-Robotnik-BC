@@ -1,0 +1,6 @@
+# R4 data with the action loss only (objective bc): the BC vs BC+J control of the objective ablation v1.
+# Data and inputs are identical to R4-dart-gate: Clean_253 fitting + d2-s075-x2 DART episodes, 22 inputs.
+data:
+  feature_definition: features-v1-gate
+  datasets: [clean253__features-v1-gate, dart-d2s075x2__features-v1-gate]
+  validation_dataset: clean253__features-v1-gate

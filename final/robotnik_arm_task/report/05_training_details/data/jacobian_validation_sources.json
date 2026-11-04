@@ -1,0 +1,170 @@
+{
+  "snapshot_date": "2026-11-04",
+  "files": [
+    {
+      "source": "final/robotnik_arm_task/training/jacobian/loss.py",
+      "copy": "code/source_snapshot/training/jacobian/loss.py",
+      "sha256": "f54416aaf25b98571f3ab541038a6f7a3d5e7986ea830154a7d60a4231702395"
+    },
+    {
+      "source": "final/robotnik_arm_task/evaluation/offline.py",
+      "copy": "code/source_snapshot/evaluation/offline.py",
+      "sha256": "a79503e76d6d92defd4afe1e8db2190e170e49f01b4d4b99ffe5aa38d84c1d5f"
+    },
+    {
+      "source": "final/robotnik_arm_task/training/baseline/loss.py",
+      "copy": "code/source_snapshot/training/baseline/loss.py",
+      "sha256": "4bccb089a6edede1da33c83cd655c7b0f8c946b6e20f3fbc0b625f7af372f388"
+    },
+    {
+      "source": "final/robotnik_arm_task/training/common/normalisation.py",
+      "copy": "code/source_snapshot/training/common/normalisation.py",
+      "sha256": "eb3e08ce4f058350c6a52a5c55f94f62feda49d3a30320e96923d91cc2624911"
+    },
+    {
+      "source": "final/robotnik_arm_task/training/common/models.py",
+      "copy": "code/source_snapshot/training/common/models.py",
+      "sha256": "3ba4f07e496ead7059b1b763a56b9bc2b9cfea4c6a76618b9fd4051e12824a5b"
+    },
+    {
+      "source": "final/robotnik_arm_task/training/common/engine.py",
+      "copy": "code/source_snapshot/training/common/engine.py",
+      "sha256": "e991e2651cf47dc09793c06d0b3035cd328ac74b3d8e042441a84065fb593643"
+    },
+    {
+      "source": "final/robotnik_arm_task/experiments/ablation/run.py",
+      "copy": "code/source_snapshot/experiments/ablation/run.py",
+      "sha256": "c67fe89a56414fee91577e1f96c6070fbfece22671de46cc89e0fa6a3ecad128"
+    },
+    {
+      "source": "final/robotnik_arm_task/experiments/ablation/2026-11-04__objective-ablation-v1.yaml",
+      "copy": "code/source_snapshot/experiments/ablation/2026-11-04__objective-ablation-v1.yaml",
+      "sha256": "c8761553cca9db08a3148a3716eae0cedb9d76668561ea12742ffcc2ee47a2c7"
+    },
+    {
+      "source": "final/robotnik_arm_task/experiments/ablation/2026-10-28__training-ablation-v1.yaml",
+      "copy": "code/source_snapshot/experiments/ablation/2026-10-28__training-ablation-v1.yaml",
+      "sha256": "a9b2ea0af529c3439c306cfbe14fea1a60d93d4cd55cf645de3f564e2250bc29"
+    },
+    {
+      "source": "final/robotnik_arm_task/experiments/configs/datasets/variants/R4-dart-gate-bc.yaml",
+      "copy": "code/source_snapshot/experiments/configs/datasets/variants/R4-dart-gate-bc.yaml",
+      "sha256": "b0619f138fd793643a0dcab1b6bc03b97f7b2d19c523563204451f20901860ee"
+    },
+    {
+      "source": "final/robotnik_arm_task/experiments/configs/datasets/variants/R4-dart-gate.yaml",
+      "copy": "code/source_snapshot/experiments/configs/datasets/variants/R4-dart-gate.yaml",
+      "sha256": "ab59c9b713324a521dccf0850f924b17d652310ab906691370bb58e470f8703f"
+    },
+    {
+      "source": "tests/training/test_jacobian.py",
+      "copy": "code/source_snapshot/tests/training/test_jacobian.py",
+      "sha256": "1ce4154e9585d3226300a63bdb68b7ec7f11325a4b40ee6d9b4ce78762fe3f56"
+    },
+    {
+      "source": "tests/conftest.py",
+      "copy": "code/source_snapshot/tests/conftest.py",
+      "sha256": "8e2a3148127a6224cc5b88737e5e6b9aa391ed6108e2f7d22bff0626f0cfa2c7"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-11-04__objective-ablation-v1/runs.csv",
+      "copy": "data/objective_ablation/bc/runs.csv",
+      "sha256": "812cc34c6b9d541bd8acfe15cdace3c9e259da1d8ab7a265e21329b9d411ccee"
+    },
+    {
+      "source": "final/robotnik_arm_task/checkpoints/ablation/2026-11-04__objective-ablation-v1/R4-dart-gate-bc__MLP01-256x3__s0__v1__2026-11-04/config.yaml",
+      "copy": "data/objective_ablation/bc/configs/R4-dart-gate-bc__MLP01-256x3__s0__v1__2026-11-04.yaml",
+      "sha256": "dbbd97bf1482bd0974570346b55a25aa31455c4822edd28a6372d0ad0bc35cc8"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-11-04__objective-ablation-v1/validation/R4-dart-gate-bc__MLP01-256x3__s0__v1__2026-11-04__validation-student.csv",
+      "copy": "data/objective_ablation/bc/validation/R4-dart-gate-bc__MLP01-256x3__s0__v1__2026-11-04__validation-student.csv",
+      "sha256": "12260e6c15ea9492ff746a91052457bda3fd2867744d7c95a42679b1c9707a0f"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-11-04__objective-ablation-v1/validation/R4-dart-gate-bc__MLP01-256x3__s0__v1__2026-11-04__validation-arm.csv",
+      "copy": "data/objective_ablation/bc/validation/R4-dart-gate-bc__MLP01-256x3__s0__v1__2026-11-04__validation-arm.csv",
+      "sha256": "9da833019343010e69a17be2a5b22841803a6c8170f4df4e61a2c59b2cac8d87"
+    },
+    {
+      "source": "final/robotnik_arm_task/checkpoints/ablation/2026-11-04__objective-ablation-v1/R4-dart-gate-bc__MLP01-256x3__s1__v1__2026-11-04/config.yaml",
+      "copy": "data/objective_ablation/bc/configs/R4-dart-gate-bc__MLP01-256x3__s1__v1__2026-11-04.yaml",
+      "sha256": "8ffb66b510fce648cfb191d6d7cdbe712bd2b3d5eecd214959cb17fb6147383d"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-11-04__objective-ablation-v1/validation/R4-dart-gate-bc__MLP01-256x3__s1__v1__2026-11-04__validation-student.csv",
+      "copy": "data/objective_ablation/bc/validation/R4-dart-gate-bc__MLP01-256x3__s1__v1__2026-11-04__validation-student.csv",
+      "sha256": "fc9ea2ede15794c7ff7f059d6095af9c92a91337cbffc431deaf8188cd822e60"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-11-04__objective-ablation-v1/validation/R4-dart-gate-bc__MLP01-256x3__s1__v1__2026-11-04__validation-arm.csv",
+      "copy": "data/objective_ablation/bc/validation/R4-dart-gate-bc__MLP01-256x3__s1__v1__2026-11-04__validation-arm.csv",
+      "sha256": "822143fd56596e988a7f32d3c2d5991190effe261335f0beb4ed47a00b7d50f5"
+    },
+    {
+      "source": "final/robotnik_arm_task/checkpoints/ablation/2026-11-04__objective-ablation-v1/R4-dart-gate-bc__MLP01-256x3__s2__v1__2026-11-04/config.yaml",
+      "copy": "data/objective_ablation/bc/configs/R4-dart-gate-bc__MLP01-256x3__s2__v1__2026-11-04.yaml",
+      "sha256": "1f66f7ffab1fab8215dc18153312792c6062395ffac996585b76eecb5d844cb8"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-11-04__objective-ablation-v1/validation/R4-dart-gate-bc__MLP01-256x3__s2__v1__2026-11-04__validation-student.csv",
+      "copy": "data/objective_ablation/bc/validation/R4-dart-gate-bc__MLP01-256x3__s2__v1__2026-11-04__validation-student.csv",
+      "sha256": "1cd7d882302ba05b01b330cb7b0a8767b361b09805344ece9aeb947804021e26"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-11-04__objective-ablation-v1/validation/R4-dart-gate-bc__MLP01-256x3__s2__v1__2026-11-04__validation-arm.csv",
+      "copy": "data/objective_ablation/bc/validation/R4-dart-gate-bc__MLP01-256x3__s2__v1__2026-11-04__validation-arm.csv",
+      "sha256": "1e475ba3f7881ae0d732772de6b19ed3577863e2a7e531354ec7e3d11065a191"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-10-28__training-ablation-v1/runs.csv",
+      "copy": "data/objective_ablation/bcj/runs.csv",
+      "sha256": "5c6543089b644dd357d60f5ccd8fd5412a84c981123660c5843ced8297155d67"
+    },
+    {
+      "source": "final/robotnik_arm_task/checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/config.yaml",
+      "copy": "data/objective_ablation/bcj/configs/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.yaml",
+      "sha256": "e1f9e455645bdd5139bc9bce9ebc63205a8256ea9f7b39bfce67fd5a63182c1a"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-10-28__training-ablation-v1/validation/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28__validation-student.csv",
+      "copy": "data/objective_ablation/bcj/validation/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28__validation-student.csv",
+      "sha256": "42f40f640411ff88a548fa745488c1343f294a859fc6650eb29396e54ab5c238"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-10-28__training-ablation-v1/validation/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28__validation-arm.csv",
+      "copy": "data/objective_ablation/bcj/validation/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28__validation-arm.csv",
+      "sha256": "42affe386a666ff43211675163e00c8927a71150c12d28104de2860b6f0dcfc6"
+    },
+    {
+      "source": "final/robotnik_arm_task/checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28/config.yaml",
+      "copy": "data/objective_ablation/bcj/configs/R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28.yaml",
+      "sha256": "cfa9875b9fa49a960d92750b96fcc467c7399428c5f23726e2ecb7d99ad216df"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-10-28__training-ablation-v1/validation/R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28__validation-student.csv",
+      "copy": "data/objective_ablation/bcj/validation/R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28__validation-student.csv",
+      "sha256": "067af465678d7d55f8cd11fe6cc758f713bb8da77b791a215fb09a8dc440b032"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-10-28__training-ablation-v1/validation/R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28__validation-arm.csv",
+      "copy": "data/objective_ablation/bcj/validation/R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28__validation-arm.csv",
+      "sha256": "137ccea2b99a931e8a0a0960df86f80d6a0a16b82ed1192ce2a2d1dce9bb2075"
+    },
+    {
+      "source": "final/robotnik_arm_task/checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28/config.yaml",
+      "copy": "data/objective_ablation/bcj/configs/R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28.yaml",
+      "sha256": "3fc116fcfc89b8f1cc4a552e0d8532cf5a2fbc0935190bcf843c67a08a7fd92a"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-10-28__training-ablation-v1/validation/R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28__validation-student.csv",
+      "copy": "data/objective_ablation/bcj/validation/R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28__validation-student.csv",
+      "sha256": "6c8604f14b52653edc5ff9291c66e5cd8b93a75f842141bb4a4d7444b025309b"
+    },
+    {
+      "source": "final/robotnik_arm_task/results/ablation/2026-10-28__training-ablation-v1/validation/R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28__validation-arm.csv",
+      "copy": "data/objective_ablation/bcj/validation/R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28__validation-arm.csv",
+      "sha256": "c610ea27c702bb948a77993b244553adb75f8e0259ab362edf675c31a11f51dd"
+    }
+  ]
+}

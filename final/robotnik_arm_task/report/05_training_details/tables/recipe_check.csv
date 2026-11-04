@@ -1,0 +1,2 @@
+runs,action_loss,architecture,arm_scale_floor_nm,arm_weight,batch_size,calibration_ratio,epsilon_tau_nm,hidden,huber_delta,jacobian_kd,jacobian_subbatch,layernorm_eps,lr,objective,optimizer,schedule,updates,warmup_updates,weight_decay,wheel_scale_floor_rad_s,wheel_weight
+40,huber,MLP01,0.1,0.5,1024,0.1,0.0001,256x256x256,1.0,30.0,256,1e-05,0.001,bcj,adamw,cosine,42000,500,0.0001,0.05,0.5

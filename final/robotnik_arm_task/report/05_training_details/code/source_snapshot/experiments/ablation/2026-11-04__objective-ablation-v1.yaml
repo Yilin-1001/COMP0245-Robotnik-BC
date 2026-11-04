@@ -1,0 +1,26 @@
+# Objective ablation v1: does the damping-Jacobian loss matter once the data contain OU-noise corrections?
+# R4-dart-gate-bc is R4-dart-gate (training-ablation v1, BC+J) with objective bc; everything else is unchanged, and the
+# same seed gives the same initialisation, so each seed is a matched pair with the v1 R4 run.
+# Run with: python -m experiments.ablation.run --manifest experiments/ablation/2026-11-04__objective-ablation-v1.yaml
+experiment: objective-ablation
+version: v1
+date: 2026-11-04
+architecture: MLP01               # 256x256x256
+rows:
+  - R4-dart-gate-bc               # clean + DART d2-s075-x2, 22 inputs, action loss only
+seeds: [0, 1, 2]
+recipe:                           # identical to training-ablation v1 except the objective
+  identity.objective: bc          # action loss only (no damping Jacobian)
+  training.lr: 1.0e-3
+  training.updates: 42000
+  loss.action: huber
+  loss.arm_weight: 0.5
+  loss.wheel_weight: 0.5
+evaluation:
+  checkpoint: terminal
+  validation_modes:
+    - student
+    - arm
+  hold_test_scenarios: [train-0001, train-0035, train-0067, train-0108, train-0142, train-0178, train-0216, train-0255]
+  primary_metric: sustained hold of the full student on validation, mean over seeds with a pooled Wilson 95% interval
+  comparison: experiments/ablation/2026-10-28__training-ablation-v1.yaml, row R4-dart-gate (BC+J)

@@ -1,0 +1,7 @@
+objective,seed,architecture,lambda_j,updates,wall_min,train_loss,train_arm_loss,train_wheel_loss,jacobian_loss,val_arm_rmse_nm,val_wheel_rmse_rad_s,val_hold_arm_rmse_nm,val_hold_bias_max_abs_nm,val_damping_median_diag,best_val_arm_rmse_nm,best_at_update,run
+bc,0,256x128x64,0.0,42000,1.03,1.530e-03,2.901e-03,1.582e-04,nan,0.508,0.0374,0.258,2.37,-9.54,0.503,30500,clean-A-bc-clean253-m6-lr1e-3-s0-selection-1f7ce5b7a590
+bc,1,256x128x64,0.0,42000,1.04,1.504e-03,2.843e-03,1.658e-04,nan,0.546,0.0366,0.357,4.36,-10.36,0.534,34000,clean-A-bc-clean253-m6-lr1e-3-s1-selection-c4567d590a98
+bc,2,256x128x64,0.0,42000,1.04,1.576e-03,2.997e-03,1.547e-04,nan,0.562,0.0339,0.374,2.51,-9.21,0.522,13000,clean-A-bc-clean253-m6-lr1e-3-s2-selection-9d587b0fdaa9
+bcj,0,256x128x64,0.07026406977471503,42000,3.41,1.734e-03,3.247e-03,2.205e-04,2.832e-03,0.732,0.0438,0.674,7.29,-29.9,0.578,9500,clean-A-bcj-clean253-m6-lr1e-3-s0-selection-d45d831c8c61
+bcj,1,256x128x64,0.07026406977471503,42000,3.34,1.738e-03,3.245e-03,2.301e-04,3.008e-03,0.575,0.0602,0.398,2.41,-29.89,0.547,16000,clean-A-bcj-clean253-m6-lr1e-3-s1-selection-aaaf7d342ebe
+bcj,2,256x128x64,0.07026406977471503,42000,3.38,1.799e-03,3.370e-03,2.273e-04,3.222e-03,0.639,0.0756,0.523,4.59,-29.93,0.562,11000,clean-A-bcj-clean253-m6-lr1e-3-s2-selection-e5fd042dd3a8

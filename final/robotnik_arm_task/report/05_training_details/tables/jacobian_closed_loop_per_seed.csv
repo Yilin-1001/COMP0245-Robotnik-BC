@@ -1,0 +1,7 @@
+objective,seed,run,student_n,student_hold,student_reach,arm_n,arm_hold,hold_test_scenarios,hold_test_arm_stayed,hold_test_median_damping_diag
+bc,0,R4-dart-gate-bc__MLP01-256x3__s0__v1__2026-11-04,32,24,29,32,26,8,7,-29.293720157283623
+bc,1,R4-dart-gate-bc__MLP01-256x3__s1__v1__2026-11-04,32,28,30,32,27,8,7,-28.779645296648276
+bc,2,R4-dart-gate-bc__MLP01-256x3__s2__v1__2026-11-04,32,24,26,32,24,8,7,-28.906605541674324
+bcj,0,R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28,32,29,32,32,26,8,7,-29.85574540998237
+bcj,1,R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28,32,27,29,32,25,8,8,-29.850635812216364
+bcj,2,R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28,32,27,29,32,27,8,8,-29.86909716200166

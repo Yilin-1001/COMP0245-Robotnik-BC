@@ -1,0 +1,258 @@
+"""Objective contract shared by every training objective; the update loop uses only this interface.
+
+An Objective is called as objective(model, x, y, normaliser, generator) with standardised batches; generator is
+the independent Jacobian sub-batch stream, which action-only objectives ignore.
+"""
+from dataclasses import dataclass, field
+from typing import Protocol
+
+import torch
+
+
+@dataclass
+class LossResult:
+    total: torch.Tensor
+    metrics: dict = field(default_factory=dict)
+
+
+class Objective(Protocol):
+    def __call__(self, model: torch.nn.Module, x: torch.Tensor, y: torch.Tensor, normaliser,
+                 generator: torch.Generator) -> LossResult: ...
+
+
+# ---------------------------------------------------------------- update loop
+
+import csv
+import hashlib
+import json
+import math
+import time
+from pathlib import Path
+from typing import Callable
+
+import numpy as np
+
+from training.common.checkpoint import export_numpy, load_checkpoint, model_payload, save_checkpoint
+from training.common.dataset import sample_indices
+from training.common.models import build_model
+
+METRIC_COLUMNS = ["update", "elapsed_s", "lr", "train_loss", "train_arm_loss", "train_wheel_loss", "val_arm_rmse_nm",
+                  "val_wheel_rmse_rad_s", "val_hold_arm_rmse_nm", "val_hold_bias_max_abs_nm", "val_hold_bias_gate_pass",
+                  "val_damping_median_diag", "val_damping_frac_below_minus33", "extra"]
+
+
+@dataclass
+class FitResult:
+    run_dir: Path
+    terminal_update: int
+    checkpoints: dict
+    status: str
+
+
+def stream_seed(seed: int, stream: str) -> int:
+    """Independent RNG streams derived from the paired experiment seed (never from the objective-specific run ID)."""
+    return int.from_bytes(hashlib.sha256(f"{int(seed)}:{stream}".encode()).digest()[:8], "little") % (2 ** 63)
+
+
+def init_model(config: dict):
+    """Model initialised from the paired seed's init stream; identical for BC and BC+J of one seed."""
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(stream_seed(config["identity"]["seed"], "init"))
+        return build_model(config)
+
+
+def lr_factor(s: int, warmup: int, updates: int, schedule: str) -> float:
+    """Multiplier for the s-th update (0-based): linear warm-up, then cosine to the budget or constant."""
+    if s < warmup:
+        return (s + 1) / warmup
+    if schedule == "constant":
+        return 1.0
+    return 0.5 * (1.0 + math.cos(math.pi * (s - warmup) / max(1, updates - warmup)))
+
+
+def _rng_state(generators: dict) -> dict:
+    state = {f"gen_{k}": g.get_state() for k, g in generators.items()}
+    state["torch_cpu"] = torch.get_rng_state()
+    if torch.cuda.is_available() and torch.cuda.is_initialized():
+        state["torch_cuda"] = torch.cuda.get_rng_state_all()
+    return state
+
+
+def _restore_rng(state: dict, generators: dict) -> None:
+    for k, g in generators.items():
+        g.set_state(state[f"gen_{k}"])
+    torch.set_rng_state(state["torch_cpu"])
+    if "torch_cuda" in state and torch.cuda.is_available():
+        torch.cuda.set_rng_state_all(state["torch_cuda"])
+
+
+def policy_meta(config: dict) -> dict:
+    ident = config["identity"]
+    return {"teacher": ident["teacher"], "input_dim": config["model"]["input_dim"], "run_id": ident["run_id"],
+            "objective": ident["objective"], "interface": dict(config["interface"]),
+            "task_context": config["data"]["task_context"], "feature_names": None,
+            "feature_definition": config["data"].get("feature_definition")}
+
+
+def offline_validation(model, validation, normaliser, config: dict) -> dict:
+    """Offline proxy on the validation cache, with the model's mode and the global RNG left untouched."""
+    from evaluation.offline import offline_metrics
+    was_training = model.training
+    with torch.random.fork_rng(devices=[]):
+        m = offline_metrics(model, validation, normaliser, config)
+    model.train(was_training)
+    return m
+
+
+def fit(config: dict, train, validation, model, normaliser, objective, on_checkpoint: Callable | None = None,
+        resume: Path | None = None, validator: Callable | None = None) -> FitResult:
+    """Run config['training']['updates'] optimiser updates of objective on the fitting cache.
+
+    Selection runs: step_<u>.pt (+ step_<u>.npz export) every checkpoint_every updates and at the terminal update;
+    best.pt is written later by the closed-loop selection, never here.
+    Refit runs: no validation and no candidate checkpoints; final.pt (+ inference.npz) at the fixed terminal update.
+    latest.pt is always resumable.
+    """
+    from training.common.config import configure_runtime, create_run_dir, validate_config
+    (validator or validate_config)(config, ready_to_train=True)
+    refit = config["identity"]["fit_stage"] == "refit"
+    if refit and validation is not None:
+        raise ValueError("a refit run has no independent validation set (former validation episodes are fitting data)")
+    tr = config["training"]
+    runtime = configure_runtime(tr["device"])
+    device = torch.device(runtime["device"])
+    run_dir = create_run_dir(config, resume=resume is not None)
+    meta = dict(policy_meta(config), feature_names=list(normaliser.feature_names))
+    normaliser.save(run_dir / "normaliser.npz")
+    (run_dir / "provenance.json").write_text(json.dumps(config["provenance"], indent=1, default=str))
+
+    x = torch.as_tensor(normaliser.transform_x(train.x), dtype=torch.float32, device=device)
+    y = torch.as_tensor(normaliser.transform_y(train.y), dtype=torch.float32, device=device)
+    if not (torch.isfinite(x).all() and torch.isfinite(y).all()):
+        raise FloatingPointError("non-finite standardised fitting data")
+    model.to(device).train()
+    opt = torch.optim.AdamW(model.parameters(), lr=tr["lr"], weight_decay=tr["weight_decay"])
+    U, w = tr["updates"], tr["warmup_updates"]
+    sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: lr_factor(s, w, U, tr["schedule"]))
+    seed = config["identity"]["seed"]
+    gens = {name: torch.Generator(device=device).manual_seed(stream_seed(seed, name)) for name in ("batch", "jacobian")}
+    start, elapsed0 = 0, 0.0
+    checkpoints = {}
+    if resume is not None:
+        state = load_checkpoint(Path(resume), expected={"run_id": config["identity"]["run_id"]})
+        if state["config"]["identity"]["config_hash"] != config["identity"]["config_hash"]:
+            raise ValueError("resume checkpoint belongs to a different configuration")
+        model.load_state_dict(state["model_state"])
+        opt.load_state_dict(state["optimizer_state"])
+        sched.load_state_dict(state["scheduler_state"])
+        _restore_rng(state["rng"], gens)
+        start, elapsed0 = state["step"], state.get("elapsed_s", 0.0)
+        checkpoints = {(k if k == "final" else int(k)): Path(v) for k, v in state.get("checkpoints", {}).items()}
+        with open(run_dir / "continuations.jsonl", "a") as f:
+            f.write(json.dumps({"resumed_at": start, "runtime": runtime}, default=str) + "\n")
+    metrics_path = run_dir / "metrics.csv"
+    if resume is None or not metrics_path.exists():
+        with open(metrics_path, "w", newline="") as f:
+            csv.writer(f, lineterminator="\n").writerow(METRIC_COLUMNS)
+    acc, n_acc, t0 = {}, 0, time.time()
+    for s in range(start, U):
+        idx = sample_indices(train, tr["batch_size"], gens["batch"], device)
+        result = objective(model, x[idx], y[idx], normaliser, gens["jacobian"])
+        if not torch.isfinite(result.total):
+            raise FloatingPointError(f"non-finite loss at update {s + 1}")
+        lr_used = opt.param_groups[0]["lr"]
+        opt.zero_grad(set_to_none=True)
+        result.total.backward()
+        opt.step()
+        sched.step()
+        update = s + 1
+        for k, v in result.metrics.items():
+            acc[k] = acc.get(k, 0.0) + float(v)
+        n_acc += 1
+        if update % tr["log_every"] == 0 or update == U:
+            row = _metrics_row(update, elapsed0 + time.time() - t0, lr_used, {k: v / n_acc for k, v in acc.items()},
+                               offline_validation(model, validation, normaliser, config) if validation is not None else None)
+            with open(metrics_path, "a", newline="") as f:
+                csv.writer(f, lineterminator="\n").writerow(row)
+            acc, n_acc = {}, 0
+        if update % tr["checkpoint_every"] == 0 or update == U:
+            ckpt = export = None
+            if not refit or update == U:
+                ckpt = run_dir / ("final.pt" if refit else f"step_{update}.pt")
+                export = run_dir / ("inference.npz" if refit else f"step_{update}.npz")
+                payload = model_payload(model, normaliser, meta, update, config=config, provenance=config["provenance"],
+                                        environment=runtime)
+                save_checkpoint(ckpt, payload)
+                export_numpy(export, model, normaliser, {**meta, "source_checkpoint": str(ckpt), "source_step": update})
+                checkpoints["final" if refit else update] = ckpt
+            save_checkpoint(run_dir / "latest.pt", model_payload(
+                model, normaliser, meta, update, config=config, provenance=config["provenance"], environment=runtime,
+                optimizer_state=opt.state_dict(), scheduler_state=sched.state_dict(), rng=_rng_state(gens),
+                elapsed_s=elapsed0 + time.time() - t0, checkpoints={str(k): str(v) for k, v in checkpoints.items()}))
+            if on_checkpoint is not None and ckpt is not None:
+                with torch.random.fork_rng(devices=[]):
+                    on_checkpoint(update, ckpt, export, model)
+                model.train()
+    return FitResult(run_dir, U, {**checkpoints, "latest": run_dir / "latest.pt"}, "completed")
+
+
+def _metrics_row(update, elapsed, lr, train_metrics: dict, val: dict | None) -> list:
+    v = val or {}
+    hold = (v.get("phase") or {}).get("hold") or {}
+    bias = v.get("hold_bias") or {}
+    damping = v.get("damping") or {}
+    extra = {k: val for k, val in train_metrics.items() if k not in ("action_loss", "arm_loss", "wheel_loss")}
+    return [update, round(elapsed, 3), lr, train_metrics.get("action_loss"), train_metrics.get("arm_loss"),
+            train_metrics.get("wheel_loss"), v.get("arm_rmse_nm"), v.get("wheel_rmse_rad_s"), hold.get("arm_rmse_nm"),
+            bias.get("max_abs_nm"), bias.get("gate_pass"), damping.get("median_diagonal"),
+            damping.get("frac_below_minus33"), json.dumps(extra) if extra else ""]
+
+
+def read_metrics(run_dir: Path) -> list[dict]:
+    with open(Path(run_dir) / "metrics.csv", newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def select_checkpoint(run_dir: Path, step: int, evidence: dict) -> dict:
+    """Validation-selected artifact of a selection run: best.pt plus its matching inference.npz."""
+    import shutil
+    import yaml
+    run_dir = Path(run_dir)
+    if yaml.safe_load((run_dir / "config.yaml").read_text())["identity"]["fit_stage"] != "selection":
+        raise ValueError("best.pt exists only for selection runs; refit runs save final.pt")
+    src = run_dir / f"step_{step}.pt"
+    payload = load_checkpoint(src)
+    for name in ("best.pt", "inference.npz", "selection.json"):
+        if (run_dir / name).exists():
+            raise FileExistsError(f"{run_dir / name} exists; selection is frozen")
+    shutil.copyfile(src, run_dir / "best.pt")
+    model = build_model(payload["config"])
+    model.load_state_dict(payload["model_state"])
+    from training.common.normalisation import Normaliser
+    normaliser = Normaliser.from_dict(payload["normaliser"])
+    meta = {k: v for k, v in payload["meta"].items() if k not in ("normaliser_sha256", "model")}
+    info = export_numpy(run_dir / "inference.npz", model, normaliser,
+                        {**meta, "source_checkpoint": str(run_dir / "best.pt"), "source_step": step})
+    record = {"selected_step": step, **info, "evidence": evidence}
+    (run_dir / "selection.json").write_text(json.dumps(record, indent=1, default=str))
+    return record
+
+
+# ---------------------------------------------------------------- code digest and git state (run provenance)
+
+TASK_DIR = Path(__file__).resolve().parents[2]
+CODE_GLOBS = ("training/**/*.py", "evaluation/offline.py", "evaluation/evaluate.py", "evaluation/test_sets.py",
+              "core/features.py", "core/interfaces.py", "experiments/configs/**/*.yaml")
+
+
+def code_digest() -> str:
+    files = sorted({p for g in CODE_GLOBS for p in TASK_DIR.glob(g) if "__pycache__" not in p.parts})
+    h = hashlib.sha256()
+    for p in files:
+        h.update(str(p.relative_to(TASK_DIR)).encode() + b"\0" + p.read_bytes() + b"\0")
+    return h.hexdigest()
+
+
+def _git(*args) -> str:
+    import subprocess
+    return subprocess.run(["git", *args], cwd=TASK_DIR, capture_output=True, text=True).stdout.strip()

@@ -1,0 +1,3 @@
+objective,seeds,student_hold_per_seed,student_hold,student_n,student_hold_rate,wilson95_low,wilson95_high,arm_hold,arm_n,hold_test_arm_stayed,hold_test_scenarios,hold_test_median_damping_diag
+bc,3,24/28/24,76,96,0.7916666666666666,0.699995683874769,0.860892763425755,77,96,21,24,-28.906605541674324
+bcj,3,29/27/27,83,96,0.8645833333333334,0.7819868570932831,0.9191237020323721,78,96,23,24,-29.85574540998237
