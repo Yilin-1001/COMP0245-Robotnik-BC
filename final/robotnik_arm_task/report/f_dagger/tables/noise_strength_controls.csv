@@ -1,0 +1,6 @@
+variant,data,arm_sigma_nm / wheel_sigma_rad_s,ou_episodes,validation_hold,source
+R2-gate,clean only,-,-,10/96,this machine (v1)
+R4-dart-gate-s0375,clean + OU,0.375 / 0.075,442,69/96,"teammate, 2026-10-30"
+R4-dart-gate,clean + OU,0.75 / 0.15,442,83/96,this machine (v1)
+R4-dart-gate-s150,clean + OU,1.5 / 0.3,442,84/96,"teammate, 2026-10-30"
+R4-dart-gate-x4,clean + OU,0.75 / 0.15,884,82/96,"teammate, 2026-10-30"

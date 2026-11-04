@@ -1,0 +1,140 @@
+% Standalone source. Required packages: amsmath, amssymb, algorithm, algpseudocode.
+% To reuse in a paper, copy the notation/equations and the algorithm environment.
+\documentclass[10pt]{article}
+\usepackage[a4paper,margin=1.7cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\newcommand{\DC}{\mathcal D_C}
+\newcommand{\DOU}{\mathcal D_{\mathrm{OU}}}
+\newcommand{\CL}{C_L}
+\newcommand{\Train}{\operatorname{TrainScratch}}
+\newcommand{\Gate}{\operatorname{ReachGate}}
+\newcommand{\TrueErr}{\operatorname{TrueEEError}}
+\newcommand{\Val}{\operatorname{ValidationSustainedHold}}
+\title{f-DAgger}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+\vspace{-2em}
+
+The method first collects expert demonstrations under piecewise OU action
+perturbations, trains an initial student on clean and perturbed demonstrations,
+and then aggregates expert-labelled student rollouts through DAgger.
+
+\paragraph{Interfaces.}
+An expert command $a_t^E=\pi_E(o_t)\in\mathbb R^{11}$ consists of seven arm torques
+and four wheel speeds in the order $[\mathrm{FR},\mathrm{FL},\mathrm{BL},\mathrm{BR}]$.
+The projection $P$ retains the seven torques and the right/left wheel pair as a
+nine-dimensional clean label. The student predicts these nine components;
+$E$ expands its wheel pair to $[r,l,l,r]$.
+$\CL$ clips arm torques to $\pm30$ N\,m and wheel speeds to $\pm6$ rad/s.
+The R8 feature map $\phi$ contains 21 base features and the current reach gate.
+Data concatenation $\uplus$ preserves samples and episode boundaries.
+
+\paragraph{Piecewise OU perturbations.}
+Independently for each expert episode, draw $\alpha\sim\mathcal U(0.25,1)$,
+initialize $z_{-1}=\mathbf0_{11}$, and use
+\begin{align}
+\rho &= e^{-\Delta t/\tau}, & \Delta t&=0.001\ \mathrm{s}, &\tau&=0.2\ \mathrm{s},\\
+\sigma_\alpha&=\alpha[0.75\mathbf1_7;\,0.15\mathbf1_4], &
+z_t&=\rho z_{t-1}+\sqrt{1-\rho^2}\,(\sigma_\alpha\odot\xi_t), &
+\xi_t&\sim\mathcal N(\mathbf0,I_{11}).
+\end{align}
+The first seven standard deviations have units N\,m, and the last four have units
+rad/s; they specify the stationary standard deviations before gating.
+Let $g_t=\mathbf1\{|d_t-d^*(h)|<0.12\ \mathrm m\ \land\
+|\psi_t|<0.075\ \mathrm{rad}\}$, with horizontal base--target distance $d_t$,
+height-dependent standoff $d^*(h)$, and target heading error $\psi_t$.
+The heading error is set to zero for $d_t\le 1$ mm.
+The standoff is linearly interpolated from heights
+$[0.1,0.5,1.1,1.25]$ m and distances $[0.80,0.65,0.65,0.35]$ m,
+with endpoint values outside this interval. Define
+\begin{align}
+T_A&=\inf\{t\Delta t:g_t=1\},\\
+T_R&=\inf\{t\Delta t:g_t=1,\ e_t^{\mathrm{true}}<0.01\ \mathrm m,
+\ t\Delta t>8\ \mathrm s\},
+\end{align}
+with $\inf\emptyset=+\infty$. The actual injected noise is
+\begin{equation}\label{eq:piecewise-ou}
+n_t=\begin{cases}
+[z_t^{\mathrm{arm}};z_t^{\mathrm{wheel}}], & t\Delta t<T_A,\\
+[z_t^{\mathrm{arm}};\mathbf0_4], & T_A\le t\Delta t<T_R+1.5\ \mathrm s,\\
+\mathbf0_{11}, & t\Delta t\ge T_R+1.5\ \mathrm s.
+\end{cases}
+\end{equation}
+Wheel noise remains disabled after the first gate activation, even if the gate
+later closes. The latent OU state continues updating; gating acts on $n_t$.
+
+\paragraph{Collection and training.}
+Every rollout queries the expert at every pre-action observation. Episodes end
+3 s after the first task reach or at the 40 s cap; simulation/numerical failures
+interrupt collection. Sustained-hold success requires the complete 3 s
+post-reach window and error below 10 mm throughout its final second.
+$\Train$ refits normalization and initializes a new network using the aggregated
+data. The implemented recipe uses standardized Huber action loss (arm/wheel group
+weights $0.5/0.5$) plus the torque--joint-velocity Jacobian regularizer,
+with fitting-only coefficient calibration and 42,000 updates. Batches sample
+an episode uniformly and then a timestep uniformly within that episode.
+Defaults are $M=2$, $K=3$, 221 fitting scenarios and 64 fresh low/near-biased
+development scenarios per DAgger round. Validation selects among rounds
+$1,\ldots,K$ using seed-0 sustained-hold success, breaking ties toward later rounds.
+
+\begin{algorithm}[p]
+\caption{f-DAgger}
+\label{alg:f-dagger}
+\footnotesize
+\begin{algorithmic}[1]
+\Require Expert $\pi_E$; clean fitting data $\DC$; fitting scenarios $\mathcal S_{\mathrm{fit}}$;
+fresh development scenarios $\mathcal S_{\mathrm{dev}}(k)$;
+validation scenarios $\mathcal S_{\mathrm{val}}$; OU parameters; draws $M$; rounds $K\ge1$
+\Ensure Policy $\pi^*$ selected by validation sustained-hold success
+\State $\DOU\gets\emptyset$
+\Statex \textit{Stage I: piecewise OU-perturbed expert demonstrations}
+\For{each $s\in\mathcal S_{\mathrm{fit}}$ and $m=1,\ldots,M$}
+    \State $o\gets\operatorname{Reset}(s)$; $z\gets\mathbf0_{11}$;
+    $T_A,T_R\gets+\infty$; $B\gets\emptyset$
+    \State Sample $\alpha\sim\mathcal U(0.25,1)$ and fix $\sigma_\alpha$ for this episode
+    \For{each control step $t$ until the shared episode stopping rule}
+        \State $x\gets\phi(o)$; $a^E\gets\pi_E(o)$; $g\gets\Gate(o)$
+        \If{$T_A=+\infty$ and $g=1$}
+            \State $T_A\gets t\Delta t$
+        \EndIf
+        \If{$T_R=+\infty$, $g=1$, $\TrueErr(o)<0.01\ \mathrm m$, and $t\Delta t>8\ \mathrm s$}
+            \State $T_R\gets t\Delta t$
+        \EndIf
+        \State Sample $\xi\sim\mathcal N(\mathbf0,I_{11})$
+        \State $z\gets\rho z+\sqrt{1-\rho^2}\,(\sigma_\alpha\odot\xi)$
+        \State $n\gets\operatorname{PiecewiseNoise}(z,t\Delta t,T_A,T_R)$ using Eq.~\eqref{eq:piecewise-ou}
+        \State Append $(x,P(a^E))$ to $B$ \Comment{clean expert label at the visited state}
+        \State $o\gets\operatorname{Step}(\CL(\CL(a^E)+n))$
+    \EndFor
+    \If{$\operatorname{SustainedHoldPass}(B)$}
+        \State $\DOU\gets\DOU\uplus B$
+    \EndIf
+\EndFor
+\State $\mathcal D_0\gets\DC\uplus\DOU$; $\pi_0\gets\Train(\mathcal D_0)$
+\Statex \textit{Stage II: student-driven DAgger with no additional OU noise}
+\For{$k=1,\ldots,K$}
+    \State $\mathcal D_{\mathrm{new}}\gets\emptyset$
+    \For{each $s\in\mathcal S_{\mathrm{fit}}\cup\mathcal S_{\mathrm{dev}}(k)$}
+        \State $o\gets\operatorname{Reset}(s)$; reset $\pi_{k-1}$; $B\gets\emptyset$
+        \For{each control step until the shared episode stopping rule}
+            \State $x\gets\phi(o)$; $a^E\gets\pi_E(o)$
+            \State Append $(x,P(a^E))$ to $B$
+            \State $o\gets\operatorname{Step}(\CL(E(\pi_{k-1}(x))))$ \Comment{$\beta=0$}
+        \EndFor
+        \If{$B$ has actions and has no numerical failure}
+            \State $\mathcal D_{\mathrm{new}}\gets\mathcal D_{\mathrm{new}}\uplus B$ \Comment{retain task failures too}
+        \EndIf
+    \EndFor
+    \State $\mathcal D_k\gets\mathcal D_{k-1}\uplus\mathcal D_{\mathrm{new}}$
+    \State $\pi_k\gets\Train(\mathcal D_k)$ \Comment{retain clean, OU and all previous DAgger data}
+    \State $v_k\gets\Val(\pi_k,\mathcal S_{\mathrm{val}})$
+\EndFor
+\State $k^*\gets\operatorname*{arg\,max}_{k\in\{1,\ldots,K\}}(v_k,k)$ \Comment{lexicographic; later round wins ties}
+\State \Return $\pi^*\gets\pi_{k^*}$
+\end{algorithmic}
+\end{algorithm}
+\end{document}

@@ -1,0 +1,77 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper,margin=1.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\pagestyle{empty}
+\begin{document}
+
+\begin{algorithm}[H]
+\caption{f-DAgger}
+\label{alg:f-dagger}
+\small
+\begin{algorithmic}[1]
+\Require Expert $\pi_E$, clean data $D_{\mathrm{clean}}$, DAgger rounds $K$
+\Ensure Learned policy $\pi^*$
+\Statex \textit{Stage 1: collect expert data with piecewise OU noise}
+\State $D_{\mathrm{OU}}\gets\emptyset$
+\For{each expert episode}
+    \State Reset environment; $z\gets0$; $T_A,T_R\gets\infty$; $B\gets\emptyset$
+    \State Sample one episode scale $\alpha\sim\mathcal U(0.25,1)$
+    \For{each control step $t$}
+        \State Observe $o_t$ and query the expert: $a_t^E\gets\pi_E(o_t)$
+        \State Update the first gate-activation time $T_A$ and first task-reach time $T_R$
+        \State $z\gets\rho z+\sqrt{1-\rho^2}\,(\alpha\sigma\odot\xi)$, where $\xi\sim\mathcal N(0,I)$
+        \State Apply the piecewise rule below to obtain $n_t$ from $z$
+        \State Save $(o_t,a_t^E)$ in $B$ \Comment{clean expert label}
+        \State Execute $\operatorname{clip}(\operatorname{clip}(a_t^E)+n_t)$
+    \EndFor
+    \State Add $B$ to $D_{\mathrm{OU}}$ only if its sustained-hold check passes
+\EndFor
+\State $D\gets D_{\mathrm{clean}}\uplus D_{\mathrm{OU}}$
+\State $\pi_0\gets\operatorname{TrainFromScratch}(D)$
+\Statex \textit{Stage 2: DAgger data aggregation}
+\For{$k=1,\ldots,K$}
+    \State Roll out student $\pi_{k-1}$ with no additional OU noise
+    \State Label every visited observation $o$ with $\pi_E(o)$ to obtain $D_{\mathrm{new}}$
+    \State Retain task failures; discard numerical-failure and empty episodes
+    \State $D\gets D\uplus D_{\mathrm{new}}$
+    \State $\pi_k\gets\operatorname{TrainFromScratch}(D)$
+    \State Evaluate $\pi_k$ on the validation scenarios
+\EndFor
+\State \Return the best validation policy $\pi^*$ among $\pi_1,\ldots,\pi_K$
+\end{algorithmic}
+\end{algorithm}
+
+\noindent\textbf{Piecewise OU noise.}
+Write $z=[z^{\mathrm{arm}};z^{\mathrm{wheel}}]$. The applied perturbation is
+\[
+n_t=\begin{cases}
+[z^{\mathrm{arm}};z^{\mathrm{wheel}}], & t\Delta t<T_A,\\
+[z^{\mathrm{arm}};0], & T_A\le t\Delta t<T_R+1.5\ \mathrm{s},\\
+0, & t\Delta t\ge T_R+1.5\ \mathrm{s}.
+\end{cases}
+\]
+$T_A$ is the first reach-gate activation; wheel noise remains off thereafter.
+$T_R$ is the first task reach: gate active, true end-effector error below 10 mm,
+and elapsed time greater than 8 s. An event that never occurs has time $\infty$.
+
+\medskip
+\noindent\textbf{Defaults.}
+$\Delta t=0.001$ s, $\tau=0.2$ s, $\rho=e^{-\Delta t/\tau}$;
+$\sigma$ contains seven arm scales of $0.75$ N\,m and four wheel scales of
+$0.15$ rad/s. All channels use independent Gaussian innovations. $K=3$.
+
+\medskip
+\noindent\textbf{Collection and training.}
+Episodes end 3 s after the first task reach or at 40 s; numerical failures
+interrupt collection. Sustained-hold success requires the complete 3 s
+post-reach window and error below 10 mm throughout its final second.
+DAgger uses fitting scenarios plus fresh low/near-biased development scenarios;
+the student executes alone ($\beta=0$), with command limits applied.
+$\uplus$ denotes data concatenation. Feature extraction and action-format
+conversion are implicit in the observation--expert-action pairs.
+Training uses the implemented BC+J objective; all previous data are retained.
+Validation uses sustained-hold success, with ties resolved toward later rounds.
+
+\end{document}

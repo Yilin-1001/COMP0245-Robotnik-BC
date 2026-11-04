@@ -1,0 +1,2 @@
+protocol,scenarios,draws,episodes,sustained_hold,rows_all,rows_used_for_training,noisy_step_share,exec_clip_step_share,alpha_min,alpha_median,alpha_max,median_final_err_mm
+d2-s075-x2,221,2,442,441,5304530,5289586,0.875,0.02311,0.251,0.619,0.999,0.77

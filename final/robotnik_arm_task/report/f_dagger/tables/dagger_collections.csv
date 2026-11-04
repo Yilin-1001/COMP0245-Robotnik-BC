@@ -1,0 +1,13 @@
+row,round,collector,episodes,fitting_student_hold,dev_student_hold,rows,median_student_teacher_arm_rmse_nm,collection
+R5-baseline-dagger,r1,R1-baseline,285,2/221,0/64,10839662,27.521,r1-ded9e8677309
+R5-baseline-dagger,r2,R5-baseline-dagger-r1,285,132/221,21/64,5775850,1.837,r2-2c203cc14ade
+R5-baseline-dagger,r3,R5-baseline-dagger-r2,285,168/221,34/64,4702313,1.539,r3-6405266edbb7
+R6-gate-dagger,r1,R2-gate,285,21/221,4/64,10054646,27.654,r1-3502b44fdd49
+R6-gate-dagger,r2,R6-gate-dagger-r1,285,188/221,38/64,4609074,0.968,r2-dd8cdddd816d
+R6-gate-dagger,r3,R6-gate-dagger-r2,285,208/221,47/64,3958569,0.459,r3-818df4ed86fa
+R7-dart-dagger,r1,R3-dart,285,5/221,0/64,11254093,18.337,r1-1c72edfc4693
+R7-dart-dagger,r2,R7-dart-dagger-r1,285,200/221,33/64,4391907,1.212,r2-f24e9e1afcf8
+R7-dart-dagger,r3,R7-dart-dagger-r2,285,205/221,49/64,3644393,0.885,r3-236d0b5825c7
+R8-dart-gate-dagger,r1,R4-dart-gate,285,201/221,50/64,4064734,0.166,r1-f6109f47b703
+R8-dart-gate-dagger,r2,R8-dart-gate-dagger-r1,285,213/221,49/64,3666213,0.129,r2-cecd413f4677
+R8-dart-gate-dagger,r3,R8-dart-gate-dagger-r2,285,217/221,56/64,3504985,0.125,r3-59c2b9d076d0

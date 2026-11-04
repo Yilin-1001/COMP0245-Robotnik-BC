@@ -1,0 +1,13 @@
+cohort,teacher,arm_sigma_nm / wheel_sigma_rad_s,n,reached,sustained_hold,median_final_err_mm
+tuning,A (lead 0.15 s),0 / 0,16,16,16,1.06
+tuning,A (lead 0.15 s),0.75 / 0.15,16,16,15,1.54
+tuning,A (lead 0.15 s),1.5 / 0.3,16,16,14,1.41
+tuning,B (template),0 / 0,16,15,15,0.57
+tuning,B (template),0.75 / 0.15,16,15,15,0.77
+tuning,B (template),1.5 / 0.3,16,14,14,1.41
+confirmation,A (lead 0.15 s),0 / 0,32,32,32,1.21
+confirmation,A (lead 0.15 s),0.75 / 0.15,64,64,62,1.39
+confirmation,B (template),0 / 0,32,31,31,0.18
+confirmation,B (template),0.75 / 0.15,64,60,59,0.74
+d2_sampled,A (lead 0.15 s),"alpha ~ U[0.25, 1] x (0.75, 0.15)",32,32,31,1.09
+d2_sampled,B (template),"alpha ~ U[0.25, 1] x (0.75, 0.15)",32,31,31,0.45
