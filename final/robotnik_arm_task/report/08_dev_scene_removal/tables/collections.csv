@@ -1,0 +1,25 @@
+version,row,name,round,collector,episodes,fitting,development,fitting_student_hold,development_student_hold,collection,written
+v2,R5,DAgger,1,R1-baseline__MLP01-256x3__s0__v1__2026-10-28,285,221,64,2,0,2026-11-01__collection__r1-ded9e8677309,2026-11-01T17:03:57+00:00
+v2,R5,DAgger,2,R5-baseline-dagger-r1__MLP01-256x3__s0__v2__2026-11-01,285,221,64,132,21,2026-11-01__collection__r2-2c203cc14ade,2026-11-01T17:13:14+00:00
+v2,R5,DAgger,3,R5-baseline-dagger-r2__MLP01-256x3__s0__v2__2026-11-01,285,221,64,168,34,2026-11-01__collection__r3-6405266edbb7,2026-11-01T17:21:58+00:00
+v2,R6,DAgger + Gate,1,R2-gate__MLP01-256x3__s0__v1__2026-10-28,285,221,64,21,4,2026-11-01__collection__r1-3502b44fdd49,2026-11-01T17:43:39+00:00
+v2,R6,DAgger + Gate,2,R6-gate-dagger-r1__MLP01-256x3__s0__v2__2026-11-01,285,221,64,188,38,2026-11-01__collection__r2-dd8cdddd816d,2026-11-01T17:51:58+00:00
+v2,R6,DAgger + Gate,3,R6-gate-dagger-r2__MLP01-256x3__s0__v2__2026-11-01,285,221,64,208,47,2026-11-01__collection__r3-818df4ed86fa,2026-11-01T17:59:52+00:00
+v2,R7,f-DAgger,1,R3-dart__MLP01-256x3__s0__v1__2026-10-28,285,221,64,5,0,2026-11-01__collection__r1-1c72edfc4693,2026-11-01T18:23:09+00:00
+v2,R7,f-DAgger,2,R7-dart-dagger-r1__MLP01-256x3__s0__v2__2026-11-01,285,221,64,200,33,2026-11-01__collection__r2-f24e9e1afcf8,2026-11-01T18:31:19+00:00
+v2,R7,f-DAgger,3,R7-dart-dagger-r2__MLP01-256x3__s0__v2__2026-11-01,285,221,64,205,49,2026-11-01__collection__r3-236d0b5825c7,2026-11-01T18:38:55+00:00
+v2,R8,f-DAgger + Gate,1,R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28,285,221,64,201,50,2026-11-01__collection__r1-f6109f47b703,2026-11-01T18:56:03+00:00
+v2,R8,f-DAgger + Gate,2,R8-dart-gate-dagger-r1__MLP01-256x3__s0__v2__2026-11-01,285,221,64,213,49,2026-11-01__collection__r2-cecd413f4677,2026-11-01T19:03:36+00:00
+v2,R8,f-DAgger + Gate,3,R8-dart-gate-dagger-r2__MLP01-256x3__s0__v2__2026-11-01,285,221,64,217,56,2026-11-01__collection__r3-59c2b9d076d0,2026-11-01T19:11:04+00:00
+v3,R5,DAgger,1,R1-baseline__MLP01-256x3__s0__v1__2026-10-28,221,221,0,2,0,2026-11-05__collection__r1-35bfc19cca73,2026-11-05T12:30:58+00:00
+v3,R5,DAgger,2,R5-baseline-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05,221,221,0,145,0,2026-11-05__collection__r2-4c3e5c3a5196,2026-11-05T12:38:46+00:00
+v3,R5,DAgger,3,R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05,221,221,0,164,0,2026-11-05__collection__r3-0c5d9f42164c,2026-11-05T12:45:58+00:00
+v3,R6,DAgger + Gate,1,R2-gate__MLP01-256x3__s0__v1__2026-10-28,221,221,0,23,0,2026-11-05__collection__r1-246dad86d873,2026-11-05T11:23:54+00:00
+v3,R6,DAgger + Gate,2,R6-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05,221,221,0,170,0,2026-11-05__collection__r2-a510dfa4f21c,2026-11-05T11:31:10+00:00
+v3,R6,DAgger + Gate,3,R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05,221,221,0,187,0,2026-11-05__collection__r3-af8db1a97ec2,2026-11-05T11:38:10+00:00
+v3,R7,f-DAgger,1,R3-dart__MLP01-256x3__s0__v1__2026-10-28,221,221,0,5,0,2026-11-05__collection__r1-8ce75a729110,2026-11-05T11:58:06+00:00
+v3,R7,f-DAgger,2,R7-dart-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05,221,221,0,182,0,2026-11-05__collection__r2-a0d7e317993f,2026-11-05T12:05:26+00:00
+v3,R7,f-DAgger,3,R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05,221,221,0,202,0,2026-11-05__collection__r3-4e702fea5bac,2026-11-05T12:12:00+00:00
+v3,R8,f-DAgger + Gate,1,R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28,221,221,0,201,0,2026-11-05__collection__r1-f637a3da41a3,2026-11-05T10:51:55+00:00
+v3,R8,f-DAgger + Gate,2,R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05,221,221,0,216,0,2026-11-05__collection__r2-f9fb4ba17483,2026-11-05T10:58:27+00:00
+v3,R8,f-DAgger + Gate,3,R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05,221,221,0,217,0,2026-11-05__collection__r3-fae52e4b63cb,2026-11-05T11:05:11+00:00
