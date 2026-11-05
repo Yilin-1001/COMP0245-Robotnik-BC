@@ -139,6 +139,12 @@ The DAgger and control variants, the DAgger runner's output paths and the v2 res
 The legacy-to-current table is in `final/robotnik_arm_task/results/ablation/2026-10-30__training-ablation-v2/README.md`.
 `results/dagger/`, `results/far_probe/` and `results/robust_probe/` moved to `results/ablation/2026-10-30__training-ablation-v2/{dagger,probes/far,probes/robust}/`. The `results/dagger/` archived on 2026-10-28 is the unrelated 27 October DAgger round 1.
 
+## Third archive: 2026-11-05 (release with v2 DAgger rows)
+
+| Original path (relative to repository root) | Reason |
+|---|---|
+| `final/robotnik_arm_task/checkpoints/2026-11-04final/` (git-ignored) | Release whose R5–R8 came from ablation v2 (DAgger rounds with 64 low/near-biased development scenes). Replaced by `checkpoints/2026-11-05final/`, whose R5–R8 come from ablation v3 (no development scenes); R1–R4 and R9 are the same models. See `final/robotnik_arm_task/report/08_dev_scene_removal/`. It was made by `tools/export_final_checkpoints.py` at commit fc08736. |
+
 ## Restore examples
 
 ```bash

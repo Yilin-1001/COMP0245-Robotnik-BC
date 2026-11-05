@@ -20,7 +20,7 @@ from core.model_names import legacy_id, report_label, row_id
 
 TASK_DIR = Path(__file__).resolve().parents[1]
 # R1-R4 use v1 terminal models; R5-R8 use the selected v2 DAgger round (r3).
-DEFAULT_PROTOCOL = TASK_DIR / "experiments/demo_models/training-ablation-v1-v2.yaml"
+DEFAULT_PROTOCOL = TASK_DIR / "experiments/demo_models/training-ablation-v1-v3.yaml"
 DEFAULT_ROW = "R4-OU-Gate"
 
 

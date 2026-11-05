@@ -1,7 +1,12 @@
 """Package the report's terminal models under canonical names, without training.
 
-Run from the task directory: python -m tools.export_final_checkpoints --date 2026-11-04
+Run from the task directory: python -m tools.export_final_checkpoints --date 2026-11-05
 Existing destinations are refused. Source checkpoints are read only.
+
+Release 2026-11-05: R1-R4 from ablation v1, R5-R8 from ablation v3 (DAgger without development scenes; v3 replaces v2,
+see report/08_dev_scene_removal), R9 (full DART alpha=6) from 2026-11-04. The run-id tag "-nodev" of v3 is dropped from
+release names (R8-f-DAgger-Gate-r3__...__v3__2026-11-05); the original run id stays in legacy_run_id.
+The 2026-11-04 release (R5-R8 from v2) was made by this tool's git version of commit fc08736.
 """
 import argparse
 import copy
@@ -22,11 +27,15 @@ from training.common.config import canonical_json, scientific_view
 from training.common.policies import MLPPolicy
 
 TASK = Path(__file__).resolve().parents[1]
+PROTOCOL = 'experiments/demo_models/training-ablation-v1-v3.yaml'  # the 24 report-tested R1-R8 models
+DAGGER_HISTORY = '2026-11-05__training-ablation-v3'  # R5-R8 round history (other rounds and seeds of the same run)
+DART_DIR = '2026-11-04__training-ablation-v2'  # R9 full DART alpha=6, rounds 1-3
+RELEASE_DROP = '-nodev'  # internal v3 variant tag, not part of release names
 
 
 def report_sources(task):
     """24 hash-pinned final R1–R8 models, then report round histories and full DART α=6."""
-    protocol = yaml.safe_load((task / 'experiments/demo_models/training-ablation-v1-v2.yaml').read_text())
+    protocol = yaml.safe_load((task / PROTOCOL).read_text())
     selected = protocol['decisions']['final']['artifacts']
     if len(selected) != 24:
         raise ValueError('expected the 24 report-tested R1–R8 models')
@@ -37,14 +46,12 @@ def report_sources(task):
             raise ValueError(f'changed report model: {source}')
         sources[source.parent] = ('final', source)
     root = task / 'checkpoints/ablation'
-    for date in ('2026-11-01', '2026-11-03', '2026-11-04'):
-        for directory in sorted((root / f'{date}__training-ablation-v2').glob('*')):
-            stem = directory.name
-            row = row_id(stem)
-            if row in ('R5', 'R6', 'R7', 'R8') and date != '2026-11-04':
-                sources.setdefault(directory, ('round_history', directory / f'{stem}.npz'))
-            elif row == 'R9' and stem.startswith('R9-dart-full-a6-'):
-                sources[directory] = ('final' if '-r3__' in stem else 'round_history', directory / f'{stem}.npz')
+    for directory in sorted((root / DAGGER_HISTORY).glob('*')):
+        if row_id(directory.name) in ('R5', 'R6', 'R7', 'R8'):
+            sources.setdefault(directory, ('round_history', directory / f'{directory.name}.npz'))
+    for directory in sorted((root / DART_DIR).glob('R9-dart-full-a6-*')):
+        stem = directory.name
+        sources[directory] = ('final' if '-r3__' in stem else 'round_history', directory / f'{stem}.npz')
     counts = {group: sum(g == group for g, _ in sources.values()) for group in ('final', 'round_history')}
     if counts != {'final': 27, 'round_history': 22}:
         raise ValueError(f'incomplete report checkpoint inventory: {counts}')
@@ -58,7 +65,7 @@ def export_one(source, output, group, task, date):
     old_run = old_meta['run_id']
     row = row_id(old_run)
     name, model_id, _ = MODEL_NAMES[row]
-    run = canonical_id(old_run)
+    run = canonical_id(old_run).replace(RELEASE_DROP + '-r', '-r', 1)
     seed = payload['config']['identity']['seed']
     variant = run.split('__')[0]
     rnd = int(variant.rsplit('-r', 1)[1]) if '-r' in variant else 0
@@ -164,6 +171,8 @@ def export_final(task, output, date):
              '| Row | Report name | Directory |', '|---|---|---|']
     lines += [f'| {row} | {v[0]} | `models/{v[1]}/` |' for row, v in MODEL_NAMES.items()]
     lines += ['', 'Each final row has seeds 0, 1, 2. R1–R4 use round 0; R5–R9 use round 3.',
+              'R5–R8 come from ablation v3 (2026-11-05): every DAgger round collected the 221 fitting scenarios only,',
+              'without development scenes (report/08_dev_scene_removal). v3 run ids carry "-nodev"; release names drop it.',
               'R9 is full DART with alpha=6. The alpha=1 exploratory run is excluded.',
               '`round_history/` contains the other report training runs, with their original available seeds.',
               'Gate means the 22nd reach_gate input; rows without Gate have 21 inputs.',
