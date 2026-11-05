@@ -1,10 +1,18 @@
 # Robotnik task entry point
 
-Final upload weights: [`checkpoints/2026-11-04final/`](checkpoints/2026-11-04final/README.md).
+Final upload weights: [`checkpoints/2026-11-05final/`](checkpoints/2026-11-05final/README.md).
 The [model naming guide](../../docs/model-naming.md) maps every Report name to its canonical ID and historical alias.
 
-Run every project command from this directory. Follow the [project README](../../README.md) to install the environment, collect data, train R4, evaluate it and run the DAgger rows.
-Test-set commands are in [step 5: Test on all 64 test scenarios](../../README.md#5-test-on-all-64-test-scenarios). The method and results are in the [project pipeline](../../docs/2026-10-30__guide__project-pipeline.md).
+**Run every project module from this directory.** Start with the [assessor's run guide](../../README.md) for installation and the project framework.
+
+- [Read what model seeds mean](../../README.md#3-before-choosing-a-model-what-do-the-seeds-mean) before choosing weights.
+- [Choose among the 27 submitted models](../../README.md#4-submitted-model-choices-and-filenames).
+- [Run live comparison](../../README.md#5-live-comparison-expert-versus-your-chosen-model), with a copyable model-name list, model/seed selection, scene overrides, keyboard controls and a headless check.
+- [Apply mouse-drag disturbances](../../README.md#mouse-drag-disturbances-inspect-robustness-interactively) in the PyBullet GUI and observe recovery after release.
+- [Run validation and unified tests](../../README.md#6-validate-and-test-the-submitted-models).
+- [Reproduce collection, feature building and training](../../README.md#7-reproduce-the-data-and-training-pipeline).
+
+Live comparison and validation need the released weights/configs and frozen validation split; training datasets are not needed. Pass `--protocol checkpoints/2026-11-05final/demo_models.yaml` explicitly to select the submitted weights. The method and results are in the [project pipeline](../../docs/2026-10-30__guide__project-pipeline.md) and [report evidence](report/README.md).
 
 | Folder | Contents |
 |---|---|
@@ -12,7 +20,7 @@ Test-set commands are in [step 5: Test on all 64 test scenarios](../../README.md
 | `data_collection/` | Teacher A (`expert.py`), teacher B wrapper, scenarios, clean, OU, full DART and DAgger collection, QA |
 | `training/` | Model, engine, losses, dataset build and the training entry point |
 | `evaluation/` | Closed-loop evaluation, test diagnosis, probes, hold test and live comparison |
-| `experiments/` | Configs, frozen split, ablation v1 runner and manifest, DAgger runner (v2), demo manifests |
+| `experiments/` | Configs, frozen split, ablation v1 runner and manifest, DAgger runner (v2/v3), demo manifests |
 | `tools/` | One-off data tools |
 | `data/`, `checkpoints/`, `results/` | Git-ignored outputs, except `results/results.csv` and the experiment summaries |
 

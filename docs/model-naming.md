@@ -21,12 +21,12 @@ R3/R4 and R7/R8 use fixed OU noise; DART is reserved for full learner-fitted Gau
 “f-DAgger” alone identifies R7 when naming a model. The algorithm can also be discussed generically as f-DAgger.
 
 Round, seed, architecture, training version and training date remain explicit in artifact filenames, e.g.
-`R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v2__2026-11-01.npz`.
+`R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05.npz`.
 For R9 the `-a6` qualifier records alpha=6; the exploratory alpha=1 run is excluded from this submission.
 
 ## Upload folder
 
-Upload [`final/robotnik_arm_task/checkpoints/2026-11-04final/`](../final/robotnik_arm_task/checkpoints/2026-11-04final/README.md).
+Upload [`final/robotnik_arm_task/checkpoints/2026-11-05final/`](../final/robotnik_arm_task/checkpoints/2026-11-05final/README.md).
 
 - `models/`: the 24 Report-tested R1–R8 final models plus 3 DART comparison models, seeds 0/1/2.
 - `round_history/`: 22 additional report round-history models, with the original available seeds.
@@ -35,7 +35,8 @@ Upload [`final/robotnik_arm_task/checkpoints/2026-11-04final/`](../final/robotni
 - `SHA256SUMS`: file integrity checks, including configs and provenance.
 - `demo_models.yaml`: the final 27-model demo manifest.
 
-R1–R4 use their frozen v1 terminal models. R5–R8 use the validation-selected v2 round 3;
+R1–R4 use their frozen v1 terminal models. R5–R8 use the validation-selected round 3 of ablation v3 (DAgger without
+development scenes, 2026-11-05; it replaces v2, see `final/robotnik_arm_task/report/08_dev_scene_removal/`);
 R9 uses alpha=6, round 3. Every checkpoint is at step 42,000.
 The package contains real files and needs no links to historical weights.
 PT metadata, NPZ metadata and the released config all use the canonical run name.
@@ -47,13 +48,13 @@ From `final/robotnik_arm_task/`:
 
 ```bash
 # Use the submission weights in the live demo.
-python -m evaluation.live_compare --protocol checkpoints/2026-11-04final/demo_models.yaml --row R8-f-DAgger-Gate --seed 0
+python -m evaluation.live_compare --protocol checkpoints/2026-11-05final/demo_models.yaml --row R8-f-DAgger-Gate --seed 0
 
 # Canonical names also resolve the original training templates for new runs.
 python -m training.datasets.train --variant R4-OU-Gate --dry-run --set identity.date=2026-11-04 --set identity.version=v1 --set training.lr=1e-3 --set training.updates=42000 --set loss.action=huber
 
 # Reproduce the release from the original local artifacts; refuses an existing destination.
-python -m tools.export_final_checkpoints --date 2026-11-04
+python -m tools.export_final_checkpoints --date 2026-11-05
 ```
 
 Both old and canonical names work in the demo. Old training commands retain their original run IDs;

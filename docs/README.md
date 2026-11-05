@@ -1,17 +1,18 @@
 # Documentation
 
-**Start with the [project pipeline](2026-10-30__guide__project-pipeline.md).** It covers the expert, data collection, splits, features, method, training, ablation (R1–R8), test results and the live demo for teacher A.
-For commands, see the [project README](../README.md) (step-by-step reproduction of R4) and the [detailed reproduction reference](2026-10-29__guide__reproduction-details.md).
+**For assessment and current commands, start with the [assessor's run guide](../README.md).** It covers installation, seed meanings, all 27 final model choices, live comparison, validation/unified testing and reproduction of R1–R9.
+The [project pipeline](2026-10-30__guide__project-pipeline.md) explains the method; the [detailed reproduction reference](2026-10-29__guide__reproduction-details.md) preserves the earlier v1/v2 command and handoff details.
 
 ## Current status
 
-| Experiment | Rows | Validation | Test (64 scenarios) | Results |
+| Experiment | Rows | Validation | Test evidence | Results |
 |---|---|---|---|---|
-| Training-method ablation v1 | R1–R4 | Done | R4 only (diagnostic, before DAgger) | `results/ablation/2026-10-28__training-ablation-v1/` |
-| Training-method ablation v2 (DAgger) | R5–R8 | Done (reference run, 2026-11-01) | **Not yet run** | `results/ablation/2026-11-01__training-ablation-v2/` |
+| Training-method ablation v1 | R1–R4 | Done | Historical R4 diagnosis; all rows also tested under unified T0–T5 | `results/ablation/2026-10-28__training-ablation-v1/` |
+| Training-method ablation v3 (DAgger, no development scenes) | R5–R8 | Done (2026-11-05); **used by the report and release** | Unified T0–T5 test completed; see report evidence | `results/ablation/2026-11-05__training-ablation-v3/` |
+| Training-method ablation v2 (DAgger + 64 development scenes) | R5–R8 | Done (2026-11-01); superseded by v3 | Unified T0–T5 test completed; compared with v3 in [`08_dev_scene_removal`](../final/robotnik_arm_task/report/08_dev_scene_removal/README.md) | `results/ablation/2026-11-01__training-ablation-v2/` |
 | v2 development run (teammate) | R5–R8, plus R4 controls | Done on a teammate's machine (record only) | Not used | `results/ablation/2026-10-30__training-ablation-v2/` |
 
-The final model has not been chosen yet. Row names are defined in the pipeline document, [Section 7](2026-10-30__guide__project-pipeline.md#7-ablation-experiment-design).
+The [final release](../final/robotnik_arm_task/checkpoints/2026-11-05final/README.md) contains R1–R9, each with seeds 0/1/2; R5–R9 use round 3. Report evidence for the completed unified tests is in [the ablation section](../final/robotnik_arm_task/report/06_ablation/README.md), and the full DART comparison is in [the training-time comparison](../final/robotnik_arm_task/report/07_training_time_comparison/README.md). Current row names are in the [model naming guide](model-naming.md).
 
 ## By stage
 
