@@ -1,0 +1,100 @@
+===== extra seeds start 2026-11-05 15:20:54
+
+===== R8-dart-gate-dagger round 1 seed 1 (15:20:54) =====
+$ -m training.datasets.train --variant R8-dart-gate-dagger-nodev-r1 --set identity.date=2026-11-05 --set identity.seed=1 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s1__v3__2026-11-05/R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s1__v3__2026-11-05.npz
+  done in 0.6 min
+  R8-dart-gate-dagger round 1 seed 1: validation sustained hold 25/32, reach 29/32, median final error 1.102 mm
+
+===== R8-dart-gate-dagger round 1 seed 2 (15:25:23) =====
+$ -m training.datasets.train --variant R8-dart-gate-dagger-nodev-r1 --set identity.date=2026-11-05 --set identity.seed=2 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s2__v3__2026-11-05/R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s2__v3__2026-11-05.npz
+  done in 0.4 min
+  R8-dart-gate-dagger round 1 seed 2: validation sustained hold 25/32, reach 29/32, median final error 1.516 mm
+
+===== R6-gate-dagger round 1 seed 1 (15:29:39) =====
+$ -m training.datasets.train --variant R6-gate-dagger-nodev-r1 --set identity.date=2026-11-05 --set identity.seed=1 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r1__MLP01-256x3__s1__v3__2026-11-05/R6-gate-dagger-nodev-r1__MLP01-256x3__s1__v3__2026-11-05.npz
+  done in 0.5 min
+  R6-gate-dagger round 1 seed 1: validation sustained hold 18/32, reach 25/32, median final error 5.765 mm
+
+===== R6-gate-dagger round 1 seed 2 (15:33:59) =====
+$ -m training.datasets.train --variant R6-gate-dagger-nodev-r1 --set identity.date=2026-11-05 --set identity.seed=2 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r1__MLP01-256x3__s2__v3__2026-11-05/R6-gate-dagger-nodev-r1__MLP01-256x3__s2__v3__2026-11-05.npz
+  done in 0.5 min
+  R6-gate-dagger round 1 seed 2: validation sustained hold 22/32, reach 28/32, median final error 6.199 mm
+
+===== R8-dart-gate-dagger round 2 seed 1 (15:38:19) =====
+$ -m training.datasets.train --variant R8-dart-gate-dagger-nodev-r2 --set identity.date=2026-11-05 --set identity.seed=1 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s1__v3__2026-11-05/R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s1__v3__2026-11-05.npz
+  done in 0.5 min
+  R8-dart-gate-dagger round 2 seed 1: validation sustained hold 31/32, reach 31/32, median final error 1.2 mm
+
+===== R8-dart-gate-dagger round 2 seed 2 (15:42:40) =====
+$ -m training.datasets.train --variant R8-dart-gate-dagger-nodev-r2 --set identity.date=2026-11-05 --set identity.seed=2 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s2__v3__2026-11-05/R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s2__v3__2026-11-05.npz
+  done in 0.4 min
+  R8-dart-gate-dagger round 2 seed 2: validation sustained hold 30/32, reach 32/32, median final error 1.021 mm
+
+===== R6-gate-dagger round 2 seed 1 (15:46:51) =====
+$ -m training.datasets.train --variant R6-gate-dagger-nodev-r2 --set identity.date=2026-11-05 --set identity.seed=1 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r2__MLP01-256x3__s1__v3__2026-11-05/R6-gate-dagger-nodev-r2__MLP01-256x3__s1__v3__2026-11-05.npz
+  done in 0.5 min
+  R6-gate-dagger round 2 seed 1: validation sustained hold 28/32, reach 29/32, median final error 2.838 mm
+
+===== R6-gate-dagger round 2 seed 2 (15:51:07) =====
+$ -m training.datasets.train --variant R6-gate-dagger-nodev-r2 --set identity.date=2026-11-05 --set identity.seed=2 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r2__MLP01-256x3__s2__v3__2026-11-05/R6-gate-dagger-nodev-r2__MLP01-256x3__s2__v3__2026-11-05.npz
+  done in 0.5 min
+  R6-gate-dagger round 2 seed 2: validation sustained hold 22/32, reach 27/32, median final error 2.523 mm
+===== extra seeds done 2026-11-05 15:55:29
+===== T0 test start 2026-11-05 15:55:29 -> results/test/2026-11-05_155529__nodev-low-round-R6-R8-T0
+init_motor_angles_names not found in the config file,assuming it empty
+No feet specified in the configuration file.
+file path ext:  /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task
+No feet defined for robot index 0
+init_motor_angles_names not found in the config file,assuming it empty
+No feet specified in the configuration file.
+file path ext:  /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task
+No feet defined for robot index 0
+init_motor_angles_names not found in the config file,assuming it empty
+No feet specified in the configuration file.
+file path ext:  /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task
+No feet defined for robot index 0
+init_motor_angles_names not found in the config file,assuming it empty
+No feet specified in the configuration file.
+file path ext:  /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task
+No feet defined for robot index 0
+init_motor_angles_names not found in the config file,assuming it empty
+No feet specified in the configuration file.
+file path ext:  /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task
+No feet defined for robot index 0
+init_motor_angles_names not found in the config file,assuming it empty
+No feet specified in the configuration file.
+file path ext:  /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task
+No feet defined for robot index 0
+init_motor_angles_names not found in the config file,assuming it empty
+No feet specified in the configuration file.
+No feet defined for robot index 0
+init_motor_angles_names not found in the config file,assuming it empty
+No feet specified in the configuration file.
+file path ext:  /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task
+No feet defined for robot index 0
+init_motor_angles_names not found in the config file,assuming it empty
+No feet specified in the configuration file.
+{
+  "directory": "/media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/results/test/2026-11-05_155529__nodev-low-round-R6-R8-T0",
+  "rollouts": 832,
+  "expected": 832,
+  "complete": true,
+  "failures": {}
+}
+===== ALL DONE 2026-11-05 16:17:07

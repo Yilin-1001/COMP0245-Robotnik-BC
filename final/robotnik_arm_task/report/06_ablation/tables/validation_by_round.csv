@@ -1,17 +1,17 @@
 row,report_name,round,model,seed0,seed1,seed2,pooled,seeds
 R5,DAgger,0,R1-baseline,0/32,1/32,0/32,1/96,3
-R5,DAgger,1,R5-baseline-dagger-r1,15/32,,,15/32,1
-R5,DAgger,2,R5-baseline-dagger-r2,21/32,,,21/32,1
-R5,DAgger,3,R5-baseline-dagger-r3,28/32,29/32,29/32,86/96,3
+R5,DAgger,1,R5-baseline-dagger-nodev-r1,15/32,,,15/32,1
+R5,DAgger,2,R5-baseline-dagger-nodev-r2,26/32,,,26/32,1
+R5,DAgger,3,R5-baseline-dagger-nodev-r3,28/32,29/32,28/32,85/96,3
 R6,DAgger + Gate,0,R2-gate,2/32,3/32,5/32,10/96,3
-R6,DAgger + Gate,1,R6-gate-dagger-r1,27/32,23/32,21/32,71/96,3
-R6,DAgger + Gate,2,R6-gate-dagger-r2,29/32,27/32,29/32,85/96,3
-R6,DAgger + Gate,3,R6-gate-dagger-r3,31/32,29/32,30/32,90/96,3
+R6,DAgger + Gate,1,R6-gate-dagger-nodev-r1,25/32,18/32,22/32,65/96,3
+R6,DAgger + Gate,2,R6-gate-dagger-nodev-r2,26/32,28/32,22/32,76/96,3
+R6,DAgger + Gate,3,R6-gate-dagger-nodev-r3,28/32,26/32,28/32,82/96,3
 R7,f-DAgger,0,R3-dart,0/32,1/32,0/32,1/96,3
-R7,f-DAgger,1,R7-dart-dagger-r1,24/32,,,24/32,1
-R7,f-DAgger,2,R7-dart-dagger-r2,28/32,,,28/32,1
-R7,f-DAgger,3,R7-dart-dagger-r3,30/32,31/32,30/32,91/96,3
+R7,f-DAgger,1,R7-dart-dagger-nodev-r1,24/32,,,24/32,1
+R7,f-DAgger,2,R7-dart-dagger-nodev-r2,27/32,,,27/32,1
+R7,f-DAgger,3,R7-dart-dagger-nodev-r3,28/32,29/32,28/32,85/96,3
 R8,f-DAgger + Gate,0,R4-dart-gate,29/32,27/32,27/32,83/96,3
-R8,f-DAgger + Gate,1,R8-dart-gate-dagger-r1,28/32,30/32,29/32,87/96,3
-R8,f-DAgger + Gate,2,R8-dart-gate-dagger-r2,28/32,29/32,28/32,85/96,3
-R8,f-DAgger + Gate,3,R8-dart-gate-dagger-r3,31/32,31/32,31/32,93/96,3
+R8,f-DAgger + Gate,1,R8-dart-gate-dagger-nodev-r1,27/32,25/32,25/32,77/96,3
+R8,f-DAgger + Gate,2,R8-dart-gate-dagger-nodev-r2,28/32,31/32,30/32,89/96,3
+R8,f-DAgger + Gate,3,R8-dart-gate-dagger-nodev-r3,29/32,29/32,31/32,89/96,3

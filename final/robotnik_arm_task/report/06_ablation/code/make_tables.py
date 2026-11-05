@@ -7,6 +7,10 @@ The eight rows are four data-collection methods, each trained without and with t
     R5 DAgger           R6 DAgger + Gate        R1 / R2 data + 3 DAgger rounds
     R7 f-DAgger         R8 f-DAgger + Gate      R3 / R4 data + 3 DAgger rounds (OU noise, then DAgger)
 
+R1-R4 are ablation v1 (2026-10-28). R5-R8 are ablation v3 (2026-11-05): every DAgger round collects the 221 fitting
+scenarios only (no development scenes; v3 replaces v2, see ../08_dev_scene_removal/). v3 run ids carry "-nodev".
+Test records: R1-R4 from the 2026-11-01 unified test, R5-R8 from the 2026-11-05 one (same frozen scenes and code;
+code/test_data.py merges them and checks that the expert's rollouts are identical).
 The row numbers and run ids (R1-baseline, ..., R8-dart-gate-dagger) are unchanged; only the report names are new.
 No simulation or training runs here. Tables:
 
@@ -25,6 +29,9 @@ No simulation or training runs here. Tables:
   hold_test.csv           R1-R4 hold test: start at the expert's hold state, does the student stay, linearised stiffness
   cost.csv                training rows, added expert labels, added wall time, sequential train->collect cycles
   efficiency.csv          inputs, parameters, inference latency per control step (from the test rollouts)
+  precision.csv           SECONDARY, added after the v3 results were seen: in-range terminal precision (final-second max
+                          error, the suite's predefined grade metric) per row on T0 and on T0+T4+T5, and paired ratios of
+                          the per-scene geometric-mean error between rows (95% scene bootstrap, 10,000, seed 20261105)
 
 Statistics (see the README section "How uncertainty is reported"):
   - The unit of resampling is the scene. Each row is run on every scene with 3 training seeds; a scene's 3 rollouts are
@@ -51,6 +58,8 @@ from pathlib import Path
 
 import numpy as np
 
+from test_data import load_rollouts, load_summary
+
 ROOT = Path(__file__).resolve().parents[1]  # report/06_ablation
 DATA, OUT = ROOT / "data", ROOT / "tables"
 BOOTSTRAP_SEED, BOOTSTRAP_N = 1101031, 1000  # same as the test suite's own report (data/test/report.json)
@@ -71,6 +80,7 @@ ROWS = {
     "R8": ("R8-dart-gate-dagger", "f-DAgger + Gate", "f-DAgger", 1, 1, 1, "R4"),
 }
 METHODS = ["Baseline", "OU", "DAgger", "f-DAgger"]
+DAGGER_TAG, DAGGER_SUFFIX = "-nodev", "__v3__2026-11-05"  # ablation v3: <row>-nodev-r<k>__MLP01-256x3__s<seed>__v3__2026-11-05
 RUN_ID = {k: v[0] for k, v in ROWS.items()}
 NAME = {k: v[1] for k, v in ROWS.items()}
 ROW_OF_RUN = {v[0]: k for k, v in ROWS.items()}
@@ -111,16 +121,16 @@ def scene_bootstrap(rollouts):
 # ---------------------------------------------------------------------------------------------------- inputs
 def rollouts():
     out = []
-    for r in read_csv(DATA / "test/rollouts.csv"):
+    for r in load_rollouts():
         r["success"] = r["success"] == "True"
         out.append(r)
     return out
 
 
 def dagger_validation():
-    """{(row, round, seed): (hold, n)} from the v2 summaries (2026-11-01 run plus the 2026-11-03 extra seeds)."""
+    """{(row, round, seed): (hold, n)} from the v3 summaries (2026-11-05 run, including the extra seeds of rounds 1-2)."""
     out = {}
-    for path in sorted(glob.glob(str(DATA / "validation/v2_*.csv"))):
+    for path in sorted(glob.glob(str(DATA / "validation/v3_*.csv"))):
         for r in read_csv(path):
             k, n = (int(x) for x in r["sustained_hold"].split("/"))
             out[(ROW_OF_RUN[r["row"]], int(r["round"]), int(r["seed"]))] = (k, n, float(r["median_final_err_mm"]))
@@ -143,10 +153,10 @@ def naming():
     write_csv("naming.csv", [{
         "row": k, "report_name": NAME[k], "run_id": RUN_ID[k], "method": v[2], "gate": v[3], "ou_noise": v[4],
         "dagger": v[5], "inputs": "features-v1-gate (22)" if v[3] else "features-v1 (21)", "training_data": data[k],
-        "model_tested": f"{RUN_ID[k]}-r3 (round 3)" if v[5] else RUN_ID[k]} for k, v in ROWS.items()])
+        "model_tested": f"{RUN_ID[k]}{DAGGER_TAG}-r3 (round 3, v3)" if v[5] else RUN_ID[k]} for k, v in ROWS.items()])
 
 
-def validation_per_scene(v2):
+def validation_per_scene(dag):
     """[{"row", "seed", "scenario_id", "success"}] for the tested model of each row (round 3 for R5-R8), 32 scenes x 3 seeds.
 
     R1-R4: the v1 per-seed validation records; R5-R8: the round-3 step-42000 rollouts. Counts are checked against the
@@ -157,24 +167,24 @@ def validation_per_scene(v2):
     for k, v in ROWS.items():
         for seed in range(3):
             run = (f"{RUN_ID[k]}__MLP01-256x3__s{seed}__v1__2026-10-28" if not v[5]
-                   else f"{RUN_ID[k]}-r3__MLP01-256x3__s{seed}__v2__2026-11-01")
+                   else f"{RUN_ID[k]}{DAGGER_TAG}-r3__MLP01-256x3__s{seed}{DAGGER_SUFFIX}")
             recs = read_csv(DATA / f"validation/per_scene/{run}.csv")
             ids = sorted(r["scenario_id"] for r in recs)
             scenes = scenes or ids
             assert ids == scenes and len(ids) == 32, run  # the same 32 validation scenes for every model
             hold = sum(r["sustained_hold_pass"] == "True" for r in recs)
-            assert hold == (v2[(k, 3, seed)][0] if v[5] else v1[k][seed]), (run, hold)
+            assert hold == (dag[(k, 3, seed)][0] if v[5] else v1[k][seed]), (run, hold)
             out += [{"row": k, "seed": str(seed), "scenario_id": r["scenario_id"],
                      "success": r["sustained_hold_pass"] == "True"} for r in recs]
     return out
 
 
-def validation(v2, val_scene):
+def validation(dag, val_scene):
     v1 = {ROW_OF_RUN[r["row"]]: r for r in read_csv(DATA / "validation/v1_R1-R4_summary.csv")}
     table = []
     for k, v in ROWS.items():
         if v[5]:
-            cells = [v2[(k, 3, s)] for s in range(3)]
+            cells = [dag[(k, 3, s)] for s in range(3)]
             per_seed, err = [c[0] for c in cells], statistics.median(c[2] for c in cells)
         else:
             per_seed = [int(x) for x in v1[k]["student_hold_per_seed"].split("/")]
@@ -192,14 +202,14 @@ def validation(v2, val_scene):
     return {r["row"]: r for r in table}
 
 
-def validation_by_round(v2):
+def validation_by_round(dag):
     table = []
     for k in ("R5", "R6", "R7", "R8"):
         for rnd in range(4):
-            cells = {s: v2.get((k, rnd, s)) for s in range(3)}
+            cells = {s: dag.get((k, rnd, s)) for s in range(3)}
             have = [c for c in cells.values() if c]
             table.append({"row": k, "report_name": NAME[k], "round": rnd,
-                          "model": RUN_ID[ROWS[k][6]] if rnd == 0 else f"{RUN_ID[k]}-r{rnd}",
+                          "model": RUN_ID[ROWS[k][6]] if rnd == 0 else f"{RUN_ID[k]}{DAGGER_TAG}-r{rnd}",
                           **{f"seed{s}": f"{c[0]}/{c[1]}" if c else "" for s, c in cells.items()},
                           "pooled": f"{sum(c[0] for c in have)}/{sum(c[1] for c in have)}",
                           "seeds": len(have)})
@@ -220,7 +230,7 @@ def test_tables(rolls):
         by[(r["row"], r["suite"], r["band"])].append(r)
         by[(r["row"], r["suite"], "all")].append(r)
         by[(r["row"], "all", "all")].append(r)
-    summary = {(r["row"], r["suite"], r["band"]): r for r in read_csv(DATA / "test/summary.csv")
+    summary = {(r["row"], r["suite"], r["band"]): r for r in load_summary()
                if r["level"] == "row" and r["subset"] == "all"}
     order = ["expert"] + list(ROWS)
     bands = sorted({(s, b) for (_, s, b) in by if s != "all"}, key=lambda x: (x[0], x[1] != "all", x[1]))
@@ -394,9 +404,9 @@ def hold_test():
 
 
 def step_minutes():
-    """{(row, module, round): minutes} for the seed-0 chain of the 2026-11-01 v2 DAgger run."""
+    """{(row, module, round): minutes} for the seed-0 chain of the 2026-11-05 v3 DAgger run."""
     out, row, step = {}, None, None
-    for line in (DATA / "logs/v2_2026-11-01_dagger_run_log.txt").read_text().splitlines():
+    for line in (DATA / "logs/v3_2026-11-05_dagger_run_log.txt").read_text().splitlines():
         m = re.match(r"===== (R\d)-\S+ start", line)
         if m:
             row = m.group(1)
@@ -434,7 +444,7 @@ def cost():
         if v[5]:
             feats = "features-v1-gate" if v[3] else "features-v1"
             for rnd in (1, 2, 3):
-                e, r = dataset_rows(f"dagger-{k}-v2-r{rnd}__{feats}")
+                e, r = dataset_rows(f"dagger-{k}-v3-r{rnd}__{feats}")
                 eps, rows, added_labels = eps + e, rows + r, added_labels + r
                 parts = [minutes[(k, s, rnd)] for s in ("collect_dagger", "build", "train", "evaluate")]
                 added_min += sum(parts)
@@ -446,6 +456,40 @@ def cost():
                       "sequential_train_collect_cycles": cycles, "note": " + ".join(note) + (" min" if note else "-")})
     write_csv("cost.csv", table)
     print(f"  clean fitting {clean}, OU {ou}, v1 training run minutes {sorted(set(v1_train))}")
+
+
+PRECISION_PAIRS = [("R8", "R4"), ("R8", "R6"), ("R8", "R7"), ("R6", "R4"), ("R5", "R4")]
+
+
+def precision(rolls):
+    """Terminal precision in range (secondary analysis; see the module docstring). No Holm correction: descriptive CIs."""
+    groups = {"T0": ("T0",), "T0+T4+T5": ("T0", "T4", "T5")}
+    table = []
+    for gname, suites in groups.items():
+        per_scene = {}
+        for k in ["expert"] + list(ROWS):
+            g = [r for r in rolls if r["row"] == k and r["suite"] in suites]
+            e = np.array([float(r["final1s_max_err_mm"]) for r in g])
+            scenes = defaultdict(list)
+            for r in g:
+                scenes[r["scenario_id"]].append(math.log(max(float(r["final1s_max_err_mm"]), 1e-3)))
+            per_scene[k] = {sc: float(np.mean(v)) for sc, v in scenes.items()}
+            table.append({"group": gname, "row": k, "report_name": NAME.get(k, "Expert A (teacher)"), "n": len(g),
+                          "median_final1s_max_err_mm": round(float(np.median(e)), 2),
+                          "share_below_5mm_pct": round(100 * float(np.mean(e < 5)), 1),
+                          "share_below_10mm_pct": round(100 * float(np.mean(e < 10)), 1),
+                          "comparison": "", "error_ratio": "", "ratio_boot95_low": "", "ratio_boot95_high": ""})
+        rng = np.random.default_rng(20261105)
+        for a, b in PRECISION_PAIRS:
+            keys = sorted(per_scene[a])
+            d = np.array([per_scene[a][sc] - per_scene[b][sc] for sc in keys])
+            lo, hi = np.exp(np.quantile(d[rng.integers(0, len(d), (PAIRED_N, len(d)))].mean(axis=1), [0.025, 0.975]))
+            table.append({"group": gname, "row": f"{a}/{b}", "report_name": f"{NAME[a]} / {NAME[b]}", "n": len(keys),
+                          "median_final1s_max_err_mm": "", "share_below_5mm_pct": "", "share_below_10mm_pct": "",
+                          "comparison": "geometric-mean error ratio, paired by scene",
+                          "error_ratio": round(float(np.exp(d.mean())), 3), "ratio_boot95_low": round(float(lo), 3),
+                          "ratio_boot95_high": round(float(hi), 3)})
+    write_csv("precision.csv", table)
 
 
 def efficiency(rolls):
@@ -465,11 +509,11 @@ def efficiency(rolls):
 if __name__ == "__main__":
     OUT.mkdir(exist_ok=True)
     rolls = rollouts()
-    v2 = dagger_validation()
+    dag = dagger_validation()
     naming()
-    val_scene = validation_per_scene(v2)
-    validation(v2, val_scene)
-    validation_by_round(v2)
+    val_scene = validation_per_scene(dag)
+    validation(dag, val_scene)
+    validation_by_round(dag)
     test_tables(rolls)
     gate_effect(comparisons(val_scene, rolls))
     failure_modes(rolls)
@@ -477,3 +521,4 @@ if __name__ == "__main__":
     hold_test()
     cost()
     efficiency(rolls)
+    precision(rolls)

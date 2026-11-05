@@ -31,7 +31,7 @@ def models():
     for row, name in [("R8-dart-gate-dagger", "f-DAgger + Gate"), ("R6-gate-dagger", "DAgger + Gate")]:
         for r in (1, 2, 3):
             for k in range(3):
-                path = glob.glob(str(TASK_DIR / f"checkpoints/ablation/2026-11-0[13]__training-ablation-v2/{row}-r{r}__MLP01-256x3__s{k}__v2__*/step_42000.npz"))[0]
+                path = glob.glob(str(TASK_DIR / f"checkpoints/ablation/2026-11-05__training-ablation-v3/{row}-nodev-r{r}__MLP01-256x3__s{k}__v3__2026-11-05/step_42000.npz"))[0]
                 out.append((f"{name} r{r}", k, Path(path)))
     return out
 

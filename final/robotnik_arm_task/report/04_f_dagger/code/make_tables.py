@@ -3,10 +3,15 @@
 No simulation or training runs here; the inputs were produced by the pipeline commands listed in ../README.md. Tables:
   ou_pilot.csv               OU-scale pilot of 2026-10-26: reach / sustained hold per cohort, teacher and noise scale
   ou_collection.csv          the OU-noise collection used for training (d2-s075-x2): episodes, holds, alpha, rows
-  dagger_collections.csv     every DAgger round of 2026-11-01: collector, student holds while collecting, rows
+  dagger_collections.csv     every DAgger round of ablation v3 (2026-11-05; 221 fitting episodes per round, no development
+                             scenes): collector, student holds while collecting, rows
   factorial_validation.csv   R1-R8 (gate x OU noise x DAgger) on the 32 validation scenes, 3 seeds, Wilson 95%
-  dagger_rounds.csv          R5-R8 per DAgger round: validation hold per seed (rounds 1-2 seeds 1-2 from 2026-11-03)
-  factorial_test.csv         R1-R8 and teacher A on the unified 240-scene test (T0-T5), 3 seeds pooled
+  dagger_rounds.csv          R5-R8 per DAgger round: validation hold per seed (R6/R8 rounds 1-2 have 3 seeds)
+  factorial_test.csv         R1-R8 and teacher A on the unified 240-scene test (T0-T5), 3 seeds pooled; R1-R4 and the
+                             expert from the 2026-11-01 test run, R5-R8 (v3) from the 2026-11-05 run (same frozen scenes)
+
+R5-R8 are ablation v3, which replaces v2 (v2 also collected 64 low/near-biased development scenes per round; see
+../08_dev_scene_removal/).
   noise_strength_controls.csv R4 noise-scale and data-volume controls (teammate's run, transcribed; see README)
 
 Usage (from final/robotnik_arm_task/):
@@ -92,7 +97,7 @@ def dagger_collections():
         m = json.loads(Path(path).read_text())
         eps = read_csv(path.replace("_manifest.json", "_episodes.csv"))
         collector = m["student"]["run_id"].split("__")[0]
-        row = BASE_ROW.get(collector) or collector.rsplit("-r", 1)[0]
+        row = BASE_ROW.get(collector) or collector.rsplit("-r", 1)[0].removesuffix("-nodev")
         rmse = [float(e["student_teacher_arm_rmse_nm"]) for e in eps if e["student_teacher_arm_rmse_nm"]]
         rows.append({"row": row, "report_name": NAMES[row], "round": m["round"], "collector": collector, "episodes": m["counts"]["train_episodes"],
                      "fitting_student_hold": f"{m['counts']['fitting_student_hold']}/{m['counts']['fitting_episodes']}",
@@ -105,22 +110,22 @@ def dagger_collections():
 
 
 def dagger_validation():
-    """{(row, round, seed): (hold, n)} from the v2 summaries (2026-11-01 run plus the 2026-11-03 extra seeds)."""
+    """{(row, round, seed): (hold, n)} from the v3 summaries (2026-11-05 run, including the R6/R8 round 1-2 extra seeds)."""
     out = {}
-    for path in sorted(glob.glob(str(DATA / "validation/v2_*.csv"))):
+    for path in sorted(glob.glob(str(DATA / "validation/v3_*.csv"))):
         for r in read_csv(path):
             k, n = (int(x) for x in r["sustained_hold"].split("/"))
             out[(r["row"], int(r["round"]), int(r["seed"]))] = (k, n)
     return out
 
 
-def factorial_validation(v2):
+def factorial_validation(dag):
     rows = []
     for r in read_csv(DATA / "validation/v1_R1-R4_summary.csv"):
         per_seed = [int(x) for x in r["student_hold_per_seed"].split("/")]
         rows.append((r["row"], "-", per_seed, 32))
     for row in list(ROWS)[4:]:
-        per_seed = [v2[(row, 3, s)][0] for s in range(3)]
+        per_seed = [dag[(row, 3, s)][0] for s in range(3)]
         rows.append((row, "r3", per_seed, 32))
     table = []
     for row, rnd, per_seed, n in rows:
@@ -132,11 +137,11 @@ def factorial_validation(v2):
     write_csv("factorial_validation.csv", table)
 
 
-def dagger_rounds(v2):
+def dagger_rounds(dag):
     table = []
     for row in list(ROWS)[4:]:
         for rnd in range(4):
-            cells = {s: v2.get((row, rnd, s)) for s in range(3)}
+            cells = {s: dag.get((row, rnd, s)) for s in range(3)}
             table.append({"row": row, "report_name": NAMES[row], "round": rnd,
                           **{f"seed{s}": f"{c[0]}/{c[1]}" if c else "" for s, c in cells.items()},
                           "pooled": f"{sum(c[0] for c in cells.values() if c)}/{sum(c[1] for c in cells.values() if c)}"})
@@ -145,9 +150,11 @@ def dagger_rounds(v2):
 
 def factorial_test():
     cells = {}
-    for r in read_csv(DATA / "test/R1-R8_2026-11-01_summary.csv"):
-        if r["level"] == "row" and r["subset"] == "all" and r["band"] == "all":
-            cells[(r["row"], r["suite"])] = (int(r["successes"]), int(r["n"]))
+    for name, rows in (("R1-R8_2026-11-01_summary.csv", ("expert", "R1", "R2", "R3", "R4")),
+                       ("R5-R8_v3_2026-11-05_summary.csv", ("R5", "R6", "R7", "R8"))):
+        for r in read_csv(DATA / "test" / name):
+            if r["level"] == "row" and r["subset"] == "all" and r["band"] == "all" and r["row"] in rows:
+                cells[(r["row"], r["suite"])] = (int(r["successes"]), int(r["n"]))
     table = []
     for short, full in [("expert", "teacher A")] + [(f"R{i + 1}", name) for i, name in enumerate(ROWS)]:
         entry = {"row": full, "report_name": NAMES[full], "round": "r3" if short in ("R5", "R6", "R7", "R8") else "-"}
@@ -180,8 +187,8 @@ if __name__ == "__main__":
     ou_pilot()
     ou_collection()
     dagger_collections()
-    v2 = dagger_validation()
-    factorial_validation(v2)
-    dagger_rounds(v2)
+    dag = dagger_validation()
+    factorial_validation(dag)
+    dagger_rounds(dag)
     factorial_test()
     noise_strength_controls()

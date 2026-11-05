@@ -3,15 +3,15 @@ R1-baseline,R1-baseline,0,features-v1,clean253,0.06466,"auto (seed-0 init, fitti
 R2-gate,R2-gate,0,features-v1-gate,clean253,0.070339,"auto (seed-0 init, fitting batch)",3
 R3-dart,R3-dart,0,features-v1,clean253 + dart-d2s075x2,0.068694,"auto (seed-0 init, fitting batch)",3
 R4-dart-gate,R4-dart-gate,0,features-v1-gate,clean253 + dart-d2s075x2,0.074398,"auto (seed-0 init, fitting batch)",3
-R5-baseline-dagger-r1,R5-baseline-dagger,1,features-v1,clean253 + dagger-R5-v2-r1,0.000254,"auto (seed-0 init, fitting batch)",1
-R5-baseline-dagger-r2,R5-baseline-dagger,2,features-v1,clean253 + dagger-R5-v2-r1 + dagger-R5-v2-r2,0.000288,"auto (seed-0 init, fitting batch)",1
-R5-baseline-dagger-r3,R5-baseline-dagger,3,features-v1,clean253 + dagger-R5-v2-r1 + dagger-R5-v2-r2 + dagger-R5-v2-r3,0.000286,"auto (seed-0 init, fitting batch)",3
-R6-gate-dagger-r1,R6-gate-dagger,1,features-v1-gate,clean253 + dagger-R6-v2-r1,0.000323,"auto (seed-0 init, fitting batch)",3
-R6-gate-dagger-r2,R6-gate-dagger,2,features-v1-gate,clean253 + dagger-R6-v2-r1 + dagger-R6-v2-r2,0.000317,"auto (seed-0 init, fitting batch)",3
-R6-gate-dagger-r3,R6-gate-dagger,3,features-v1-gate,clean253 + dagger-R6-v2-r1 + dagger-R6-v2-r2 + dagger-R6-v2-r3,0.000289,"auto (seed-0 init, fitting batch)",3
-R7-dart-dagger-r1,R7-dart-dagger,1,features-v1,clean253 + dart-d2s075x2 + dagger-R7-v2-r1,0.432911,"auto (seed-0 init, fitting batch)",1
-R7-dart-dagger-r2,R7-dart-dagger,2,features-v1,clean253 + dart-d2s075x2 + dagger-R7-v2-r1 + dagger-R7-v2-r2,0.373463,"auto (seed-0 init, fitting batch)",1
-R7-dart-dagger-r3,R7-dart-dagger,3,features-v1,clean253 + dart-d2s075x2 + dagger-R7-v2-r1 + dagger-R7-v2-r2 + dagger-R7-v2-r3,0.400697,"auto (seed-0 init, fitting batch)",3
-R8-dart-gate-dagger-r1,R8-dart-gate-dagger,1,features-v1-gate,clean253 + dart-d2s075x2 + dagger-R8-v2-r1,0.135159,"auto (seed-0 init, fitting batch)",3
-R8-dart-gate-dagger-r2,R8-dart-gate-dagger,2,features-v1-gate,clean253 + dart-d2s075x2 + dagger-R8-v2-r1 + dagger-R8-v2-r2,0.129396,"auto (seed-0 init, fitting batch)",3
-R8-dart-gate-dagger-r3,R8-dart-gate-dagger,3,features-v1-gate,clean253 + dart-d2s075x2 + dagger-R8-v2-r1 + dagger-R8-v2-r2 + dagger-R8-v2-r3,0.126214,"auto (seed-0 init, fitting batch)",3
+R5-baseline-dagger-nodev-r1,R5-baseline-dagger,1,features-v1,clean253 + dagger-R5-v3-r1,0.000273,"auto (seed-0 init, fitting batch)",1
+R5-baseline-dagger-nodev-r2,R5-baseline-dagger,2,features-v1,clean253 + dagger-R5-v3-r1 + dagger-R5-v3-r2,0.00028,"auto (seed-0 init, fitting batch)",1
+R5-baseline-dagger-nodev-r3,R5-baseline-dagger,3,features-v1,clean253 + dagger-R5-v3-r1 + dagger-R5-v3-r2 + dagger-R5-v3-r3,0.000287,"auto (seed-0 init, fitting batch)",3
+R6-gate-dagger-nodev-r1,R6-gate-dagger,1,features-v1-gate,clean253 + dagger-R6-v3-r1,0.000319,"auto (seed-0 init, fitting batch)",3
+R6-gate-dagger-nodev-r2,R6-gate-dagger,2,features-v1-gate,clean253 + dagger-R6-v3-r1 + dagger-R6-v3-r2,0.000297,"auto (seed-0 init, fitting batch)",3
+R6-gate-dagger-nodev-r3,R6-gate-dagger,3,features-v1-gate,clean253 + dagger-R6-v3-r1 + dagger-R6-v3-r2 + dagger-R6-v3-r3,0.000318,"auto (seed-0 init, fitting batch)",3
+R7-dart-dagger-nodev-r1,R7-dart-dagger,1,features-v1,clean253 + dart-d2s075x2 + dagger-R7-v3-r1,0.329031,"auto (seed-0 init, fitting batch)",1
+R7-dart-dagger-nodev-r2,R7-dart-dagger,2,features-v1,clean253 + dart-d2s075x2 + dagger-R7-v3-r1 + dagger-R7-v3-r2,0.398262,"auto (seed-0 init, fitting batch)",1
+R7-dart-dagger-nodev-r3,R7-dart-dagger,3,features-v1,clean253 + dart-d2s075x2 + dagger-R7-v3-r1 + dagger-R7-v3-r2 + dagger-R7-v3-r3,0.402918,"auto (seed-0 init, fitting batch)",3
+R8-dart-gate-dagger-nodev-r1,R8-dart-gate-dagger,1,features-v1-gate,clean253 + dart-d2s075x2 + dagger-R8-v3-r1,0.100293,"auto (seed-0 init, fitting batch)",3
+R8-dart-gate-dagger-nodev-r2,R8-dart-gate-dagger,2,features-v1-gate,clean253 + dart-d2s075x2 + dagger-R8-v3-r1 + dagger-R8-v3-r2,0.102877,"auto (seed-0 init, fitting batch)",3
+R8-dart-gate-dagger-nodev-r3,R8-dart-gate-dagger,3,features-v1-gate,clean253 + dart-d2s075x2 + dagger-R8-v3-r1 + dagger-R8-v3-r2 + dagger-R8-v3-r3,0.108392,"auto (seed-0 init, fitting batch)",3

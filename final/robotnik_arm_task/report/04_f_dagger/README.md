@@ -14,8 +14,8 @@ Names follow [`../06_ablation/`](../06_ablation/README.md). **Gate** is the 22nd
 
 | Report name | Inputs | Run ids |
 |---|---|---|
-| f-DAgger | 21 | round 0 (= OU, R3): `R3-dart`; rounds 1–3 (R7): `R7-dart-dagger-r1..r3` |
-| **f-DAgger + Gate** | 22 | round 0 (= OU + Gate, R4): `R4-dart-gate`; rounds 1–3 (R8): `R8-dart-gate-dagger-r1..r3` |
+| f-DAgger | 21 | round 0 (= OU, R3): `R3-dart`; rounds 1–3 (R7): `R7-dart-dagger-nodev-r1..r3` |
+| **f-DAgger + Gate** | 22 | round 0 (= OU + Gate, R4): `R4-dart-gate`; rounds 1–3 (R8): `R8-dart-gate-dagger-nodev-r1..r3` |
 
 ## The problem it addresses
 
@@ -44,7 +44,7 @@ Stage 1 (OU noise injection; no student needed)
   D ← D_clean ⊎ D_OU;   π0 ← train from scratch on D
 Stage 2 (DAgger)
   for k = 1..K:
-      roll out π_{k−1} alone (β = 0, no added noise) on the fitting scenarios + 64 fresh low/near-biased scenes
+      roll out π_{k−1} alone (β = 0, no added noise) on the 221 fitting scenarios
       label every visited observation with πE;  keep failed episodes, drop numerical failures
       D ← D ⊎ D_new;   π_k ← train from scratch on D;   validate π_k
   return the π_k (k ≥ 1) with the highest seed-0 validation hold; ties go to the later round
@@ -56,8 +56,8 @@ Every statement in both `.tex` files was checked against the code below.
 |---|---|
 | OU noise, phase gating, clean labels | `data_collection/collect_dart.py` (`NoisyEnv`), protocol `experiments/configs/dart/d2-s075-x2.yaml` |
 | Keep only sustained-hold OU episodes; DAgger keeps failures, drops numerical failures | `training/datasets/build.py` (`dart_sources`, `dagger_sources`) |
-| Student rollout with expert labels (β = 0) and the development scenes | `data_collection/collect_dagger.py` (`StudentEnv`, `dev_rows`) |
-| Rounds: collect → build → train from scratch → validate, plus round selection | `experiments/dagger_rounds.py` |
+| Student rollout with expert labels (β = 0); `--dev-scenes 0` (no development scenes) | `data_collection/collect_dagger.py` (`StudentEnv`) |
+| Rounds: collect → build → train from scratch → validate, plus round selection (v3: `--version v3 --variant-suffix=-nodev --dev-scenes 0`) | `experiments/dagger_rounds.py` |
 | Extra seeds for rounds 1–2 on the same datasets | `experiments/dagger_extra_seeds.py` |
 | Reach gate (the 22nd input, also used by the noise schedule) | `core/feature_sets.py`, `data_collection/expert.py` (`base_command`) |
 | Training recipe (BC + Jacobian loss, Huber, 42k updates) | `training/datasets/train.py`, `training/jacobian/loss.py` |
@@ -104,49 +104,30 @@ The focused [OU parameter-selection report](ou_parameter_selection.md) collects 
 | R4-dart-gate-s150 | 1.5 / 0.3 | 442 | 84/96 | teammate's machine |
 | R4-dart-gate-x4 | 0.75 / 0.15 | 884 | 82/96 | teammate's machine |
 
-Halving σ is clearly worse. Doubling σ or doubling the OU data gives nothing further. More OU data cannot replace DAgger: DAgger + Gate reaches 89–90/96 with a similar number of episodes (R6 r3, 855).
+Halving σ is clearly worse. Doubling σ or doubling the OU data gives nothing further: about 83/96 is where OU + Gate saturates on validation. DAgger + Gate (R6 r3, 663 DAgger episodes) reaches 82/96, so in range the two routes end at the same level (see [`../06_ablation/`](../06_ablation/README.md) for the paired test).
 
 ## Stage 2: DAgger rounds
 
 | Setting | Value | Why |
 |---|---|---|
 | Who drives | The student alone (β = 0); no added noise | The states that matter are the ones the student itself reaches |
-| Scenes per round | The 221 fitting scenarios, plus 64 newly sampled training scenarios per round (`dev-r<k>-<i>`, called development scenes in the code), biased towards low and near targets as detailed below | The R4 test diagnosis found its failures at low and near targets |
+| Scenes per round | The 221 fitting scenarios, every round (221 episodes per round, 663 over three rounds) | The same training scenes as the clean and OU data; validation and test scenes are never used |
 | Labels | The expert's action at every visited 1 ms step, whatever the student does; failed episodes are kept | Failed episodes contain the states DAgger is for. The expert recovers all of them: 13/13 failed R4 episodes were held after the expert took over |
 | Aggregation | The next student is trained **from scratch** on clean + OU + every DAgger round so far, with the same recipe | No warm-start effects; each round differs only in its data |
 | Round selection | Highest seed-0 validation hold among rounds 1..K (tie → later round); seeds 1–2 are then trained for that round | Declared before the run; the test set is never used |
 
-**What the 64 new development scenes mean.** A scene specifies the robot's initial base position and heading, and the target position for the same reaching-and-holding task. Each round samples 64 new configurations within the training ranges. Their student rollouts and expert labels enter training; these scenes are separate from the frozen validation and test sets. Here, "development" names an additional source of training scenes, not a held-out evaluation split.
+**Ablation v3 replaces v2.** The first DAgger run (v2, 2026-11-01) also collected 64 newly sampled scenes per round (285 episodes per round). Those scenes were biased towards low and near targets after a diagnosis that had looked at the T0 test scenes. To keep test information out of the training data, R5–R8 were re-run without them (v3, 2026-11-05, `--dev-scenes 0`). Everything else is unchanged: the round-0 students, the recipe, 3 rounds, round 3 selected for every row, and seeds 0–2. The reported results are v3. The v2 − v3 comparison is in [`../08_dev_scene_removal/`](../08_dev_scene_removal/README.md).
 
-**Why add new scenes each round?** DAgger can collect corrective labels on the existing 221 fitting scenes alone; adding new configurations is a choice in this experiment, not a requirement of the algorithm. It serves two purposes. First, new combinations of start pose and target position broaden the configurations on which the current student receives corrective supervision, with the aim of improving generalisation beyond the fixed fitting scenes. Second, the low/near bias allocates more collection to the conditions where R4 struggled, so the expert labels the student's approach, stall and drift states under additional configurations. The [R4 diagnosis](../../../../docs/reports/2026-10-29__report__r4-test-diagnosis.md) found all 13 failed runs in seven low or near scenes and recommended oversampling these conditions. It also found that these failures were not simply outside the fitting-scene coverage: the purpose is denser corrective supervision in difficult parts of the training range. As recorded under provenance below, this design was informed by the earlier test diagnosis; the newly generated scene configurations themselves are not taken from validation or test.
-
-Keeping all 221 fitting scenes preserves coverage of the original training conditions, while sampling 64 additional scenes each round supplies new combinations in the difficult regions. These are intended benefits of the sampling design; the reported ablation does not isolate the contribution of fresh scenes from the rest of DAgger.
-
-**Why exactly 64?** This is the configured per-round collection budget (`--dev-scenes 64`), adding about 29% more trajectories than the 221 fitting-scene rollouts alone, for 285 trajectories per round. The experiment records do not establish 64 as an optimal or necessary number, and the reported results do not compare 0, 32, 64 or 128 added scenes. It should therefore be reported as an experimental setting, rather than a theoretically required sample count or a separately validated optimum.
-
-The sampling rule in [`dev_rows`](../../data_collection/collect_dagger.py) is:
-
-| Scene parameter | Sampling rule |
-|---|---|
-| Initial base position | x and y independently uniform in −0.5–0.5 m |
-| Initial heading and target relative azimuth | Independently uniform in −π–π radians |
-| Target height z | With probability 0.7, uniform in 0.1–0.5 m; otherwise uniform in the full 0.1–1.25 m range |
-| Horizontal start-to-target distance d | With probability 0.5, uniform in 0.5–1.0 m; otherwise uniform in the full 0.5–3.0 m range |
-
-These are mixture-selection probabilities, not exact quotas of the 64 scenes. The full ranges also include the low and near bands, so the final fractions within those bands need not equal 70% and 50%. This sampling increases coverage of low and near targets, where the student had struggled.
-
-Each round therefore collects **285 new trajectories: 221 fresh student rollouts on the existing fitting scenes, plus 64 rollouts on newly sampled scenes**. Over three rounds, each method adds 192 scene configurations and 855 trajectories. The 221 fitting configurations are reused; their trajectories change with the student. The new scenes have IDs `dev-r1-0000` through `dev-r1-0063` in round 1, and corresponding `dev-r2-*` and `dev-r3-*` IDs in later rounds. Sampling is reproducible: `default_rng([20261030, round_index, scene_index])` gives R5–R8 the same 64 configurations at a given round, although their students produce different trajectories and labels.
-
-The fixed trajectory count does not imply a fixed number of labelled samples. Each executed 1 ms step contributes one expert-action label; trajectories stop 3 s after the first reach or at the 40 s cap, so their lengths and the total label count vary by method and round. Extra training seeds reuse the existing aggregated datasets without collecting new scenes or labels ([`dagger_extra_seeds.py`](../../experiments/dagger_extra_seeds.py)).
+The fixed episode count does not imply a fixed number of labelled samples. Each executed 1 ms step contributes one expert-action label. Episodes stop 3 s after the first reach or at the 40 s cap, so their lengths and the total label count vary by method and round. Extra training seeds reuse the existing aggregated datasets without collecting new scenes or labels ([`dagger_extra_seeds.py`](../../experiments/dagger_extra_seeds.py)).
 
 **f-DAgger + Gate's DAgger data are already near-expert** (`tables/dagger_collections.csv`, round 1). The collector is the round-0 student, so it determines what DAgger sees:
 
-| Row | Round-1 collector | Collector holds while collecting (fitting / development) | Student–expert arm RMSE (median) | Rows |
+| Row | Round-1 collector | Collector holds while collecting | Student–expert arm RMSE (median) | Rows |
 |---|---|---|---|---|
-| **R8 f-DAgger + Gate** | R4-dart-gate (OU + Gate) | **201/221 / 50/64** | **0.17 N·m** | 4.1 M |
-| R6 DAgger + Gate | R2-gate (Baseline + Gate) | 21/221 / 4/64 | 27.7 N·m | 10.1 M |
-| R7 f-DAgger | R3-dart (OU) | 5/221 / 0/64 | 18.3 N·m | 11.3 M |
-| R5 DAgger | R1-baseline (Baseline) | 2/221 / 0/64 | 27.5 N·m | 10.8 M |
+| **R8 f-DAgger + Gate** | R4-dart-gate (OU + Gate) | **201/221** | **0.08 N·m** | 2.9 M |
+| R6 DAgger + Gate | R2-gate (Baseline + Gate) | 23/221 | 27.5 N·m | 7.8 M |
+| R7 f-DAgger | R3-dart (OU) | 5/221 | 10.9 N·m | 8.7 M |
+| R5 DAgger | R1-baseline (Baseline) | 2/221 | 27.2 N·m | 8.5 M |
 
 For R5–R7, round 1 mostly records an untrained student failing far from the expert's path. For f-DAgger + Gate it records small on-policy deviations around a working controller.
 
@@ -156,7 +137,7 @@ For R5–R7, round 1 mostly records an untrained student failing far from the ex
 
 The full ablation (per band, gate effect, failure modes, terminal precision, cost) is in [`../06_ablation/`](../06_ablation/README.md).
 
-**Validation** (`tables/factorial_validation.csv`; 32 scenes × 3 seeds; DAgger rows at round 3, the round chosen for every row):
+**Validation** (`tables/factorial_validation.csv`; 32 scenes × 3 seeds; DAgger rows at round 3, the round chosen for every row; R5–R8 are ablation v3):
 
 | Row | Run id | Gate | OU noise | DAgger | Hold per seed | Pooled (Wilson 95%) |
 |---|---|---|---|---|---|---|
@@ -164,14 +145,14 @@ The full ablation (per band, gate effect, failure modes, terminal precision, cos
 | R2 Baseline + Gate | `R2-gate` | ✓ | | | 2 / 3 / 5 | 10/96 (0.06–0.18) |
 | R3 OU | `R3-dart` | | ✓ | | 0 / 1 / 0 | 1/96 (0.00–0.06) |
 | **R4 OU + Gate** (f-DAgger + Gate r0) | `R4-dart-gate` | ✓ | ✓ | | 29 / 27 / 27 | **83/96** (0.78–0.92) |
-| R5 DAgger | `R5-baseline-dagger` | | | ✓ | 28 / 29 / 29 | 86/96 (0.82–0.94) |
-| R6 DAgger + Gate | `R6-gate-dagger` | ✓ | | ✓ | 31 / 29 / 30 | 90/96 (0.87–0.97) |
-| R7 f-DAgger | `R7-dart-dagger` | | ✓ | ✓ | 30 / 31 / 30 | 91/96 (0.88–0.98) |
-| **R8 f-DAgger + Gate** (r3) | `R8-dart-gate-dagger` | ✓ | ✓ | ✓ | 31 / 31 / 31 | **93/96** (0.91–0.99) |
+| R5 DAgger | `R5-baseline-dagger-nodev` | | | ✓ | 28 / 29 / 28 | 85/96 (0.81–0.93) |
+| R6 DAgger + Gate | `R6-gate-dagger-nodev` | ✓ | | ✓ | 28 / 26 / 28 | 82/96 (0.77–0.91) |
+| R7 f-DAgger | `R7-dart-dagger-nodev` | | ✓ | ✓ | 28 / 29 / 28 | 85/96 (0.81–0.93) |
+| **R8 f-DAgger + Gate** (r3) | `R8-dart-gate-dagger-nodev` | ✓ | ✓ | ✓ | 29 / 29 / 31 | **89/96** (0.86–0.96) |
 
-Per round (`tables/dagger_rounds.csv`, seed 0): f-DAgger + Gate (R8) holds 29 / 28 / 28 / 31 of 32 for rounds 0–3. DAgger + Gate (R6) holds 2 / 27 / 29 / 31. With all three seeds, R8 holds 87, 85 and 93 of 96 for rounds 1–3, and R6 holds 71, 85 and 90.
+Per round (`tables/dagger_rounds.csv`, seed 0): f-DAgger + Gate (R8) holds 29 / 27 / 28 / 29 of 32 for rounds 0–3. DAgger + Gate (R6) holds 2 / 25 / 26 / 28. With all three seeds, R8 holds 77, 89 and 89 of 96 for rounds 1–3 (round 0: 83), and R6 holds 65, 76 and 82 (round 0: 10).
 
-**Unified test** (`tables/factorial_test.csv`; 240 scenes × 3 seeds; success = continuous < 10 mm for 3 s, or 20 s on T5; suites T0 in range, T1 far 3–15 m, T2 near, T3 height edges, T4 translated start, T5 long hold):
+**Unified test** (`tables/factorial_test.csv`; 240 scenes × 3 seeds; success = continuous < 10 mm for 3 s, or 20 s on T5; suites T0 in range, T1 far 3–15 m, T2 near, T3 height edges, T4 translated start, T5 long hold). R1–R4 and the teacher come from the 2026-11-01 test run, R5–R8 from the 2026-11-05 run on the same frozen scenes:
 
 | Row | T0 | T1 | T2 | T3 | T4 | T5 | All 240 |
 |---|---|---|---|---|---|---|---|
@@ -179,18 +160,19 @@ Per round (`tables/dagger_rounds.csv`, seed 0): f-DAgger + Gate (R8) holds 29 / 
 | R1 Baseline | 2.1 | 0.0 | 2.8 | 0.0 | 2.8 | 0.0 | 1.1 |
 | R2 Baseline + Gate | 20.8 | 0.0 | 1.4 | 3.1 | 22.2 | 0.0 | 8.3 |
 | R3 OU | 1.6 | 3.7 | 6.9 | 14.6 | 4.2 | 0.0 | 4.6 |
-| **R4 OU + Gate** (f-DAgger + Gate r0) | 96.9 | 90.7 | 47.2 | 54.2 | 94.4 | 68.1 | **81.2** |
-| R5 DAgger (r3) | 96.4 | 97.7 | 37.5 | 12.5 | 94.4 | 51.4 | 75.0 |
-| R6 DAgger + Gate (r3) | 97.9 | **100** | 50.0 | 21.9 | 95.8 | 72.2 | 80.8 |
-| R7 f-DAgger (r3) | 97.4 | 88.9 | 50.0 | 25.0 | 93.1 | 54.2 | 75.7 |
-| **R8 f-DAgger + Gate** (r3) | **99.0** | 44.4 | **81.9** | **66.7** | **97.2** | **87.5** | 75.3 |
+| **R4 OU + Gate** (f-DAgger + Gate r0) | 96.9 | 90.7 | 47.2 | **54.2** | **94.4** | 68.1 | **81.2** |
+| R5 DAgger (r3) | 96.4 | **100** | 34.7 | 33.3 | **94.4** | 69.4 | 80.0 |
+| R6 DAgger + Gate (r3) | 91.7 | 96.8 | 50.0 | 27.1 | 84.7 | 61.1 | 76.7 |
+| R7 f-DAgger (r3) | 96.4 | 66.7 | 37.5 | 30.2 | 91.7 | 50.0 | 67.6 |
+| R8 f-DAgger + Gate (r3) | **97.9** | 45.8 | **56.9** | 53.1 | **94.4** | **79.2** | 70.0 |
 
-What the ablation shows:
+What the ablation shows (paired tests with Holm correction in [`../06_ablation/`](../06_ablation/README.md)):
 
 1. **Without DAgger, OU noise and the gate work only together.** Either alone gives at most 10/96; both give 83/96 and 96.9% on T0.
-2. **f-DAgger + Gate is the best row in range.** R8 r3 has the highest validation hold (93/96, 31 on every seed) and the best test results on T0, T2, T3, T4 and T5. The largest gains over DAgger + Gate (R6) are at the range edges: near targets 81.9 vs 50.0% and height edges 66.7 vs 21.9%.
-3. **f-DAgger + Gate loses far targets (T1).** R8 r3 holds 44.4% on T1, against 90.7% for its own round 0 and 100% for R6. Its failures are navigation failures. R6's T1 advantage is confounded: its round-1 collector (R2) drove up to 798 m away, so R6's data contain 3.1 M rows beyond 3 m, and every other dataset stops at 3.1 m. This analysis is in [`../07_training_time_comparison/`](../07_training_time_comparison/README.md) (`data/analysis/`).
-4. **Over all 240 scenes, round 0 (OU + Gate) is f-DAgger + Gate's best point** (81.2%, against 69.7 / 76.9 / 75.3% for rounds 1–3), because the T1 loss outweighs the in-range gains. Validation (in range only) picks round 3. Per-round test results for rounds 1–2 are in [`../07_training_time_comparison/tables/success_by_round.csv`](../07_training_time_comparison/README.md).
+2. **In range, the DAgger rounds add nothing detectable to OU + Gate.** R8 r3 has the highest validation hold (89/96) and the highest T0 rate (97.9%), but its paired differences from OU + Gate (R4) are not significant: validation +6.2 [−1.0, +15.6] and T0 +1.0 [−2.6, +4.7] pp.
+3. **f-DAgger + Gate loses far targets (T1).** R8 r3 holds 45.8% on T1 (5.6% at 10–15 m), against 90.7% for its own round 0 (OU + Gate) and 96.8% for R6. Its T1 failures are navigation failures. R5's and R6's T1 results are confounded by data coverage: their round-1 collectors could not reach and drove up to 736 m and 859 m away, so their data contain millions of rows beyond 3 m. Every other dataset stops at 3.1 m ([`../07_training_time_comparison/`](../07_training_time_comparison/README.md), `data/analysis/`).
+4. **Over all 240 scenes, round 0 (OU + Gate) is f-DAgger + Gate's best point**: 81.2 vs 70.0% for round 3, Δ = −11.2 [−16.1, −6.5] pp, Holm p = 0.0056. Validation (in range only) cannot see the T1 loss.
+5. **Against DAgger + Gate, starting from OU data helps high targets and hurts far ones.** R8 − R6: T3 +26.0 pp (Holm p = 0.018; high band 75.0 vs 35.4%), T1 −50.9 pp (Holm p = 0.0056); the T2 difference (+6.9) is not significant. With v2, R8 was far ahead on near targets (81.9%); that advantage came mostly from v2's near-biased development scenes ([`../08_dev_scene_removal/`](../08_dev_scene_removal/README.md)).
 
 ## Relation to prior work
 
@@ -218,9 +200,10 @@ References: [1] Ross & Bagnell, AISTATS 2010. [2] Osa et al., Found. Trends Robo
                ou_noise/strength_controls/  original student-control report and dataset variant configs
                ou_noise/README.md        archive index; source_inventory.csv and verification_summary.json record integrity
                collections/              OU collection episodes.csv + manifest; dagger/<round>-<digest>_{episodes.csv,manifest.json}
-                                         for all 12 DAgger collections of 2026-11-01
-               validation/               v1 R1-R4 summary and runs; v2 per-row summaries (2026-11-01, extra seeds 2026-11-03)
-               test/                     unified test R1-R8 of 2026-11-01: summary.csv and summary.md
+                                         for all 12 DAgger collections of ablation v3 (2026-11-05)
+               validation/               v1 R1-R4 summary and runs; v3 per-row summaries (2026-11-05, incl. R6/R8 extra seeds)
+               test/                     unified test summaries: R1-R8 of 2026-11-01 (R1-R4 and teacher used) and
+                                         R5-R8 v3 of 2026-11-05
   code/        make_tables.py            data/ -> tables/
                draw_schematic.py         figures/gate_dart_dagger_comparison.* (copy; see caveats)
                redraw_ou_figures.py      figures/ou_noise_episode.png, state_coverage.png (pipeline plots with report names)
@@ -252,21 +235,23 @@ python -m training.datasets.train --variant R4-dart-gate \
     --set identity.version=v1 --set identity.date=2026-10-28 --set identity.seed=0 \
     --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 \
     --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
-# Stage 2: DAgger rounds 1-3 from R4 seed 0, then seeds 1-2 of the chosen round
-python -m experiments.dagger_rounds --row R8-dart-gate-dagger --rounds 3 --date 2026-11-01 --final-seeds 1 2 --workers 20
-python -m experiments.dagger_extra_seeds --date 2026-11-03 --rows R8-dart-gate-dagger --rounds 1 2 --seeds 1 2 --workers 20
-# The other ablation rows: experiments.ablation.run (R1-R4) and dagger_rounds --row R5/R6/R7 (R5-R7)
-python -m evaluation.test_suite --models <step_42000.npz files> --out results/test/<run> --workers 20
+# Stage 2 (ablation v3): DAgger rounds 1-3 from R4 seed 0 on the fitting scenarios, then seeds 1-2 of the chosen round
+python -m experiments.dagger_rounds --row R8-dart-gate-dagger --rounds 3 --date 2026-11-05 --final-seeds 1 2 --workers 20 \
+    --version v3 --variant-suffix=-nodev --dev-scenes 0
+python -m experiments.dagger_extra_seeds --date 2026-11-05 --rows R8-dart-gate-dagger --rounds 1 2 --seeds 1 2 --workers 20 \
+    --version v3 --variant-suffix=-nodev --source-date 2026-11-05 --dev-scenes 0
+# The other ablation rows: experiments.ablation.run (R1-R4) and dagger_rounds --row R5/R6/R7 with the same v3 options
+python report/07_training_time_comparison/code/test_suite_frozen.py --models <step_42000.npz files> --out results/test/<run> --workers 20
 ```
 
-Source runs: `results/ablation/2026-10-28__training-ablation-v1/` (R1–R4), `results/ablation/2026-11-01__training-ablation-v2/` (R5–R8), `results/ablation/2026-11-03__training-ablation-v2/` (extra seeds), `results/test/2026-11-01_215340__R1-R8/` (test, scene manifest sha256 `0a916445…`).
+Source runs: `results/ablation/2026-10-28__training-ablation-v1/` (R1–R4), `results/ablation/2026-11-05__training-ablation-v3/` (R5–R8 and extra seeds), `results/test/2026-11-01_215340__R1-R8/` (R1–R4 test) and `results/test/2026-11-05_130144__nodev-dagger-R5-R8/` (R5–R8 test); both tests use scene manifest sha256 `0a916445…`.
 
 ## Provenance and caveats
 
 - **Teammate's controls.** The noise-strength and data-volume controls (`-s0375`, `-s150`, `-x4`) were run on a teammate's machine on 2026-10-30 and are validation only. Their numbers are transcribed from `docs/reports/2026-10-31__report__dagger-ablation-and-final-model.md`; per-seed counts and checkpoints are not on this machine. No teammate test-set result is used anywhere.
 - **The pilot used a different teacher setting.** The 2026-10-26 OU pilot ran expert A at the code default lead_time = 0.15 s, with a wheel clip of about 5.273 rad/s. The training collection uses lead_time = 0.50 s and a 6 rad/s clip. The chosen scale was re-confirmed by the collection itself (441/442 held at 0.50 s). The pilot lives outside the repository (`ML_Final/ou_validation_20261026/`); its results, manifests, report and script are copied into `data/ou_noise/pilot/`.
-- **Arithmetic slip upstream.** `results/ablation/2026-11-01__training-ablation-v2/README.md` gives R5 round 3 as "28 / 29 / 29 = 87/96". The seeds sum to 86/96, which is what `tables/` uses. The upstream file was not changed.
+- **v3 replaces v2.** R5–R8 were first run (v2, 2026-11-01) with 64 extra low/near-biased scenes per round, chosen after a diagnosis that had looked at T0. They were re-run without them (v3). The v2 numbers are kept only in [`../08_dev_scene_removal/`](../08_dev_scene_removal/README.md).
 - **Validation is slightly optimistic for R5–R8**, because the round count was chosen on it. The test run is the unbiased estimate. The selection rule considers rounds 1..K only, so round 0 (OU + Gate, R4) is never selected, even though it is f-DAgger + Gate's best point over all 240 test scenes.
-- **Test.** One run, after all models were frozen. T0 had been viewed once during development (the R4 test diagnosis of 2026-10-29); T1–T5 had not. T1 is confounded by data coverage (point 3 above).
+- **Test.** R1–R4 were tested once (2026-11-01) and the v3 R5–R8 once (2026-11-05), each after its models were frozen. T0 had been viewed during development (early clean-data models and the R4 test diagnosis of 2026-10-29); T1–T5 had not been viewed before the 2026-11-01 run. T1 is confounded by data coverage (point 3 above).
 - **Schematic and LaTeX.** `figures/gate_dart_dagger_comparison.*`, `code/draw_schematic.py`, `algorithm/*.tex` and `literature/overlap_review.md` were copied from `ML_Final/outputs/2026-11-04/`. `draw_schematic.py` now writes to `figures/` and uses the report names (OU + Gate, DAgger + Gate, f-DAgger + Gate; the original said "DART-style"). The schematic shows the implementation, not a measured trajectory.
 - **Literature search.** The search behind `literature/overlap_review.md` is targeted, not systematic, and was not re-run for this folder.

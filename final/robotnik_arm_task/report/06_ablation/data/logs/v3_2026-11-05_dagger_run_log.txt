@@ -1,0 +1,264 @@
+===== R8-dart-gate-dagger start 2026-11-05 10:47:55
+
+===== R8-dart-gate-dagger round 0 (R4-dart-gate), seed 0: R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.npz =====
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.npz
+===== R8-dart-gate-dagger start 2026-11-05 10:48:14
+
+===== R8-dart-gate-dagger round 0 (R4-dart-gate), seed 0: R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.npz =====
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.npz
+step failed (1) after 21 s; see /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/results/ablation/2026-11-05__training-ablation-v3/dagger/R8-dart-gate-dagger/logs/r0-s0-validate.log
+/media/yilin/data/ML_Final/.venv/bin/python failed with exit status 1.
+===== restart after round-0 cache copy 2026-11-05 10:49:17
+===== R8-dart-gate-dagger start 2026-11-05 10:49:17
+
+===== R8-dart-gate-dagger round 0 (R4-dart-gate), seed 0: R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.npz =====
+  R8-dart-gate-dagger round 0 seed 0: validation sustained hold 29/32, reach 32/32, median final error 1.583 mm
+
+===== R8-dart-gate-dagger DAgger round 1: collector R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.npz --round r1 --dev-scenes 0 --workers 20
+  done in 2.6 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 201, "development_student_hold": 0, "wall_s": 157.6}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r1-f637a3da41a3 --name dagger-R8-v3-r1 --features features-v1-gate --workers 20
+  done in 0.0 min
+$ -m training.datasets.train --variant R8-dart-gate-dagger-nodev-r1 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.4 min
+  R8-dart-gate-dagger round 1 seed 0: validation sustained hold 27/32, reach 30/32, median final error 1.296 mm
+
+===== R8-dart-gate-dagger DAgger round 2: collector R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz --round r2 --dev-scenes 0 --workers 20
+  done in 2.3 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 216, "development_student_hold": 0, "wall_s": 138.7}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r2-f9fb4ba17483 --name dagger-R8-v3-r2 --features features-v1-gate --workers 20
+  done in 0.0 min
+$ -m training.datasets.train --variant R8-dart-gate-dagger-nodev-r2 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.5 min
+  R8-dart-gate-dagger round 2 seed 0: validation sustained hold 28/32, reach 30/32, median final error 1.371 mm
+
+===== R8-dart-gate-dagger DAgger round 3: collector R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz --round r3 --dev-scenes 0 --workers 20
+  done in 2.4 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 217, "development_student_hold": 0, "wall_s": 142.5}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r3-fae52e4b63cb --name dagger-R8-v3-r3 --features features-v1-gate --workers 20
+  done in 0.0 min
+$ -m training.datasets.train --variant R8-dart-gate-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 4.0 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.4 min
+  R8-dart-gate-dagger round 3 seed 0: validation sustained hold 29/32, reach 31/32, median final error 1.363 mm
+
+===== extra seeds for round 3 (best seed-0 validation hold 29/32) =====
+$ -m training.datasets.train --variant R8-dart-gate-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=1 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05.npz
+  done in 0.4 min
+  R8-dart-gate-dagger round 3 seed 1: validation sustained hold 29/32, reach 31/32, median final error 1.591 mm
+$ -m training.datasets.train --variant R8-dart-gate-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=2 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.7 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05.npz
+  done in 0.4 min
+  R8-dart-gate-dagger round 3 seed 2: validation sustained hold 31/32, reach 31/32, median final error 1.076 mm
+
+Summary: /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/results/ablation/2026-11-05__training-ablation-v3/dagger/R8-dart-gate-dagger/summary.csv
+row,round,seed,run,collector,sustained_hold,reach,n,median_final_err_mm,max_final1s_err_mm,model,written
+R8-dart-gate-dagger,0,0,R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28,-,29/32,32/32,32,1.583,14.721,checkpoints/ablation/2026-10-28__training-ablation-v1/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28/R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.npz,2026-11-05 10:49:17
+R8-dart-gate-dagger,1,0,R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05,R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28.npz,27/32,30/32,32,1.296,145.272,checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 10:56:08
+R8-dart-gate-dagger,2,0,R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05,R8-dart-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz,28/32,30/32,32,1.371,71.97,checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 11:02:48
+R8-dart-gate-dagger,3,0,R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05,R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,29/32,31/32,32,1.363,41.765,checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 11:09:35
+R8-dart-gate-dagger,3,1,R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05,R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,29/32,31/32,32,1.591,193.444,checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05.npz,2026-11-05 11:13:52
+R8-dart-gate-dagger,3,2,R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05,R8-dart-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,31/32,31/32,32,1.076,33.432,checkpoints/ablation/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05/R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05.npz,2026-11-05 11:18:01
+
+===== R8-dart-gate-dagger done 2026-11-05 11:18:01
+===== R6-gate-dagger start 2026-11-05 11:18:01
+
+===== R6-gate-dagger round 0 (R2-gate), seed 0: R2-gate__MLP01-256x3__s0__v1__2026-10-28.npz =====
+  R6-gate-dagger round 0 seed 0: validation sustained hold 2/32, reach 5/32, median final error 15294.12 mm
+
+===== R6-gate-dagger DAgger round 1: collector R2-gate__MLP01-256x3__s0__v1__2026-10-28.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-10-28__training-ablation-v1/R2-gate__MLP01-256x3__s0__v1__2026-10-28/R2-gate__MLP01-256x3__s0__v1__2026-10-28.npz --round r1 --dev-scenes 0 --workers 20
+  done in 5.9 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 23, "development_student_hold": 0, "wall_s": 352.4}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r1-246dad86d873 --name dagger-R6-v3-r1 --features features-v1-gate --workers 20
+  done in 0.1 min
+$ -m training.datasets.train --variant R6-gate-dagger-nodev-r1 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.7 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R6-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.4 min
+  R6-gate-dagger round 1 seed 0: validation sustained hold 25/32, reach 30/32, median final error 5.443 mm
+
+===== R6-gate-dagger DAgger round 2: collector R6-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R6-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz --round r2 --dev-scenes 0 --workers 20
+  done in 3.1 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 170, "development_student_hold": 0, "wall_s": 182.7}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r2-a510dfa4f21c --name dagger-R6-v3-r2 --features features-v1-gate --workers 20
+  done in 0.0 min
+$ -m training.datasets.train --variant R6-gate-dagger-nodev-r2 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.4 min
+  R6-gate-dagger round 2 seed 0: validation sustained hold 26/32, reach 29/32, median final error 3.212 mm
+
+===== R6-gate-dagger DAgger round 3: collector R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz --round r3 --dev-scenes 0 --workers 20
+  done in 2.7 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 187, "development_student_hold": 0, "wall_s": 164.5}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r3-af8db1a97ec2 --name dagger-R6-v3-r3 --features features-v1-gate --workers 20
+  done in 0.0 min
+$ -m training.datasets.train --variant R6-gate-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05/R6-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.4 min
+  R6-gate-dagger round 3 seed 0: validation sustained hold 28/32, reach 29/32, median final error 1.702 mm
+
+===== extra seeds for round 3 (best seed-0 validation hold 28/32) =====
+$ -m training.datasets.train --variant R6-gate-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=1 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05/R6-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05.npz
+  done in 0.5 min
+  R6-gate-dagger round 3 seed 1: validation sustained hold 26/32, reach 30/32, median final error 2.133 mm
+$ -m training.datasets.train --variant R6-gate-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=2 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.7 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05/R6-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05.npz
+  done in 0.4 min
+  R6-gate-dagger round 3 seed 2: validation sustained hold 28/32, reach 29/32, median final error 2.502 mm
+
+Summary: /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/results/ablation/2026-11-05__training-ablation-v3/dagger/R6-gate-dagger/summary.csv
+row,round,seed,run,collector,sustained_hold,reach,n,median_final_err_mm,max_final1s_err_mm,model,written
+R6-gate-dagger,0,0,R2-gate__MLP01-256x3__s0__v1__2026-10-28,-,2/32,5/32,32,15294.12,2099515.947,checkpoints/ablation/2026-10-28__training-ablation-v1/R2-gate__MLP01-256x3__s0__v1__2026-10-28/R2-gate__MLP01-256x3__s0__v1__2026-10-28.npz,2026-11-05 11:18:01
+R6-gate-dagger,1,0,R6-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05,R2-gate__MLP01-256x3__s0__v1__2026-10-28.npz,25/32,30/32,32,5.443,182.008,checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R6-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 11:28:07
+R6-gate-dagger,2,0,R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05,R6-gate-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz,26/32,29/32,32,3.212,438.016,checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 11:35:26
+R6-gate-dagger,3,0,R6-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05,R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,28/32,29/32,32,1.702,304.642,checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05/R6-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 11:42:25
+R6-gate-dagger,3,1,R6-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05,R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,26/32,30/32,32,2.133,41.123,checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05/R6-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05.npz,2026-11-05 11:46:48
+R6-gate-dagger,3,2,R6-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05,R6-gate-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,28/32,29/32,32,2.502,471.31,checkpoints/ablation/2026-11-05__training-ablation-v3/R6-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05/R6-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05.npz,2026-11-05 11:50:56
+
+===== R6-gate-dagger done 2026-11-05 11:50:56
+===== R7-dart-dagger start 2026-11-05 11:50:56
+
+===== R7-dart-dagger round 0 (R3-dart), seed 0: R3-dart__MLP01-256x3__s0__v1__2026-10-28.npz =====
+  R7-dart-dagger round 0 seed 0: validation sustained hold 0/32, reach 0/32, median final error 298.876 mm
+
+===== R7-dart-dagger DAgger round 1: collector R3-dart__MLP01-256x3__s0__v1__2026-10-28.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-10-28__training-ablation-v1/R3-dart__MLP01-256x3__s0__v1__2026-10-28/R3-dart__MLP01-256x3__s0__v1__2026-10-28.npz --round r1 --dev-scenes 0 --workers 20
+  done in 7.2 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 5, "development_student_hold": 0, "wall_s": 429.9}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r1-8ce75a729110 --name dagger-R7-v3-r1 --features features-v1 --workers 20
+  done in 0.1 min
+$ -m training.datasets.train --variant R7-dart-dagger-nodev-r1 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R7-dart-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.5 min
+  R7-dart-dagger round 1 seed 0: validation sustained hold 24/32, reach 25/32, median final error 1.454 mm
+
+===== R7-dart-dagger DAgger round 2: collector R7-dart-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R7-dart-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz --round r2 --dev-scenes 0 --workers 20
+  done in 2.8 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 182, "development_student_hold": 0, "wall_s": 169.6}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r2-a0d7e317993f --name dagger-R7-v3-r2 --features features-v1 --workers 20
+  done in 0.0 min
+$ -m training.datasets.train --variant R7-dart-dagger-nodev-r2 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.5 min
+  R7-dart-dagger round 2 seed 0: validation sustained hold 27/32, reach 28/32, median final error 2.027 mm
+
+===== R7-dart-dagger DAgger round 3: collector R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz --round r3 --dev-scenes 0 --workers 20
+  done in 2.2 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 202, "development_student_hold": 0, "wall_s": 131.6}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r3-4e702fea5bac --name dagger-R7-v3-r3 --features features-v1 --workers 20
+  done in 0.0 min
+$ -m training.datasets.train --variant R7-dart-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05/R7-dart-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.5 min
+  R7-dart-dagger round 3 seed 0: validation sustained hold 28/32, reach 30/32, median final error 2.158 mm
+
+===== extra seeds for round 3 (best seed-0 validation hold 28/32) =====
+$ -m training.datasets.train --variant R7-dart-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=1 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05/R7-dart-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05.npz
+  done in 0.4 min
+  R7-dart-dagger round 3 seed 1: validation sustained hold 29/32, reach 31/32, median final error 2.357 mm
+$ -m training.datasets.train --variant R7-dart-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=2 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05/R7-dart-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05.npz
+  done in 0.4 min
+  R7-dart-dagger round 3 seed 2: validation sustained hold 28/32, reach 31/32, median final error 2.269 mm
+
+Summary: /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/results/ablation/2026-11-05__training-ablation-v3/dagger/R7-dart-dagger/summary.csv
+row,round,seed,run,collector,sustained_hold,reach,n,median_final_err_mm,max_final1s_err_mm,model,written
+R7-dart-dagger,0,0,R3-dart__MLP01-256x3__s0__v1__2026-10-28,-,0/32,0/32,32,298.876,655.932,checkpoints/ablation/2026-10-28__training-ablation-v1/R3-dart__MLP01-256x3__s0__v1__2026-10-28/R3-dart__MLP01-256x3__s0__v1__2026-10-28.npz,2026-11-05 11:50:56
+R7-dart-dagger,1,0,R7-dart-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05,R3-dart__MLP01-256x3__s0__v1__2026-10-28.npz,24/32,25/32,32,1.454,152.077,checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R7-dart-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 12:02:36
+R7-dart-dagger,2,0,R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05,R7-dart-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz,27/32,28/32,32,2.027,1412.037,checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 12:09:48
+R7-dart-dagger,3,0,R7-dart-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05,R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,28/32,30/32,32,2.158,51.624,checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05/R7-dart-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 12:16:20
+R7-dart-dagger,3,1,R7-dart-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05,R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,29/32,31/32,32,2.357,123.264,checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05/R7-dart-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05.npz,2026-11-05 12:20:38
+R7-dart-dagger,3,2,R7-dart-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05,R7-dart-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,28/32,31/32,32,2.269,79.078,checkpoints/ablation/2026-11-05__training-ablation-v3/R7-dart-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05/R7-dart-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05.npz,2026-11-05 12:24:59
+
+===== R7-dart-dagger done 2026-11-05 12:24:59
+===== R5-baseline-dagger start 2026-11-05 12:24:59
+
+===== R5-baseline-dagger round 0 (R1-baseline), seed 0: R1-baseline__MLP01-256x3__s0__v1__2026-10-28.npz =====
+  R5-baseline-dagger round 0 seed 0: validation sustained hold 0/32, reach 3/32, median final error 25000.242 mm
+
+===== R5-baseline-dagger DAgger round 1: collector R1-baseline__MLP01-256x3__s0__v1__2026-10-28.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-10-28__training-ablation-v1/R1-baseline__MLP01-256x3__s0__v1__2026-10-28/R1-baseline__MLP01-256x3__s0__v1__2026-10-28.npz --round r1 --dev-scenes 0 --workers 20
+  done in 6.0 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 2, "development_student_hold": 0, "wall_s": 358.3}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r1-35bfc19cca73 --name dagger-R5-v3-r1 --features features-v1 --workers 20
+  done in 0.1 min
+$ -m training.datasets.train --variant R5-baseline-dagger-nodev-r1 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.8 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R5-baseline-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.6 min
+  R5-baseline-dagger round 1 seed 0: validation sustained hold 15/32, reach 26/32, median final error 10.451 mm
+
+===== R5-baseline-dagger DAgger round 2: collector R5-baseline-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R5-baseline-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz --round r2 --dev-scenes 0 --workers 20
+  done in 3.4 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 145, "development_student_hold": 0, "wall_s": 201.7}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r2-4c3e5c3a5196 --name dagger-R5-v3-r2 --features features-v1 --workers 20
+  done in 0.1 min
+$ -m training.datasets.train --variant R5-baseline-dagger-nodev-r2 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.4 min
+  R5-baseline-dagger round 2 seed 0: validation sustained hold 26/32, reach 30/32, median final error 4.397 mm
+
+===== R5-baseline-dagger DAgger round 3: collector R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz =====
+$ -m data_collection.collect_dagger --student /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz --round r3 --dev-scenes 0 --workers 20
+  done in 2.9 min
+  collected: {"train_episodes": 221, "fitting_episodes": 221, "development_episodes": 0, "fitting_student_hold": 164, "development_student_hold": 0, "wall_s": 173.2}
+$ -m training.datasets.build --source data/Markovian/DAgger/2026-11-05__collection__r3-0c5d9f42164c --name dagger-R5-v3-r3 --features features-v1 --workers 20
+  done in 0.0 min
+$ -m training.datasets.train --variant R5-baseline-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=0 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05/R5-baseline-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05.npz
+  done in 0.4 min
+  R5-baseline-dagger round 3 seed 0: validation sustained hold 28/32, reach 29/32, median final error 2.262 mm
+
+===== extra seeds for round 3 (best seed-0 validation hold 28/32) =====
+$ -m training.datasets.train --variant R5-baseline-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=1 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.9 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05/R5-baseline-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05.npz
+  done in 0.4 min
+  R5-baseline-dagger round 3 seed 1: validation sustained hold 29/32, reach 30/32, median final error 2.908 mm
+$ -m training.datasets.train --variant R5-baseline-dagger-nodev-r3 --set identity.date=2026-11-05 --set identity.seed=2 --set identity.version=v3 --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+  done in 3.7 min
+$ -m evaluation.evaluate --policy mlp --split validation --workers 20 --artifact checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05/R5-baseline-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05.npz
+  done in 0.4 min
+  R5-baseline-dagger round 3 seed 2: validation sustained hold 28/32, reach 31/32, median final error 2.801 mm
+
+Summary: /media/yilin/data/ML_Final/COMP_0245_2026_Final/final/robotnik_arm_task/results/ablation/2026-11-05__training-ablation-v3/dagger/R5-baseline-dagger/summary.csv
+row,round,seed,run,collector,sustained_hold,reach,n,median_final_err_mm,max_final1s_err_mm,model,written
+R5-baseline-dagger,0,0,R1-baseline__MLP01-256x3__s0__v1__2026-10-28,-,0/32,3/32,32,25000.242,690231.601,checkpoints/ablation/2026-10-28__training-ablation-v1/R1-baseline__MLP01-256x3__s0__v1__2026-10-28/R1-baseline__MLP01-256x3__s0__v1__2026-10-28.npz,2026-11-05 12:24:59
+R5-baseline-dagger,1,0,R5-baseline-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05,R1-baseline__MLP01-256x3__s0__v1__2026-10-28.npz,15/32,26/32,32,10.451,312.096,checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05/R5-baseline-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 12:35:24
+R5-baseline-dagger,2,0,R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05,R5-baseline-dagger-nodev-r1__MLP01-256x3__s0__v3__2026-11-05.npz,26/32,30/32,32,4.397,131.505,checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 12:43:04
+R5-baseline-dagger,3,0,R5-baseline-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05,R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,28/32,29/32,32,2.262,86.12,checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05/R5-baseline-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05.npz,2026-11-05 12:50:19
+R5-baseline-dagger,3,1,R5-baseline-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05,R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,29/32,30/32,32,2.908,57.798,checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05/R5-baseline-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05.npz,2026-11-05 12:54:39
+R5-baseline-dagger,3,2,R5-baseline-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05,R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz,28/32,31/32,32,2.801,72.846,checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05/R5-baseline-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05.npz,2026-11-05 12:58:45
+
+===== R5-baseline-dagger done 2026-11-05 12:58:45
+===== ALL DONE 2026-11-05 12:58:45

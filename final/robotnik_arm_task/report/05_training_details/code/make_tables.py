@@ -22,7 +22,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]  # report/05_training_details
 DATA, OUT = ROOT / "data", ROOT / "tables"
 RUN = re.compile(r"^(?P<variant>.+?)__(?P<arch>[^_]+)__s(?P<seed>\d+)__(?P<version>v\d+)__(?P<date>[\d-]+)$")
-ROUND = re.compile(r"^(?P<row>.+)-r(?P<round>\d+)$")
+ROUND = re.compile(r"^(?P<row>.+?)(?:-nodev)?-r(?P<round>\d+)$")  # v3 variants: <row>-nodev-r<k>
 
 
 def read_metrics(path: Path) -> list[dict]:

@@ -1,12 +1,12 @@
 pipeline,round,added_wall_min,added_expert_labels_M,sequential_train_collect_cycles,note
 DAgger + Gate,0,0.0,0.0,0,-
-DAgger + Gate,1,12.0,10.05,1,round 1: collect 7.7 + build 0.1 + train 3.8 + validate 0.4 min
-DAgger + Gate,2,20.4,14.66,2,round 2: collect 4.0 + build 0.1 + train 4.0 + validate 0.3 min
-DAgger + Gate,3,28.4,18.62,3,round 3: collect 3.5 + build 0.1 + train 4.0 + validate 0.4 min
+DAgger + Gate,1,10.1,7.81,1,round 1: collect 5.9 + build 0.1 + train 3.7 + validate 0.4 min
+DAgger + Gate,2,17.4,11.13,2,round 2: collect 3.1 + build 0.0 + train 3.8 + validate 0.4 min
+DAgger + Gate,3,24.3,14.23,3,round 3: collect 2.7 + build 0.0 + train 3.8 + validate 0.4 min
 f-DAgger + Gate,0,3.3,5.3,0,"OU collection 442 episodes, first-to-last write"
-f-DAgger + Gate,1,11.1,9.37,1,round 1: collect 3.4 + build 0.1 + train 3.9 + validate 0.4 min
-f-DAgger + Gate,2,18.8,13.04,2,round 2: collect 3.3 + build 0.1 + train 3.9 + validate 0.4 min
-f-DAgger + Gate,3,26.0,16.54,3,round 3: collect 3.0 + build 0.1 + train 3.8 + validate 0.3 min
+f-DAgger + Gate,1,10.1,8.23,1,round 1: collect 2.6 + build 0.0 + train 3.8 + validate 0.4 min
+f-DAgger + Gate,2,16.7,10.95,2,round 2: collect 2.3 + build 0.0 + train 3.8 + validate 0.5 min
+f-DAgger + Gate,3,23.5,13.69,3,round 3: collect 2.4 + build 0.0 + train 4.0 + validate 0.4 min
 DART + Gate (alpha 1),0,0.0,0.0,0,-
 DART + Gate (alpha 1),1,8.7,5.32,1,iteration 1: collect_heldout 0.3 + estimate_noise 0.1 + collect_noisy 3.3 + build 0.1 + train 4.2 + validate 0.7 min
 DART + Gate (alpha 1),2,17.1,10.63,2,iteration 2: collect_heldout 0.3 + estimate_noise 0.1 + collect_noisy 3.2 + build 0.1 + train 4.1 + validate 0.6 min

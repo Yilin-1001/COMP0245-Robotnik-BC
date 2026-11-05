@@ -35,7 +35,7 @@
 \State train $\hat\pi_0$ on $\D$
 \Statex \textit{Phase 2: DAgger}
 \For{$i=1,\dots,N$}
-  \State run $\hat\pi_{i-1}$ on the training and new development scenarios
+  \State run $\hat\pi_{i-1}$ on the training scenarios
   \State get dataset $\D_i=\{(s,\pi^*(s))\}$ of visited states and expert actions
   \State aggregate datasets: $\D\gets\D\cup\D_i$
   \State train $\hat\pi_i$ on $\D$

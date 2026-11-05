@@ -23,6 +23,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 
+from test_data import load_rollouts
+
 ROOT = Path(__file__).resolve().parents[1]  # report/06_ablation
 DATA, TAB, FIG = ROOT / "data", ROOT / "tables", ROOT / "figures"
 # Reference palette, categorical slots 1-2 (validated pair, CVD-safe) and the text/grid neutrals.
@@ -129,6 +131,7 @@ def dagger_rounds():
     rows = read("validation_by_round.csv")
     fig, ax = plt.subplots(figsize=(3.5, 2.6))
     style = {"R5": (ORANGE, "--", "o"), "R6": (BLUE, "-", "o"), "R7": (ORANGE, "--", "s"), "R8": (BLUE, "-", "s")}
+    ends, LABEL_GAP = [], 11.0  # LABEL_GAP in percentage points
     for k, (colour, ls, marker) in style.items():
         g = sorted((r for r in rows if r["row"] == k), key=lambda r: int(r["round"]))
         rnd = np.array([int(r["round"]) for r in g])
@@ -140,9 +143,14 @@ def dagger_rounds():
                    linewidth=0.8)
         ax.scatter(rnd[~three], rate[~three], facecolor="white", edgecolor=colour, marker=marker, s=22, zorder=3,
                    linewidth=1.0)
-        name = g[0]["report_name"]
-        ax.annotate(f"{k} {name}", (3, rate[-1]), xytext=(5, {"R5": -6, "R6": -1, "R7": 4, "R8": 9}[k]),
-                    textcoords="offset points", va="center", fontsize=6, color=INK)
+        ends.append((rate[-1], f"{k} {g[0]['report_name']}"))
+    # End labels, top to bottom by final value, at least LABEL_GAP points apart so close rows do not overlap.
+    y_prev = None
+    for y, text in sorted(ends, reverse=True):
+        y_label = y if y_prev is None else min(y, y_prev - LABEL_GAP)
+        ax.annotate(text, (3, y), xytext=(3.2, y_label), textcoords="data", va="center", fontsize=6, color=INK,
+                    annotation_clip=False)
+        y_prev = y_label
     ax.set_xticks(range(4), ["0\n(no DAgger)", "1", "2", "3"])
     ax.set_xlim(-0.15, 3.15)
     ax.set_ylim(0, 104)
@@ -163,8 +171,7 @@ def dagger_rounds():
 
 
 def terminal_error_ecdf():
-    with open(DATA / "test/rollouts.csv", newline="") as f:
-        rolls = [r for r in csv.DictReader(f) if r["suite"] == "T0"]
+    rolls = [r for r in load_rollouts() if r["suite"] == "T0"]
     fig, axes = plt.subplots(1, 4, figsize=(7.16, 1.85), sharey=True)
     for ax, m in zip(axes, METHODS):
         for k, colour, ls, label in [(PAIRS[m][0], ORANGE, "--", "without Gate"), (PAIRS[m][1], BLUE, "-", "with Gate")]:

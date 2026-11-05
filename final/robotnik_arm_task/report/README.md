@@ -1,7 +1,7 @@
 # Report evidence
 
 The upload weights use these Report names in filenames, checkpoint metadata and configs:
-[`../checkpoints/2026-11-04final/`](../checkpoints/2026-11-04final/README.md).
+[`../checkpoints/2026-11-05final/`](../checkpoints/2026-11-05final/README.md).
 See the [canonical model IDs and historical aliases](../../../docs/model-naming.md).
 
 Each folder backs one part of the written report with its figures, tables, code and data.
@@ -15,6 +15,7 @@ Each folder backs one part of the written report with its figures, tables, code 
 | 05. Training details | [`05_training_details/`](05_training_details/README.md) | The shared training recipe (network, Huber + damping-Jacobian loss, AdamW, warm-up + cosine lr, 42k updates), its provenance, training curves, M6 offline and R4 closed-loop BC vs BC+J comparisons, numerical correctness checks and source snapshots |
 | 06. Ablation Experiment | [`06_ablation/`](06_ablation/README.md) | The R1–R8 ablation under the report names Baseline, OU, DAgger and f-DAgger, each without and with the Gate: validation, unified test per suite and band, DAgger rounds, gate effect, failure modes, hold test, cost and efficiency |
 | 07. Training time comparison | [`07_training_time_comparison/`](07_training_time_comparison/README.md) | Training time vs test success for f-DAgger + Gate (ours), DAgger + Gate and full DART (DART + Gate), with the supporting noise and far-target analyses |
+| 08. DAgger without development scenes | [`08_dev_scene_removal/`](08_dev_scene_removal/README.md) | Why the report's R5–R8 come from v3 (221 fitting episodes per DAgger round) instead of v2 (plus 64 low/near-biased development scenes), and the v3 − v2 effect on validation and every test suite |
 
 The [OU noise parameter-selection experiments](04_f_dagger/ou_parameter_selection.md) are indexed under `04_f_dagger/`, with their original pilot traces, stress-test records, protocol files and source hashes in [`04_f_dagger/data/ou_noise/`](04_f_dagger/data/ou_noise/README.md).
 

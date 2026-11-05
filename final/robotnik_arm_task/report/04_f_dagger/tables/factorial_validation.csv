@@ -3,7 +3,7 @@ R1-baseline,Baseline,0,0,0,-,0/1/0,1/96,0.01,0.00-0.06
 R2-gate,Baseline + Gate,1,0,0,-,2/3/5,10/96,0.104,0.06-0.18
 R3-dart,OU,0,1,0,-,0/1/0,1/96,0.01,0.00-0.06
 R4-dart-gate,OU + Gate,1,1,0,-,29/27/27,83/96,0.865,0.78-0.92
-R5-baseline-dagger,DAgger,0,0,1,r3,28/29/29,86/96,0.896,0.82-0.94
-R6-gate-dagger,DAgger + Gate,1,0,1,r3,31/29/30,90/96,0.938,0.87-0.97
-R7-dart-dagger,f-DAgger,0,1,1,r3,30/31/30,91/96,0.948,0.88-0.98
-R8-dart-gate-dagger,f-DAgger + Gate,1,1,1,r3,31/31/31,93/96,0.969,0.91-0.99
+R5-baseline-dagger,DAgger,0,0,1,r3,28/29/28,85/96,0.885,0.81-0.93
+R6-gate-dagger,DAgger + Gate,1,0,1,r3,28/26/28,82/96,0.854,0.77-0.91
+R7-dart-dagger,f-DAgger,0,1,1,r3,28/29/28,85/96,0.885,0.81-0.93
+R8-dart-gate-dagger,f-DAgger + Gate,1,1,1,r3,29/29/31,89/96,0.927,0.86-0.96

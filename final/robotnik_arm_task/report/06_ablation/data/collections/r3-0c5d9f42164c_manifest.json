@@ -1,0 +1,184 @@
+{
+  "schema_version": "dagger-v1",
+  "dataset_id": "Markovian/DAgger/2026-11-05__collection__r3-0c5d9f42164c",
+  "dataset_kind": "dagger",
+  "teacher_id": "markovian_expert",
+  "teacher_version": "markovian-lt0.50-v1",
+  "teacher_parameters": {
+    "class": "data_collection.expert.MarkovianExpert",
+    "params": {
+      "arm": {
+        "reach_limit": 0.85,
+        "kp": 100.0,
+        "kd": 30.0,
+        "max_joint_vel": 1.0,
+        "max_q_lead": 0.15,
+        "max_torque": 30.0,
+        "cartesian_kp": 1.5,
+        "max_cartesian_speed": 0.25,
+        "min_ik_damping": 0.01,
+        "max_ik_damping": 0.1,
+        "singularity_threshold": 0.15,
+        "limit_margin": 0.05
+      },
+      "base": {
+        "nav_timeout": "inf",
+        "kp_pos": 1.0,
+        "kp_ori": 3.0,
+        "max_lin_vel": 0.25,
+        "min_lin_vel": 0.05,
+        "max_ang_vel": 1.0,
+        "pos_tol": 0.08,
+        "ang_tol": 0.05,
+        "wheel_radius": 0.11,
+        "wheel_base_width": 0.66
+      },
+      "lead_time": 0.5,
+      "drive_heading_tol": 0.3,
+      "reach_tol_scale": 1.5,
+      "base_pitch": 0.0022
+    },
+    "model": "summit_xl_complete_pin.urdf + 1 kg end-effector body (PyBullet default mass), fixed fingers 0.1 rad"
+  },
+  "round": "r3",
+  "beta": 0.0,
+  "student": {
+    "path": "checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz",
+    "sha256": "1444f9449f8f78d5e8dc746b4f874759950f1b85c20abcdcda259657abf888e3",
+    "run_id": "R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05"
+  },
+  "development_scenes": {
+    "seed": 20261030,
+    "low_frac": 0.7,
+    "low_z": [
+      0.1,
+      0.5
+    ],
+    "near_frac": 0.5,
+    "near_d": [
+      0.5,
+      1.0
+    ],
+    "full_z": [
+      0.1,
+      1.25
+    ],
+    "full_d": [
+      0.5,
+      3.0
+    ],
+    "n": 0
+  },
+  "fitting_scenes": true,
+  "code_digest": "0c5d9f42164c8565911a0e16ae4944ac4ac37bf75ccdca39b95eb6d77987cf9f",
+  "source": {
+    "git_head": "e1606f2c7aa96c6bc7a07fe0f3f6b47775f709da",
+    "git_dirty_paths": [
+      "M README.md",
+      " M docs/README.md",
+      " M final/robotnik_arm_task/README.md",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R5-baseline-dagger-nodev-r1.yaml",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R5-baseline-dagger-nodev-r2.yaml",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R6-gate-dagger-nodev-r1.yaml",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R6-gate-dagger-nodev-r2.yaml",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R6-gate-dagger-nodev-r3.yaml",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R7-dart-dagger-nodev-r1.yaml",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R7-dart-dagger-nodev-r2.yaml",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R7-dart-dagger-nodev-r3.yaml",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R8-dart-gate-dagger-nodev-r1.yaml",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R8-dart-gate-dagger-nodev-r2.yaml",
+      "?? final/robotnik_arm_task/experiments/configs/datasets/variants/R8-dart-gate-dagger-nodev-r3.yaml",
+      "?? final/robotnik_arm_task/results/ablation/2026-11-05__training-ablation-v3/"
+    ],
+    "source_sha256": {
+      "data_collection/expert.py": "48b5ec45d7ec294b8d7914e09daaeca5a55b1259a05cce02ed36d11be6c46b52",
+      "data_collection/template_teacher.py": "23c46487ba4f71a830c06c2dd70800ffef2031eb6b707cc9bca67d9fce468c99",
+      "robotnik_arm_control.py": "1fd0baf658406c142e1dbb02c51f225e30bc60cb22ff0a0a6192f2ba9cc990e9",
+      "robotnik_arm_task.py": "a8de247c79a5aa8ffb80c86e70ae4eb6a0afb4d60da2b89fb584924ea0eea94e",
+      "core/env.py": "9aab94018236fbb2f2f86d432fada45d384e395aacba118b5fb5ab44cb6789d2",
+      "core/interfaces.py": "0ef0b76a6a7e1b893acd6fff2370f8d267e7d372a615574297d22ddcdde3c582",
+      "data_collection/scenarios.py": "d47d300e60757e0b6acaef5a0c6426e9605ae3c237b3b76a9b5356c00b2409d6",
+      "data_collection/collect.py": "2a29b865501166b5640ddd565a1c4a91adb2b824b1e6ec76217c307010eedd17",
+      "settings.yaml": "b5efd38c5d6f8f0788825ea759635ca9915a61d0ce0a6f2238df73f0142176c7",
+      "configs/robotnik_arm.json": "ee65349b469a95257f8e94fc06c22d76629f2b3b6f45ac74521c0e059de9bdf2",
+      "models/summit_xl_arm_description/summit_xl_complete.urdf": "25923594d151ed8fdf953de09072adc41e07ba29374b6bcdf44fa3a90bb1b180",
+      "models/summit_xl_arm_description/summit_xl_complete_pin.urdf": "aea40a17a794e73d1b8058b0308431130f9b055e35a6092c51074406e951f369",
+      "simulation_and_control/sim/pybullet_robot_interface.py": "4635296328b78d8e5c4444ba97dbd4fae2323d1bf722faee67114bcd5705534f",
+      "simulation_and_control/controllers/servo_motor.py": "93608b614caa9440954559e242c8705c776008be89d66f269b682f80477708eb"
+    },
+    "code_digest": "c94ad845072c274f3f5ccb87c873defac5f47d5eb475725d4b658130a8710038",
+    "versions": {
+      "python": "3.10.20",
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "pybullet": "3.2.7 (requirements.txt)",
+      "pinocchio": "4.1.0"
+    }
+  },
+  "collection_configuration": {
+    "sobol_m": {
+      "train": 8,
+      "test": 6
+    },
+    "sobol_seed": {
+      "train": 1026001,
+      "test": 1026002
+    },
+    "env_seed_offset": {
+      "train": 1000000,
+      "test": 1100000
+    },
+    "ranges": {
+      "target_dist": [
+        0.5,
+        3.0
+      ],
+      "rel_azimuth": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "target_z": [
+        0.1,
+        1.25
+      ],
+      "start_x": [
+        -0.5,
+        0.5
+      ],
+      "start_y": [
+        -0.5,
+        0.5
+      ],
+      "start_yaw": [
+        -3.141592653589793,
+        3.141592653589793
+      ]
+    },
+    "markovian_lead_time": 0.5,
+    "episode_cap_s": 40.0,
+    "post_reach_record_s": 3.0,
+    "min_reach_time_s": 8.0,
+    "hold_window_s": 1.0,
+    "exec_torque_limit": 30.0,
+    "exec_wheel_limit": 6.0,
+    "pilot_scenarios": 16
+  },
+  "reach_tolerance_m": 0.01,
+  "counts": {
+    "train_episodes": 221,
+    "fitting_episodes": 221,
+    "development_episodes": 0,
+    "fitting_student_hold": 164,
+    "development_student_hold": 0
+  },
+  "fields": {
+    "a_expert": "label: clean teacher-A output on o_t (the state the student reached)",
+    "a_executed": "the student's clipped command, sent to the simulator",
+    "student_raw": "the student's 9-dimensional prediction before limits",
+    "sampled_action_noise": "a_executed - clip(a_expert): student/teacher disagreement, diagnostics only",
+    "other fields": "as in Clean (see data/Markovian/Clean/manifest.json)"
+  },
+  "outcome_definitions": "as in Clean, for the student's own rollout",
+  "collection_command": "python -m data_collection.collect_dagger --student checkpoints/ablation/2026-11-05__training-ablation-v3/R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05/R5-baseline-dagger-nodev-r2__MLP01-256x3__s0__v3__2026-11-05.npz --round r3 --dev-scenes 0",
+  "written": "2026-11-05T12:45:58+00:00"
+}

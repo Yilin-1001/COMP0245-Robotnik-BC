@@ -1,13 +1,13 @@
 row,report_name,round,collector,episodes,fitting_student_hold,dev_student_hold,rows,median_student_teacher_arm_rmse_nm,collection
-R5-baseline-dagger,DAgger,r1,R1-baseline,285,2/221,0/64,10839662,27.521,r1-ded9e8677309
-R5-baseline-dagger,DAgger,r2,R5-baseline-dagger-r1,285,132/221,21/64,5775850,1.837,r2-2c203cc14ade
-R5-baseline-dagger,DAgger,r3,R5-baseline-dagger-r2,285,168/221,34/64,4702313,1.539,r3-6405266edbb7
-R6-gate-dagger,DAgger + Gate,r1,R2-gate,285,21/221,4/64,10054646,27.654,r1-3502b44fdd49
-R6-gate-dagger,DAgger + Gate,r2,R6-gate-dagger-r1,285,188/221,38/64,4609074,0.968,r2-dd8cdddd816d
-R6-gate-dagger,DAgger + Gate,r3,R6-gate-dagger-r2,285,208/221,47/64,3958569,0.459,r3-818df4ed86fa
-R7-dart-dagger,f-DAgger,r1,R3-dart,285,5/221,0/64,11254093,18.337,r1-1c72edfc4693
-R7-dart-dagger,f-DAgger,r2,R7-dart-dagger-r1,285,200/221,33/64,4391907,1.212,r2-f24e9e1afcf8
-R7-dart-dagger,f-DAgger,r3,R7-dart-dagger-r2,285,205/221,49/64,3644393,0.885,r3-236d0b5825c7
-R8-dart-gate-dagger,f-DAgger + Gate,r1,R4-dart-gate,285,201/221,50/64,4064734,0.166,r1-f6109f47b703
-R8-dart-gate-dagger,f-DAgger + Gate,r2,R8-dart-gate-dagger-r1,285,213/221,49/64,3666213,0.129,r2-cecd413f4677
-R8-dart-gate-dagger,f-DAgger + Gate,r3,R8-dart-gate-dagger-r2,285,217/221,56/64,3504985,0.125,r3-59c2b9d076d0
+R5-baseline-dagger,DAgger,r1,R1-baseline,221,2/221,0/0,8515945,27.222,r1-35bfc19cca73
+R5-baseline-dagger,DAgger,r2,R5-baseline-dagger-nodev-r1,221,145/221,0/0,4021304,1.617,r2-4c3e5c3a5196
+R5-baseline-dagger,DAgger,r3,R5-baseline-dagger-nodev-r2,221,164/221,0/0,3193247,1.252,r3-0c5d9f42164c
+R6-gate-dagger,DAgger + Gate,r1,R2-gate,221,23/221,0/0,7808284,27.517,r1-246dad86d873
+R6-gate-dagger,DAgger + Gate,r2,R6-gate-dagger-nodev-r1,221,170/221,0/0,3326479,0.866,r2-a510dfa4f21c
+R6-gate-dagger,DAgger + Gate,r3,R6-gate-dagger-nodev-r2,221,187/221,0/0,3095924,0.532,r3-af8db1a97ec2
+R7-dart-dagger,f-DAgger,r1,R3-dart,221,5/221,0/0,8694093,10.908,r1-8ce75a729110
+R7-dart-dagger,f-DAgger,r2,R7-dart-dagger-nodev-r1,221,182/221,0/0,3377971,1.082,r2-a0d7e317993f
+R7-dart-dagger,f-DAgger,r3,R7-dart-dagger-nodev-r2,221,202/221,0/0,2725137,0.97,r3-4e702fea5bac
+R8-dart-gate-dagger,f-DAgger + Gate,r1,R4-dart-gate,221,201/221,0/0,2929001,0.08,r1-f637a3da41a3
+R8-dart-gate-dagger,f-DAgger + Gate,r2,R8-dart-gate-dagger-nodev-r1,221,216/221,0/0,2716986,0.092,r2-f9fb4ba17483
+R8-dart-gate-dagger,f-DAgger + Gate,r3,R8-dart-gate-dagger-nodev-r2,221,217/221,0/0,2735619,0.088,r3-fae52e4b63cb

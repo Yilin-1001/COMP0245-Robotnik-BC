@@ -1,0 +1,29 @@
+group,row,report_name,n,median_final1s_max_err_mm,share_below_5mm_pct,share_below_10mm_pct,comparison,error_ratio,ratio_boot95_low,ratio_boot95_high
+T0,expert,Expert A (teacher),64,0.65,100.0,100.0,,,,
+T0,R1,Baseline,192,2518.15,0.5,1.0,,,,
+T0,R2,Baseline + Gate,192,9033.23,0.0,0.0,,,,
+T0,R3,OU,192,288.7,0.0,0.0,,,,
+T0,R4,OU + Gate,192,8.9,39.1,51.6,,,,
+T0,R5,DAgger,192,9.18,34.9,53.6,,,,
+T0,R6,DAgger + Gate,192,11.69,28.6,46.9,,,,
+T0,R7,f-DAgger,192,20.04,13.0,31.2,,,,
+T0,R8,f-DAgger + Gate,192,4.76,51.0,65.6,,,,
+T0,R8/R4,f-DAgger + Gate / OU + Gate,64,,,,"geometric-mean error ratio, paired by scene",0.643,0.491,0.847
+T0,R8/R6,f-DAgger + Gate / DAgger + Gate,64,,,,"geometric-mean error ratio, paired by scene",0.383,0.278,0.531
+T0,R8/R7,f-DAgger + Gate / f-DAgger,64,,,,"geometric-mean error ratio, paired by scene",0.272,0.201,0.369
+T0,R6/R4,DAgger + Gate / OU + Gate,64,,,,"geometric-mean error ratio, paired by scene",1.677,1.214,2.314
+T0,R5/R4,DAgger / OU + Gate,64,,,,"geometric-mean error ratio, paired by scene",1.107,0.787,1.584
+T0+T4+T5,expert,Expert A (teacher),112,0.65,100.0,100.0,,,,
+T0+T4+T5,R1,Baseline,336,2537.33,0.3,0.6,,,,
+T0+T4+T5,R2,Baseline + Gate,336,9237.65,0.0,0.0,,,,
+T0+T4+T5,R3,OU,336,276.33,0.0,0.0,,,,
+T0+T4+T5,R4,OU + Gate,336,13.03,33.3,44.3,,,,
+T0+T4+T5,R5,DAgger,336,8.14,37.8,56.5,,,,
+T0+T4+T5,R6,DAgger + Gate,336,13.79,26.2,44.0,,,,
+T0+T4+T5,R7,f-DAgger,336,21.54,14.6,31.2,,,,
+T0+T4+T5,R8,f-DAgger + Gate,336,6.38,45.2,60.7,,,,
+T0+T4+T5,R8/R4,f-DAgger + Gate / OU + Gate,112,,,,"geometric-mean error ratio, paired by scene",0.604,0.488,0.753
+T0+T4+T5,R8/R6,f-DAgger + Gate / DAgger + Gate,112,,,,"geometric-mean error ratio, paired by scene",0.416,0.32,0.545
+T0+T4+T5,R8/R7,f-DAgger + Gate / f-DAgger,112,,,,"geometric-mean error ratio, paired by scene",0.33,0.257,0.425
+T0+T4+T5,R6/R4,DAgger + Gate / OU + Gate,112,,,,"geometric-mean error ratio, paired by scene",1.452,1.112,1.898
+T0+T4+T5,R5/R4,DAgger / OU + Gate,112,,,,"geometric-mean error ratio, paired by scene",0.791,0.6,1.043

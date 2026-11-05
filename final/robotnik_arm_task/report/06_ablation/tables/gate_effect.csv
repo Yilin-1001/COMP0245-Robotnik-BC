@@ -9,13 +9,13 @@ OU,test T0 in range,R3,1.6,R4,96.9,95.3,91.1,98.4,0.0056,9/9
 OU,test T2 near,R3,6.9,R4,47.2,40.3,25.0,55.6,0.0064,9/9
 OU,test T3 height edges,R3,14.6,R4,54.2,39.6,26.0,53.1,0.0064,9/9
 OU,test all 240,R3,4.6,R4,81.2,76.7,72.1,80.8,0.0056,9/9
-DAgger,validation hold,R5,89.6,R6,93.8,4.2,-3.1,11.5,1.0,7/9
-DAgger,test T0 in range,R5,96.4,R6,97.9,1.6,-0.5,4.2,1.0,6/9
-DAgger,test T2 near,R5,37.5,R6,50.0,12.5,-5.6,29.2,1.0,7/9
-DAgger,test T3 height edges,R5,12.5,R6,21.9,9.4,0.0,20.8,1.0,8/9
-DAgger,test all 240,R5,75.0,R6,80.8,5.8,2.9,8.8,0.0091,8/9
-f-DAgger,validation hold,R7,94.8,R8,96.9,2.1,-2.1,7.3,1.0,6/9
-f-DAgger,test T0 in range,R7,97.4,R8,99.0,1.6,-1.0,5.2,1.0,5/9
-f-DAgger,test T2 near,R7,50.0,R8,81.9,31.9,16.7,47.2,0.057,8/9
-f-DAgger,test T3 height edges,R7,25.0,R8,66.7,41.7,31.2,52.1,0.0056,9/9
-f-DAgger,test all 240,R7,75.7,R8,75.3,-0.4,-6.0,5.1,1.0,5/9
+DAgger,validation hold,R5,88.5,R6,85.4,-3.1,-10.4,4.2,1.0,5/9
+DAgger,test T0 in range,R5,96.4,R6,91.7,-4.7,-10.4,0.0,1.0,8/9
+DAgger,test T2 near,R5,34.7,R6,50.0,15.3,-2.8,33.3,1.0,6/9
+DAgger,test T3 height edges,R5,33.3,R6,27.1,-6.2,-17.7,4.2,1.0,6/9
+DAgger,test all 240,R5,80.0,R6,76.7,-3.3,-6.8,0.1,1.0,7/9
+f-DAgger,validation hold,R7,88.5,R8,92.7,4.2,-1.0,10.4,1.0,7/9
+f-DAgger,test T0 in range,R7,96.4,R8,97.9,1.6,-1.0,5.2,1.0,6/9
+f-DAgger,test T2 near,R7,37.5,R8,56.9,19.4,4.2,34.7,1.0,7/9
+f-DAgger,test T3 height edges,R7,30.2,R8,53.1,22.9,10.4,36.5,0.18,8/9
+f-DAgger,test all 240,R7,67.6,R8,70.0,2.4,-1.8,6.5,1.0,6/9

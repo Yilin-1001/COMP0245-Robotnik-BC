@@ -1,21 +1,22 @@
 """Training-time comparison: unified-test success per round and pipeline cost per round, for four pipelines.
 
 Pipelines (the key in the CSVs is the report name; "+ Gate" = the 22-input models, as in ../../06_ablation/):
-  DAgger + Gate          : R2-gate (round 0, BC on clean data) -> R6-gate-dagger-r1..r3
-  f-DAgger + Gate        : R4-dart-gate (round 0, OU + Gate: clean + OU-noise data) -> R8-dart-gate-dagger-r1..r3
+  DAgger + Gate          : R2-gate (round 0, BC on clean data) -> R6-gate-dagger-nodev-r1..r3 (ablation v3)
+  f-DAgger + Gate        : R4-dart-gate (round 0, OU + Gate: clean + OU-noise data) -> R8-dart-gate-dagger-nodev-r1..r3 (v3)
   DART + Gate            : R2-gate (round 0) -> R9-dart-full-a6-r1..r3 (full DART, learner-fitted noise, alpha = 6)
   DART + Gate (alpha 1)  : R2-gate (round 0) -> R9-dart-full-r1..r3 (validation only, not tested, so no test rows)
 Success comes from unified-test rollouts.csv files, matched by run id, so several test runs can be merged.
 Cost is the wall time of each round's seed-0 chain: the steps that must run in sequence. Sources:
-  - DAgger rounds: the 2026-11-01 v2 run log.
+  - DAgger rounds: the 2026-11-05 v3 run log (v3 = no development scenes; it replaces v2, ../../08_dev_scene_removal/).
   - OU-noise collection: its per-episode write timestamps.
   - Full DART: results/ablation/2026-11-04__dart-full/timing.csv.
 All runs use 20 workers on the reference machine (RTX 5070 Ti laptop, 24 CPU threads).
 
 Usage (from final/robotnik_arm_task/):
     python report/07_training_time_comparison/code/make_comparison.py --tests results/test/2026-11-01_215340__R1-R8 \
-        results/test/2026-11-03_231207__dart-low-round-dagger results/test/2026-11-04_134912__dart-full-a6 \
-        results/test/2026-11-04_151122__dart-full-a6-r2r3 --out report/07_training_time_comparison/tables \
+        results/test/2026-11-05_130144__nodev-dagger-R5-R8 results/test/<datetime>__nodev-low-round-R6-R8-T0 \
+        results/test/2026-11-04_134912__dart-full-a6 results/test/2026-11-04_151122__dart-full-a6-r2r3 \
+        --out report/07_training_time_comparison/tables \
         --fig-dir report/07_training_time_comparison/figures --data-dir report/07_training_time_comparison/data
 """
 import argparse
@@ -29,10 +30,12 @@ from pathlib import Path
 import numpy as np
 
 TASK_DIR = Path(__file__).resolve().parents[3]  # final/robotnik_arm_task
-V2_LOG = TASK_DIR / "results/ablation/2026-11-01__training-ablation-v2/dagger/run.log"
+DAGGER_LOG = TASK_DIR / "results/ablation/2026-11-05__training-ablation-v3/dagger/run.log"
+DAGGER_VERSION = "v3"
 DART_DIR = TASK_DIR / "data/Markovian/DART/2026-10-28__collection__d2-s075-x2-58af5db87875"
 DATASETS = TASK_DIR / "data/datasets/A"
-PIPELINES = {"DAgger + Gate": ("R2-gate", "R6-gate-dagger", "R6"), "f-DAgger + Gate": ("R4-dart-gate", "R8-dart-gate-dagger", "R8"),
+PIPELINES = {"DAgger + Gate": ("R2-gate", "R6-gate-dagger-nodev", "R6"),
+             "f-DAgger + Gate": ("R4-dart-gate", "R8-dart-gate-dagger-nodev", "R8"),
              "DART + Gate (alpha 1)": ("R2-gate", "R9-dart-full", "R9"), "DART + Gate": ("R2-gate", "R9-dart-full-a6", "R9a6")}
 DART_FULL_TIMING = TASK_DIR / "results/ablation/2026-11-04__dart-full/timing.csv"
 GROUPS = [("T0", None, "T0 core (in distribution)"), ("T1", "3-6m", "T1 far 3-6 m"), ("T1", "6-10m", "T1 far 6-10 m"),
@@ -92,7 +95,12 @@ def success_table(rows):
     for (pipe, rnd) in sorted({(r["pipeline"], r["round"]) for r in rows}):
         sel = [r for r in rows if r["pipeline"] == pipe and r["round"] == rnd]
         seeds = sorted({r["seed"] for r in sel})
+        tested = {r["suite"] for r in sel}
         for suite, band, label in GROUPS:
+            # A pooled group is reported only if every suite in it was tested (v3 rounds 1-2 were tested on T0 only).
+            needed = set(GROUP_SUITES.get(suite, ("T0", "T1", "T2", "T3", "T4", "T5") if suite == "all" else (suite,)))
+            if not needed <= tested:
+                continue
             g = [r for r in sel if in_group(r, suite, band)]
             if not g:
                 continue
@@ -113,9 +121,9 @@ def success_table(rows):
 
 
 def step_minutes():
-    """{(row prefix, step, round): minutes} for the seed-0 chain of the 2026-11-01 v2 run."""
+    """{(row prefix, step, round): minutes} for the seed-0 chain of the 2026-11-05 v3 run."""
     out, row, step = {}, None, None
-    for line in V2_LOG.read_text().splitlines():
+    for line in DAGGER_LOG.read_text().splitlines():
         m = re.match(r"===== (R\d)-\S+ start", line)
         if m:
             row = m.group(1)
@@ -156,7 +164,7 @@ def cost_table():
         for k in (1, 2, 3):
             parts = {s: minutes[(row, s, k)] for s in ("collect_dagger", "build", "train", "evaluate")}
             wall += sum(parts.values())
-            labels += rows_of(f"dagger-{row}-v2-r{k}__features-v1-gate")
+            labels += rows_of(f"dagger-{row}-{DAGGER_VERSION}-r{k}__features-v1-gate")
             cycles += 1
             out.append({"pipeline": pipe, "round": k, "added_wall_min": round(wall, 1), "added_expert_labels_M": round(labels / 1e6, 2),
                         "sequential_train_collect_cycles": cycles,
@@ -193,6 +201,23 @@ def dart_full_cost(pipe):
         out.append({"pipeline": pipe, "round": k, "added_wall_min": round(wall, 1),
                     "added_expert_labels_M": round(labels / 1e6, 2), "sequential_train_collect_cycles": k,
                     "note": f"iteration {k}: " + " + ".join(f"{s} {m:.1f}" for s, m in parts.items()) + " min"})
+    return out
+
+
+def test_runs(test_dirs, used):
+    """One line per (test run, model used here): run status, scene-manifest hash, run hash, git head, model sha256."""
+    out, seen = [], set()
+    for d in test_dirs:
+        run = json.load(open(Path(d) / "run.json"))
+        for m in run["models"]:
+            if m["id"] not in used or m["id"] in seen:
+                continue
+            seen.add(m["id"])
+            out.append({"test_run": Path(d).name, "status": run["status"],
+                        "scene_manifest_sha256": run["scene_manifest_sha256"], "run_hash": run["run_hash"],
+                        "git_head": run.get("git_head", ""), "model_id": m["id"], "model_sha256": m["sha256"],
+                        "model_path": str(Path(m["path"]).resolve().relative_to(TASK_DIR)),
+                        "feature_definition": m["feature_definition"]})
     return out
 
 
@@ -260,6 +285,7 @@ def main(argv=None) -> int:
                              "scenario_id": r["scenario_id"], "suite": r["suite"], "band": r["band"],
                              "success": r["success"], "final1s_max_err_mm": r["final1s_max_err_mm"]}
         write_csv(args.data_dir / "rollouts_used.csv", sorted(used.values(), key=lambda r: (r["model_id"], r["scenario_id"])))
+        write_csv(args.data_dir / "test_runs.csv", test_runs(args.tests, {r["model_id"] for r in rows}))
     for c in cost:
         print(c)
     for s in success:

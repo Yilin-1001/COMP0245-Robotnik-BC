@@ -77,8 +77,8 @@ data. The implemented recipe uses standardized Huber action loss (arm/wheel grou
 weights $0.5/0.5$) plus the torque--joint-velocity Jacobian regularizer,
 with fitting-only coefficient calibration and 42,000 updates. Batches sample
 an episode uniformly and then a timestep uniformly within that episode.
-Defaults are $M=2$, $K=3$, 221 fitting scenarios and 64 fresh low/near-biased
-development scenarios per DAgger round. Validation selects among rounds
+Defaults are $M=2$, $K=3$ and the 221 fitting scenarios in every DAgger round,
+with no additional scenarios. Validation selects among rounds
 $1,\ldots,K$ using seed-0 sustained-hold success, breaking ties toward later rounds.
 
 \begin{algorithm}[p]
@@ -87,7 +87,6 @@ $1,\ldots,K$ using seed-0 sustained-hold success, breaking ties toward later rou
 \footnotesize
 \begin{algorithmic}[1]
 \Require Expert $\pi_E$; clean fitting data $\DC$; fitting scenarios $\mathcal S_{\mathrm{fit}}$;
-fresh development scenarios $\mathcal S_{\mathrm{dev}}(k)$;
 validation scenarios $\mathcal S_{\mathrm{val}}$; OU parameters; draws $M$; rounds $K\ge1$
 \Ensure Policy $\pi^*$ selected by validation sustained-hold success
 \State $\DOU\gets\emptyset$
@@ -118,7 +117,7 @@ validation scenarios $\mathcal S_{\mathrm{val}}$; OU parameters; draws $M$; roun
 \Statex \textit{Stage II: student-driven DAgger with no additional OU noise}
 \For{$k=1,\ldots,K$}
     \State $\mathcal D_{\mathrm{new}}\gets\emptyset$
-    \For{each $s\in\mathcal S_{\mathrm{fit}}\cup\mathcal S_{\mathrm{dev}}(k)$}
+    \For{each $s\in\mathcal S_{\mathrm{fit}}$}
         \State $o\gets\operatorname{Reset}(s)$; reset $\pi_{k-1}$; $B\gets\emptyset$
         \For{each control step until the shared episode stopping rule}
             \State $x\gets\phi(o)$; $a^E\gets\pi_E(o)$

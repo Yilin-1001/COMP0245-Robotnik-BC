@@ -18,11 +18,14 @@ import numpy as np
 
 TASK_DIR = Path(__file__).resolve().parents[4]
 OUT = TASK_DIR / "report/07_training_time_comparison/data/analysis"
-DATASETS = ["clean253", "dart-d2s075x2"] + [f"dagger-R{r}-v2-r{k}" for r in (6, 8) for k in (1, 2, 3)] + \
+DATASETS = ["clean253", "dart-d2s075x2"] + [f"dagger-R{r}-v3-r{k}" for r in (6, 8) for k in (1, 2, 3)] + \
            [f"dartfull-a6-k{k}" for k in (1, 2, 3)]
-TESTS = ["2026-11-01_215340__R1-R8", "2026-11-03_231207__dart-low-round-dagger",
+# R2/R4 (round 0) from the 2026-11-01 run, DAgger rows (ablation v3, round 3) from 2026-11-05; v3 rounds 1-2 were tested
+# on T0 only, so they have no T1 rollouts. The v2 DAgger models in the 2026-11-01 run match no prefix below.
+TESTS = ["2026-11-01_215340__R1-R8", "2026-11-05_130144__nodev-dagger-R5-R8",
          "2026-11-04_134912__dart-full-a6", "2026-11-04_151122__dart-full-a6-r2r3"]
-NAMES = [("R4-dart-gate__", "f-DAgger + Gate r0"), ("R8-dart-gate-dagger-r", "f-DAgger + Gate r"), ("R6-gate-dagger-r", "DAgger + Gate r"),
+NAMES = [("R4-dart-gate__", "f-DAgger + Gate r0"), ("R8-dart-gate-dagger-nodev-r", "f-DAgger + Gate r"),
+         ("R6-gate-dagger-nodev-r", "DAgger + Gate r"),
          ("R9-dart-full-a6-r", "DART + Gate r"), ("R2-gate__", "Baseline + Gate (r0)")]
 
 

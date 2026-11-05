@@ -86,7 +86,7 @@ def save(fig, name: str):
 
 def training_curves():
     r4 = runs("runs/2026-10-28__training-ablation-v1/R4-dart-gate__*")
-    r8 = runs("runs/2026-11-01__training-ablation-v2/R8-dart-gate-dagger-r3__*")
+    r8 = runs("runs/2026-11-05__training-ablation-v3/R8-dart-gate-dagger-nodev-r3__*")
     groups = [(r4, BLUE, "-", "R4 OU + Gate"), (r8, ORANGE, "--", "R8 f-DAgger + Gate (r3)")]
     panels = [("train_loss", "(a) Total training loss", "standardised", True, None, ""),
               ("train_arm_loss", "(b) Arm action loss (Huber)", "standardised", True, None, ""),
