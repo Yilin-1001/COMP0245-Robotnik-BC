@@ -1,0 +1,36 @@
+\begin{table}[!htbp]
+\caption{Robustness: Hold Success (\%) Under Unseen Perturbations.}
+\label{tab:robustness}
+\centering
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcrrrrr@{}}
+\toprule
+Condition & Expert & OU & DAgger & DAgger & f-DAgger & f-DAgger \\
+Gate & -- & Yes & No & Yes & No & Yes \\
+\midrule
+\multicolumn{7}{@{}l}{\textit{Expert holds every scene}} \\
+Nominal & 12/12 & 86.1 & 77.8 & 80.6 & 83.3 & \textbf{91.7} \\
+Friction $\times0.5$ & 12/12 & 86.1 & 83.3 & 80.6 & 77.8 & \textbf{88.9} \\
+Friction $\times1.5$ & 12/12 & 94.4 & 91.7 & 91.7 & \textbf{97.2} & 91.7 \\
+Sensor noise $\times20$ & 12/12 & 94.4 & 97.2 & \textbf{100.0} & 94.4 & 97.2 \\
+Hand push, at target & 12/12 & 83.3 & 75.0 & 83.3 & 75.0 & \textbf{88.9} \\
+\midrule
+\multicolumn{7}{@{}l}{\textit{Expert itself fails}} \\
+Mass $\times0.9$ & 6/12 & \textbf{50.0} & 36.1 & 16.7 & 19.4 & \textbf{50.0} \\
+Mass $\times1.1$ & 9/12 & \textbf{55.6} & 44.4 & 16.7 & 27.8 & 41.7 \\
+Base push, driving & 6/12 & 19.4 & 27.8 & 36.1 & 33.3 & \textbf{38.9} \\
+Base push, at target & 7/12 & 22.2 & \textbf{38.9} & 22.2 & 16.7 & 27.8 \\
+\midrule
+All perturbations & 76/96 & 63.2 & 61.8 & 55.9 & 55.2 & \textbf{65.6} \\
+Expert-held scenes & 76/76 & 75.4 & 73.2 & 68.4 & 69.7 & \textbf{80.3} \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\columnwidth}\footnotesize
+12 in-range scenes per condition; students pool three seeds ($n=36$), the expert
+runs once. Success: final 1\,s below 10\,mm after reaching. Pushes last 0.2\,s:
+120\,N on the base, 20\,N on the hand, at target 1\,s after first reaching.
+Bottom rows pool the eight perturbations; expert-held keeps only the 76
+perturbed scenes the expert holds. Bold: best student per row.
+\end{minipage}
+\end{table}

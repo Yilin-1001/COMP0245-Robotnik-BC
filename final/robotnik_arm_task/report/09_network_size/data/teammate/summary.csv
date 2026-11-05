@@ -1,0 +1,5 @@
+arch,parameters,flops,npz_kb,latency_p50_us,latency_p99_us,train_min_median,device,chosen_round,pipeline_min_to_chosen,pipeline_min_all_rounds,collect_min_total,build_min_total,train_min_total,validate_min_total,validation_per_seed,validation_pooled,validation_by_round_s0,test in range (T0+T4+T5),test edges (T2+T3),test far (T1),test all 240
+MLP02,3337,6080,42.0,33.6,99.3,7.87,cuda:NVIDIA GeForce RTX 3070 Ti Laptop GPU,3,54.8,54.8,18.6,0.2,49.4,4.2,28 / 28 / 30,86/96,19/32 / 22/32 / 27/32 / 28/32,89.0% (299/336),51.2% (86/168),70.4% (152/216),74.6% (537/720)
+MLP04,10761,20352,99.9,33.8,100.8,7.71,cuda:NVIDIA GeForce RTX 3070 Ti Laptop GPU,2,33.9,47.2,13.9,0.2,46.6,3.5,29 / 27 / 31,87/96,24/32 / 26/32 / 29/32 / 28/32,90.5% (304/336),53.0% (89/168),65.3% (141/216),74.2% (534/720)
+MLP06,37897,73472,312.0,34.4,58.6,7.97,cuda:NVIDIA GeForce RTX 3070 Ti Laptop GPU,3,50.1,50.1,14.8,0.2,49.0,3.9,29 / 29 / 29,87/96,26/32 / 25/32 / 29/32 / 29/32,89.9% (302/336),57.7% (97/168),70.4% (152/216),76.5% (551/720)
+teacher A,,,,,,,,,,,,,,,,,,100.0% (112/112),89.3% (50/56),100.0% (72/72),97.5% (234/240)

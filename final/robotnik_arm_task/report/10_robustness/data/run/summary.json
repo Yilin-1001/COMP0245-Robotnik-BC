@@ -1,0 +1,743 @@
+{
+ "n_per_condition": 12,
+ "conditions": {
+  "nominal": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.95
+   },
+   "R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 1.9
+   },
+   "R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 0.78
+   },
+   "R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.2
+   },
+   "R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 2.9
+   },
+   "R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 3.53
+   },
+   "R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 3.93
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 1.69
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 2.49
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.92
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 2.12
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 1.61
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 2.52
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.0
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.09
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.76
+   }
+  },
+  "friction x0.5": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.79
+   },
+   "R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 2.06
+   },
+   "R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 2.16
+   },
+   "R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.98
+   },
+   "R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 2.87
+   },
+   "R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 2.03
+   },
+   "R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 3.16
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 2.29
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 2.26
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 2.13
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 2.12
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 1.63
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 2.04
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 1.72
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.48
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 1.41
+   }
+  },
+  "friction x1.5": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.63
+   },
+   "R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.92
+   },
+   "R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.95
+   },
+   "R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.8
+   },
+   "R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.76
+   },
+   "R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 2.26
+   },
+   "R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 2.11
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 2.02
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.98
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 2.33
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.89
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.07
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.41
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.11
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.8
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.75
+   }
+  },
+  "mass x0.9": {
+   "teacher-A": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "6/6",
+    "median_final_err_mm": 9.71
+   },
+   "R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": "5/12",
+    "hold_where_teacher_holds": "3/6",
+    "median_final_err_mm": 11.13
+   },
+   "R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": "7/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 9.47
+   },
+   "R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "3/6",
+    "median_final_err_mm": 9.41
+   },
+   "R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "7/12",
+    "hold_where_teacher_holds": "2/6",
+    "median_final_err_mm": 9.16
+   },
+   "R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "1/6",
+    "median_final_err_mm": 12.87
+   },
+   "R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "2/6",
+    "median_final_err_mm": 11.16
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "2/12",
+    "hold_where_teacher_holds": "1/6",
+    "median_final_err_mm": 29.13
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "1/12",
+    "hold_where_teacher_holds": "0/6",
+    "median_final_err_mm": 14.07
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "2/6",
+    "median_final_err_mm": 13.08
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "2/12",
+    "hold_where_teacher_holds": "2/6",
+    "median_final_err_mm": 17.95
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 29.58
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "1/12",
+    "hold_where_teacher_holds": "1/6",
+    "median_final_err_mm": 67.43
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "7/12",
+    "hold_where_teacher_holds": "5/6",
+    "median_final_err_mm": 9.85
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 9.56
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "5/12",
+    "hold_where_teacher_holds": "3/6",
+    "median_final_err_mm": 9.61
+   }
+  },
+  "mass x1.1": {
+   "teacher-A": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/9",
+    "median_final_err_mm": 6.25
+   },
+   "R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": "8/12",
+    "hold_where_teacher_holds": "7/9",
+    "median_final_err_mm": 9.05
+   },
+   "R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": "5/12",
+    "hold_where_teacher_holds": "5/9",
+    "median_final_err_mm": 10.12
+   },
+   "R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": "7/12",
+    "hold_where_teacher_holds": "6/9",
+    "median_final_err_mm": 9.48
+   },
+   "R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/9",
+    "median_final_err_mm": 11.59
+   },
+   "R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/9",
+    "median_final_err_mm": 11.57
+   },
+   "R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "8/12",
+    "hold_where_teacher_holds": "6/9",
+    "median_final_err_mm": 8.72
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "3/9",
+    "median_final_err_mm": 9.87
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "1/12",
+    "hold_where_teacher_holds": "1/9",
+    "median_final_err_mm": 16.92
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "1/12",
+    "hold_where_teacher_holds": "1/9",
+    "median_final_err_mm": 37.21
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "3/9",
+    "median_final_err_mm": 13.5
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "2/12",
+    "hold_where_teacher_holds": "2/9",
+    "median_final_err_mm": 14.52
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "5/12",
+    "hold_where_teacher_holds": "5/9",
+    "median_final_err_mm": 11.69
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "3/9",
+    "median_final_err_mm": 10.77
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "5/12",
+    "hold_where_teacher_holds": "5/9",
+    "median_final_err_mm": 10.26
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "7/12",
+    "hold_where_teacher_holds": "7/9",
+    "median_final_err_mm": 9.53
+   }
+  },
+  "sensor noise x20": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.73
+   },
+   "R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.83
+   },
+   "R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.84
+   },
+   "R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.83
+   },
+   "R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.48
+   },
+   "R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.22
+   },
+   "R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 2.01
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.14
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.55
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.56
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.43
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.92
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.32
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.64
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.85
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.84
+   }
+  },
+  "push base, driving": {
+   "teacher-A": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "6/6",
+    "median_final_err_mm": 1544.07
+   },
+   "R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": "2/12",
+    "hold_where_teacher_holds": "2/6",
+    "median_final_err_mm": 2370.63
+   },
+   "R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "3/6",
+    "median_final_err_mm": 1501.92
+   },
+   "R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": "2/12",
+    "hold_where_teacher_holds": "2/6",
+    "median_final_err_mm": 1696.31
+   },
+   "R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 1287.09
+   },
+   "R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "2/12",
+    "hold_where_teacher_holds": "2/6",
+    "median_final_err_mm": 2432.19
+   },
+   "R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 1448.47
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "3/6",
+    "median_final_err_mm": 1474.22
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "6/6",
+    "median_final_err_mm": 1471.65
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 1497.83
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 1585.5
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 1433.0
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 963.47
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "6/6",
+    "median_final_err_mm": 1448.2
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 1398.6
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/6",
+    "median_final_err_mm": 1467.26
+   }
+  },
+  "push base, at target": {
+   "teacher-A": {
+    "hold": "7/12",
+    "hold_where_teacher_holds": "7/7",
+    "median_final_err_mm": 1.21
+   },
+   "R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "3/7",
+    "median_final_err_mm": 229.33
+   },
+   "R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "3/7",
+    "median_final_err_mm": 136.88
+   },
+   "R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": "2/12",
+    "hold_where_teacher_holds": "2/7",
+    "median_final_err_mm": 242.41
+   },
+   "R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "5/12",
+    "hold_where_teacher_holds": "5/7",
+    "median_final_err_mm": 18.78
+   },
+   "R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "5/12",
+    "hold_where_teacher_holds": "5/7",
+    "median_final_err_mm": 64.85
+   },
+   "R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "3/7",
+    "median_final_err_mm": 59.34
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "3/7",
+    "median_final_err_mm": 53.19
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "3/7",
+    "median_final_err_mm": 191.29
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "1/12",
+    "hold_where_teacher_holds": "1/7",
+    "median_final_err_mm": 132.06
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "1/12",
+    "hold_where_teacher_holds": "1/7",
+    "median_final_err_mm": 52.08
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/7",
+    "median_final_err_mm": 27.27
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "1/12",
+    "hold_where_teacher_holds": "1/7",
+    "median_final_err_mm": 47.61
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "3/7",
+    "median_final_err_mm": 123.3
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "3/7",
+    "median_final_err_mm": 102.14
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/7",
+    "median_final_err_mm": 16.53
+   }
+  },
+  "push hand, at target": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.81
+   },
+   "R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 2.06
+   },
+   "R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 2.03
+   },
+   "R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.34
+   },
+   "R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 4.21
+   },
+   "R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "8/12",
+    "hold_where_teacher_holds": "8/12",
+    "median_final_err_mm": 5.37
+   },
+   "R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 5.05
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 2.86
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 5.23
+   },
+   "R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 5.42
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 6.39
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 4.08
+   },
+   "R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 4.18
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.52
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.97
+   },
+   "R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 2.12
+   }
+  }
+ }
+}

@@ -1,0 +1,14 @@
+{
+  "python": "3.10.20 (main, Mar 11 2026, 17:46:40) [GCC 14.3.0]",
+  "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.39",
+  "packages": {
+    "numpy": "2.2.6",
+    "pybullet": "3.2.7",
+    "pin": "4.1.0",
+    "scipy": "1.15.3",
+    "PyYAML": "6.0.3",
+    "matplotlib": "3.10.9",
+    "threadpoolctl": "3.7.0"
+  },
+  "roboenv_git_head": "7bb49439677c2ac111347b40e997025ce87bff50"
+}

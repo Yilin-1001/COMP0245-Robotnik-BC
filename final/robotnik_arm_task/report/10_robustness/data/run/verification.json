@@ -1,0 +1,33 @@
+{
+ "all_ok": true,
+ "checks": {
+  "1_complete": {
+   "policies": 16,
+   "rollouts": 1728,
+   "expected": 1728,
+   "duplicates": 0,
+   "ok": true
+  },
+  "2_model_hashes": {
+   "models": 15,
+   "mismatches": [],
+   "ok": true
+  },
+  "3_scenes": {
+   "scenes": 108,
+   "regenerated": 108,
+   "mismatches": [],
+   "ok": true
+  },
+  "4_summary": {
+   "mismatches": [],
+   "ok": true
+  },
+  "5_source": {
+   "files": 54,
+   "changed": [],
+   "missing": [],
+   "ok": true
+  }
+ }
+}

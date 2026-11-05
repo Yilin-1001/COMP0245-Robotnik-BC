@@ -1,0 +1,28 @@
+report_name,size,row,round,seed,run_id,original_run_id,source
+f-DAgger + Gate,32×3,R8,3,0,R8-f-DAgger-Gate-r3__MLP02-32x3__s0__v3__2026-11-05,R8-dart-gate-dagger-MLP02nodev-r3__MLP02-32x3__s0__v2__2026-11-05,"teammate, feature/small-net-dagger (his machine)"
+f-DAgger + Gate,32×3,R8,3,1,R8-f-DAgger-Gate-r3__MLP02-32x3__s1__v3__2026-11-05,R8-dart-gate-dagger-MLP02nodev-r3__MLP02-32x3__s1__v2__2026-11-05,"teammate, feature/small-net-dagger (his machine)"
+f-DAgger + Gate,32×3,R8,3,2,R8-f-DAgger-Gate-r3__MLP02-32x3__s2__v3__2026-11-05,R8-dart-gate-dagger-MLP02nodev-r3__MLP02-32x3__s2__v2__2026-11-05,"teammate, feature/small-net-dagger (his machine)"
+f-DAgger + Gate,64×3,R8,2,0,R8-f-DAgger-Gate-r2__MLP04-64x3__s0__v3__2026-11-05,R8-dart-gate-dagger-MLP04nodev-r2__MLP04-64x3__s0__v2__2026-11-05,"teammate, feature/small-net-dagger (his machine)"
+f-DAgger + Gate,64×3,R8,2,1,R8-f-DAgger-Gate-r2__MLP04-64x3__s1__v3__2026-11-05,R8-dart-gate-dagger-MLP04nodev-r2__MLP04-64x3__s1__v2__2026-11-05,"teammate, feature/small-net-dagger (his machine)"
+f-DAgger + Gate,64×3,R8,2,2,R8-f-DAgger-Gate-r2__MLP04-64x3__s2__v3__2026-11-05,R8-dart-gate-dagger-MLP04nodev-r2__MLP04-64x3__s2__v2__2026-11-05,"teammate, feature/small-net-dagger (his machine)"
+f-DAgger + Gate,128×3,R8,3,0,R8-f-DAgger-Gate-r3__MLP06-128x3__s0__v3__2026-11-05,R8-dart-gate-dagger-MLP06nodev-r3__MLP06-128x3__s0__v2__2026-11-05,"teammate, feature/small-net-dagger (his machine)"
+f-DAgger + Gate,128×3,R8,3,1,R8-f-DAgger-Gate-r3__MLP06-128x3__s1__v3__2026-11-05,R8-dart-gate-dagger-MLP06nodev-r3__MLP06-128x3__s1__v2__2026-11-05,"teammate, feature/small-net-dagger (his machine)"
+f-DAgger + Gate,128×3,R8,3,2,R8-f-DAgger-Gate-r3__MLP06-128x3__s2__v3__2026-11-05,R8-dart-gate-dagger-MLP06nodev-r3__MLP06-128x3__s2__v2__2026-11-05,"teammate, feature/small-net-dagger (his machine)"
+f-DAgger + Gate,256×3,R8,3,0,R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05,R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s0__v3__2026-11-05,report v3 (this machine; checkpoints/2026-11-05final)
+f-DAgger + Gate,256×3,R8,3,1,R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05,R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s1__v3__2026-11-05,report v3 (this machine; checkpoints/2026-11-05final)
+f-DAgger + Gate,256×3,R8,3,2,R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05,R8-dart-gate-dagger-nodev-r3__MLP01-256x3__s2__v3__2026-11-05,report v3 (this machine; checkpoints/2026-11-05final)
+OU + Gate,32×3,R4,0,0,R4-OU-Gate__MLP02-32x3__s0__v1__2026-11-02,R4-dart-gate__MLP02-32x3__s0__v1__2026-11-02,2026-11-02 architecture ablation (this machine)
+OU + Gate,32×3,R4,0,1,R4-OU-Gate__MLP02-32x3__s1__v1__2026-11-02,R4-dart-gate__MLP02-32x3__s1__v1__2026-11-02,2026-11-02 architecture ablation (this machine)
+OU + Gate,32×3,R4,0,2,R4-OU-Gate__MLP02-32x3__s2__v1__2026-11-02,R4-dart-gate__MLP02-32x3__s2__v1__2026-11-02,2026-11-02 architecture ablation (this machine)
+OU + Gate,64×3,R4,0,0,R4-OU-Gate__MLP04-64x3__s0__v1__2026-11-02,R4-dart-gate__MLP04-64x3__s0__v1__2026-11-02,2026-11-02 architecture ablation (this machine)
+OU + Gate,64×3,R4,0,1,R4-OU-Gate__MLP04-64x3__s1__v1__2026-11-02,R4-dart-gate__MLP04-64x3__s1__v1__2026-11-02,2026-11-02 architecture ablation (this machine)
+OU + Gate,64×3,R4,0,2,R4-OU-Gate__MLP04-64x3__s2__v1__2026-11-02,R4-dart-gate__MLP04-64x3__s2__v1__2026-11-02,2026-11-02 architecture ablation (this machine)
+OU + Gate,128×3,R4,0,0,R4-OU-Gate__MLP06-128x3__s0__v1__2026-11-02,R4-dart-gate__MLP06-128x3__s0__v1__2026-11-02,2026-11-02 architecture ablation (this machine)
+OU + Gate,128×3,R4,0,1,R4-OU-Gate__MLP06-128x3__s1__v1__2026-11-02,R4-dart-gate__MLP06-128x3__s1__v1__2026-11-02,2026-11-02 architecture ablation (this machine)
+OU + Gate,128×3,R4,0,2,R4-OU-Gate__MLP06-128x3__s2__v1__2026-11-02,R4-dart-gate__MLP06-128x3__s2__v1__2026-11-02,2026-11-02 architecture ablation (this machine)
+OU + Gate,256×3,R4,0,0,R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28,R4-dart-gate__MLP01-256x3__s0__v1__2026-10-28,report v1 R4 (this machine)
+OU + Gate,256×3,R4,0,1,R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28,R4-dart-gate__MLP01-256x3__s1__v1__2026-10-28,report v1 R4 (this machine)
+OU + Gate,256×3,R4,0,2,R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28,R4-dart-gate__MLP01-256x3__s2__v1__2026-10-28,report v1 R4 (this machine)
+OU + Gate (f-DAgger round 0),32×3,R4,0,0,R4-OU-Gate__MLP02-32x3__s0__v2__2026-11-04,R4-dart-gate__MLP02-32x3__s0__v2__2026-11-04,"teammate (his machine), seed 0 only"
+OU + Gate (f-DAgger round 0),64×3,R4,0,0,R4-OU-Gate__MLP04-64x3__s0__v2__2026-11-04,R4-dart-gate__MLP04-64x3__s0__v2__2026-11-04,"teammate (his machine), seed 0 only"
+OU + Gate (f-DAgger round 0),128×3,R4,0,0,R4-OU-Gate__MLP06-128x3__s0__v2__2026-11-04,R4-dart-gate__MLP06-128x3__s0__v2__2026-11-04,"teammate (his machine), seed 0 only"

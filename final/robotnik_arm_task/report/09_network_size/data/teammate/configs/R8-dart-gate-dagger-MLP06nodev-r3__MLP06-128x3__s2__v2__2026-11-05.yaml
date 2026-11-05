@@ -1,0 +1,447 @@
+identity:
+  cohort: clean253
+  architecture: MLP06
+  seed: 2
+  fit_stage: selection
+  replicate: 0
+  regime: ablation
+  teacher: A
+  objective: bcj
+  version: v2
+  date: '2026-11-05'
+  config_hash: 2e16883c2fa23eaa992f53761f6f19e28841875562ae3f1b808d0647e6802a1a
+  config_id: 2e16883c2fa2
+  run_id: R8-dart-gate-dagger-MLP06nodev-r3__MLP06-128x3__s2__v2__2026-11-05
+model:
+  architectures:
+    MLP01:
+    - 256
+    - 256
+    - 256
+    MLP02:
+    - 32
+    - 32
+    - 32
+    MLP03:
+    - 64
+    - 64
+    MLP04:
+    - 64
+    - 64
+    - 64
+    MLP05:
+    - 64
+    - 64
+    - 64
+    - 64
+    MLP06:
+    - 128
+    - 128
+    - 128
+    MLP07:
+    - 256
+    - 128
+    - 64
+    MLP08:
+    - 256
+    - 256
+    MLP09:
+    - 256
+    - 256
+    - 256
+    - 256
+    MLP10:
+    - 512
+    - 512
+    - 512
+  layernorm_eps: 1.0e-05
+  input_dim: 22
+training:
+  optimizer: adamw
+  lr: 0.001
+  lr_grid:
+  - 0.001
+  - 0.0003
+  - 0.0001
+  weight_decay: 0.0001
+  batch_size: 1024
+  warmup_updates: 500
+  schedule: cosine
+  updates: 42000
+  log_every: 500
+  checkpoint_every: 2000
+  device: auto
+loss:
+  action: huber
+  arm_weight: 0.5
+  wheel_weight: 0.5
+  action_candidates:
+  - huber
+  - mse
+  huber_delta: 1.0
+  epsilon_tau: 0.0001
+  jacobian:
+    lambda_j: 0.09553482147592955
+    calibration: null
+    calibration_ratio: 0.1
+    subbatch_size: 256
+    kd: 30.0
+    calibration_record:
+      path: auto (seed-0 init, fitting batch)
+      lambda_j: 0.09553482147592955
+      sha256: a7bc4cbd8a2dc7074f0ad29c3d81c778115f9cdc2de179e39b5f8ffb0fa58ab9
+data:
+  split_manifest: experiments/splits/clean253.json
+  cache_root: data/cache
+  input_scale_floor: 1.0e-06
+  arm_scale_floor: 0.1
+  wheel_scale_floor: 0.05
+  dataset_root: data/datasets
+  feature_definition: features-v1-gate
+  datasets:
+  - clean253__features-v1-gate
+  - dart-d2s075x2__features-v1-gate
+  - dagger-R8-v2-MLP06nodev-r1__features-v1-gate
+  - dagger-R8-v2-MLP06nodev-r2__features-v1-gate
+  - dagger-R8-v2-MLP06nodev-r3__features-v1-gate
+  mix: null
+  validation_dataset: clean253__features-v1-gate
+  fitting_ids: fitting_ids.clean253
+  task_context: null
+evaluation:
+  workers: 16
+  episode_cap_s: 40.0
+  min_reach_time_s: 8.0
+  post_reach_s: 3.0
+  hold_window_s: 1.0
+  reach_tolerance_m: 0.01
+  hold_bias_gate_nm: 0.5
+  jacobian_samples: 4096
+outputs:
+  checkpoint_root: checkpoints
+  results_root: results
+  results_index: results/results.csv
+  experiment: training-ablation
+  experiment_dir: 2026-11-05__training-ablation-v2
+interface:
+  action_order: a = [torque_arm (7), wheel_cmds FR, FL, BL, BR (4)]
+  torque_limit: 30.0
+  wheel_limit: 6.0
+  control_hz: 1000
+provenance:
+  datasets:
+    clean253__features-v1-gate:
+      complete_sha256: 74b02800b70afa771f9e6c46976bab622577b0e7fa425cf0afc613b6b63cffb1
+      build_key: 0d94fcdf19f9904abaf23d8cf18462cec976e8316d9b4fb651ba38a26a6a961f
+      episodes: 221
+      rows: 2657690
+    dart-d2s075x2__features-v1-gate:
+      complete_sha256: a6fa3383cdcff9218ad43fd8b5b69b5777f8a590dbb1d5c9e7f332eee88e7a0d
+      build_key: 91771944ab4dad3e147a2fd7a6b9435987a4c4c222baf90837d237b3f550d1e3
+      episodes: 441
+      rows: 5290207
+    dagger-R8-v2-MLP06nodev-r1__features-v1-gate:
+      complete_sha256: af03c6b7f32a1b3f3d3a489864b713381ce55e9789d55b411707d207a0d5a3b1
+      build_key: 687dab35a95f6803d58d51f22797e74565a1e0030dba09b6a0f2d6ff0695da68
+      episodes: 221
+      rows: 3038558
+    dagger-R8-v2-MLP06nodev-r2__features-v1-gate:
+      complete_sha256: 077a076fe7fe81c81b241f8a6338b8de3585638ef3d3381ebeabec1192b26a21
+      build_key: 4522b81f29cecd873728597fb0a03dec89fabd1a373bc960f09003424520d774
+      episodes: 221
+      rows: 2833562
+    dagger-R8-v2-MLP06nodev-r3__features-v1-gate:
+      complete_sha256: 0cb74c24c7acaf5bb6f0b09786e0977428545fcb29689d1321e8f8affb42eff5
+      build_key: a2c6ec4779bf3b3a87b49adb098e86da92518180858f8e3c517e0feb9533adc2
+      episodes: 221
+      rows: 2751838
+  validation_dataset:
+    name: clean253__features-v1-gate
+    complete_sha256: 74b02800b70afa771f9e6c46976bab622577b0e7fa425cf0afc613b6b63cffb1
+  fitting_ids:
+  - train-0001
+  - train-0002
+  - train-0003
+  - train-0004
+  - train-0006
+  - train-0007
+  - train-0008
+  - train-0009
+  - train-0010
+  - train-0011
+  - train-0012
+  - train-0013
+  - train-0014
+  - train-0015
+  - train-0016
+  - train-0017
+  - train-0018
+  - train-0019
+  - train-0020
+  - train-0021
+  - train-0022
+  - train-0025
+  - train-0026
+  - train-0027
+  - train-0028
+  - train-0029
+  - train-0030
+  - train-0031
+  - train-0032
+  - train-0033
+  - train-0034
+  - train-0035
+  - train-0036
+  - train-0037
+  - train-0038
+  - train-0039
+  - train-0040
+  - train-0041
+  - train-0042
+  - train-0043
+  - train-0044
+  - train-0045
+  - train-0046
+  - train-0047
+  - train-0048
+  - train-0049
+  - train-0050
+  - train-0051
+  - train-0052
+  - train-0053
+  - train-0054
+  - train-0055
+  - train-0056
+  - train-0057
+  - train-0058
+  - train-0059
+  - train-0060
+  - train-0061
+  - train-0062
+  - train-0063
+  - train-0065
+  - train-0066
+  - train-0067
+  - train-0069
+  - train-0070
+  - train-0071
+  - train-0072
+  - train-0073
+  - train-0074
+  - train-0075
+  - train-0076
+  - train-0077
+  - train-0078
+  - train-0079
+  - train-0080
+  - train-0083
+  - train-0084
+  - train-0086
+  - train-0087
+  - train-0088
+  - train-0089
+  - train-0090
+  - train-0094
+  - train-0095
+  - train-0096
+  - train-0097
+  - train-0098
+  - train-0099
+  - train-0100
+  - train-0101
+  - train-0102
+  - train-0105
+  - train-0106
+  - train-0107
+  - train-0108
+  - train-0109
+  - train-0110
+  - train-0111
+  - train-0112
+  - train-0113
+  - train-0114
+  - train-0115
+  - train-0116
+  - train-0117
+  - train-0118
+  - train-0119
+  - train-0120
+  - train-0121
+  - train-0122
+  - train-0123
+  - train-0124
+  - train-0125
+  - train-0126
+  - train-0127
+  - train-0128
+  - train-0129
+  - train-0132
+  - train-0133
+  - train-0134
+  - train-0135
+  - train-0136
+  - train-0137
+  - train-0138
+  - train-0139
+  - train-0141
+  - train-0142
+  - train-0144
+  - train-0146
+  - train-0147
+  - train-0148
+  - train-0149
+  - train-0150
+  - train-0151
+  - train-0152
+  - train-0153
+  - train-0155
+  - train-0156
+  - train-0157
+  - train-0158
+  - train-0159
+  - train-0160
+  - train-0161
+  - train-0163
+  - train-0164
+  - train-0165
+  - train-0166
+  - train-0167
+  - train-0168
+  - train-0169
+  - train-0170
+  - train-0171
+  - train-0172
+  - train-0173
+  - train-0174
+  - train-0175
+  - train-0176
+  - train-0177
+  - train-0178
+  - train-0179
+  - train-0180
+  - train-0181
+  - train-0184
+  - train-0187
+  - train-0189
+  - train-0190
+  - train-0191
+  - train-0192
+  - train-0193
+  - train-0194
+  - train-0196
+  - train-0197
+  - train-0198
+  - train-0199
+  - train-0200
+  - train-0202
+  - train-0203
+  - train-0204
+  - train-0205
+  - train-0206
+  - train-0207
+  - train-0208
+  - train-0209
+  - train-0210
+  - train-0211
+  - train-0212
+  - train-0213
+  - train-0214
+  - train-0215
+  - train-0216
+  - train-0217
+  - train-0218
+  - train-0220
+  - train-0221
+  - train-0222
+  - train-0223
+  - train-0224
+  - train-0225
+  - train-0227
+  - train-0228
+  - train-0229
+  - train-0230
+  - train-0231
+  - train-0232
+  - train-0233
+  - train-0234
+  - train-0235
+  - train-0237
+  - train-0238
+  - train-0239
+  - train-0240
+  - train-0241
+  - train-0242
+  - train-0244
+  - train-0246
+  - train-0247
+  - train-0248
+  - train-0249
+  - train-0252
+  - train-0253
+  - train-0254
+  - train-0255
+  validation_ids:
+  - train-0143
+  - train-0219
+  - train-0092
+  - train-0188
+  - train-0091
+  - train-0243
+  - train-0024
+  - train-0104
+  - train-0103
+  - train-0023
+  - train-0000
+  - train-0140
+  - train-0251
+  - train-0195
+  - train-0068
+  - train-0236
+  - train-0185
+  - train-0201
+  - train-0250
+  - train-0082
+  - train-0145
+  - train-0085
+  - train-0154
+  - train-0162
+  - train-0081
+  - train-0005
+  - train-0130
+  - train-0186
+  - train-0093
+  - train-0245
+  - train-0226
+  - train-0182
+  split_sha256: 2743e14393408f1084b214ce6762447576da479f06d5afe45831a05d13f100e0
+  normaliser_sha256: ba45146e9d6d5bad44e3177adc42a1d99fe5a3b898107c56ad45b37ab38579e5
+  code_digest: 27ed510733ee1af17e4491b8cac633e62a9617d6f78f6c74b0fefd71dc567181
+  operational:
+    git_head: 470b2afbf99c1d603e911f1af48aed7c60c8a618
+    git_dirty: true
+    prepared_utc: '2026-11-05T16:38:48Z'
+  calibration:
+    lambda_j: 0.09553482147592955
+    action_loss: 0.3489094376564026
+    jacobian_loss: 0.36521703004837036
+    ratio: 0.1
+    valid_entry_frac: 0.9900948405265808
+    batch_rows: 1024
+    batch_sha256: f77bdb02fc971346400f98a2e36127183e8b18786ab47c020263bb6d20ac1bc6
+    init_sha256: 9a4617da8a6d83beb19613d12adc34b4b7b5104fd06d21663c84b02de7d6655a
+    normaliser_sha256: ba45146e9d6d5bad44e3177adc42a1d99fe5a3b898107c56ad45b37ab38579e5
+    arm_weight: 0.5
+    wheel_weight: 0.5
+  calibration_sha256: a7bc4cbd8a2dc7074f0ad29c3d81c778115f9cdc2de179e39b5f8ffb0fa58ab9
+variant: R8-dart-gate-dagger-MLP06nodev-r3
+layers:
+- common.yaml
+- objectives/bcj.yaml
+- datasets/base.yaml
+- datasets/variants/R8-dart-gate-dagger-MLP06nodev-r3.yaml
+- cli
+template_sha256:
+  common.yaml: 6d1d0cdc47b68463e34888a2fa9b239da9fb41550969540327b28394144c3391
+  objectives/bcj.yaml: 4e0854a19f410a635a85101b785f291da3204fe3120ac9983e120fe255da6501
+  datasets/base.yaml: eb2f0eabd6968501f868a4c0aecdc05a5a987144da1cfec3955c3f8cb88ccad1
+  datasets/variants/R8-dart-gate-dagger-MLP06nodev-r3.yaml: e96242c4640ecebcbc9670a0594be1b3e5562273f14e28251f1e30926f56bf07

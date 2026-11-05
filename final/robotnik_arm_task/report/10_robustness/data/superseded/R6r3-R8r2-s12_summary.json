@@ -1,0 +1,248 @@
+{
+ "n_per_condition": 12,
+ "conditions": {
+  "nominal": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.79
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 2.16
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "9/12",
+    "hold_where_teacher_holds": "9/12",
+    "median_final_err_mm": 2.25
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.25
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.06
+   }
+  },
+  "friction x0.5": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.83
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 2.62
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.86
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.3
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 1.95
+   }
+  },
+  "friction x1.5": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.6
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 2.01
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 2.12
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 1.24
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 0.93
+   }
+  },
+  "mass x0.9": {
+   "teacher-A": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/4",
+    "median_final_err_mm": 10.03
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "2/4",
+    "median_final_err_mm": 10.8
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "8/12",
+    "hold_where_teacher_holds": "1/4",
+    "median_final_err_mm": 8.68
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "5/12",
+    "hold_where_teacher_holds": "2/4",
+    "median_final_err_mm": 10.26
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "3/4",
+    "median_final_err_mm": 9.57
+   }
+  },
+  "mass x1.1": {
+   "teacher-A": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/10",
+    "median_final_err_mm": 6.25
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "1/12",
+    "hold_where_teacher_holds": "1/10",
+    "median_final_err_mm": 15.04
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "7/12",
+    "hold_where_teacher_holds": "7/10",
+    "median_final_err_mm": 8.09
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "5/10",
+    "median_final_err_mm": 9.55
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "8/12",
+    "hold_where_teacher_holds": "7/10",
+    "median_final_err_mm": 9.43
+   }
+  },
+  "sensor noise x20": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.12
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.59
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.8
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.84
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.72
+   }
+  },
+  "push base, driving": {
+   "teacher-A": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "6/6",
+    "median_final_err_mm": 1542.24
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "3/12",
+    "hold_where_teacher_holds": "3/6",
+    "median_final_err_mm": 2341.64
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "6/6",
+    "median_final_err_mm": 1502.7
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "2/12",
+    "hold_where_teacher_holds": "2/6",
+    "median_final_err_mm": 1442.98
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "2/12",
+    "hold_where_teacher_holds": "2/6",
+    "median_final_err_mm": 2830.45
+   }
+  },
+  "push base, at target": {
+   "teacher-A": {
+    "hold": "7/12",
+    "hold_where_teacher_holds": "7/7",
+    "median_final_err_mm": 1.5
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "5/12",
+    "hold_where_teacher_holds": "5/7",
+    "median_final_err_mm": 100.83
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/7",
+    "median_final_err_mm": 23.81
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "4/12",
+    "hold_where_teacher_holds": "4/7",
+    "median_final_err_mm": 98.64
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "6/12",
+    "hold_where_teacher_holds": "5/7",
+    "median_final_err_mm": 10.6
+   }
+  },
+  "push hand, at target": {
+   "teacher-A": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 0.86
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "11/12",
+    "hold_where_teacher_holds": "11/12",
+    "median_final_err_mm": 3.15
+   },
+   "R2D-dagger-R2v1-r3__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "10/12",
+    "hold_where_teacher_holds": "10/12",
+    "median_final_err_mm": 3.5
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s1__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 3.44
+   },
+   "R6-dagger-v1-r2__MLP01-256x3__s2__v1__2026-10-30": {
+    "hold": "12/12",
+    "hold_where_teacher_holds": "12/12",
+    "median_final_err_mm": 1.32
+   }
+  }
+ }
+}

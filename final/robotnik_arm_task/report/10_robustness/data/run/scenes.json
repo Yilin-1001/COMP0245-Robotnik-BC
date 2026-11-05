@@ -1,0 +1,2354 @@
+[
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-00",
+    "seed": 990000,
+    "target_ee_pos": [
+      -1.6253954636103325,
+      0.21614193316152508,
+      0.7496406077511962
+    ],
+    "base_start_pos": [
+      -0.22614759429933218,
+      -0.3528752544327638,
+      0.0
+    ],
+    "base_start_bearing": 2.2120570312666903,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-01",
+    "seed": 990001,
+    "target_ee_pos": [
+      -0.03702570821618911,
+      0.3732382624150302,
+      0.5275101611944983
+    ],
+    "base_start_pos": [
+      0.4869522968304467,
+      0.24908081457567977,
+      0.0
+    ],
+    "base_start_bearing": -1.0938133273158694,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-02",
+    "seed": 990002,
+    "target_ee_pos": [
+      -0.7370793141031341,
+      2.980796584529401,
+      1.15771657842077
+    ],
+    "base_start_pos": [
+      0.4931925716671116,
+      0.36117901249528606,
+      0.0
+    ],
+    "base_start_bearing": -1.3649839315930872,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-03",
+    "seed": 990003,
+    "target_ee_pos": [
+      1.117881041336831,
+      0.28583161609922036,
+      1.1598364656420366
+    ],
+    "base_start_pos": [
+      0.03011242584225704,
+      -0.3434671475446349,
+      0.0
+    ],
+    "base_start_bearing": -2.013618474617525,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-04",
+    "seed": 990004,
+    "target_ee_pos": [
+      -1.4044138451658084,
+      -0.5339715461816252,
+      1.053831385931308
+    ],
+    "base_start_pos": [
+      -0.4903659594105606,
+      -0.1286697273916052,
+      0.0
+    ],
+    "base_start_bearing": 1.2482165754459364,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-05",
+    "seed": 990005,
+    "target_ee_pos": [
+      0.6990745877898681,
+      1.6000027471484826,
+      0.3925021228330806
+    ],
+    "base_start_pos": [
+      -0.4504951646087261,
+      -0.3105506762513194,
+      0.0
+    ],
+    "base_start_bearing": 0.5021905671424394,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-06",
+    "seed": 990006,
+    "target_ee_pos": [
+      1.4736494822595532,
+      0.138095503393795,
+      0.8121096474578258
+    ],
+    "base_start_pos": [
+      0.24234549938445993,
+      0.15133378162689415,
+      0.0
+    ],
+    "base_start_bearing": -1.4758515890895463,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-07",
+    "seed": 990007,
+    "target_ee_pos": [
+      -0.12077260203996565,
+      -2.6529938968872933,
+      1.025476148539398
+    ],
+    "base_start_pos": [
+      -0.3716334771865455,
+      -0.12893191711461105,
+      0.0
+    ],
+    "base_start_bearing": -0.9568818675285238,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-08",
+    "seed": 990008,
+    "target_ee_pos": [
+      -0.8071288924312026,
+      0.23084672029431763,
+      0.45096793757304
+    ],
+    "base_start_pos": [
+      -0.05658519863196998,
+      -0.28958763731957604,
+      0.0
+    ],
+    "base_start_bearing": -1.3153674431736833,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-09",
+    "seed": 990009,
+    "target_ee_pos": [
+      1.4984169617059893,
+      -1.1496510709592227,
+      1.1448597966937666
+    ],
+    "base_start_pos": [
+      0.12463866947511404,
+      0.2596005818781215,
+      0.0
+    ],
+    "base_start_bearing": 2.0420960373410804,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-10",
+    "seed": 990010,
+    "target_ee_pos": [
+      -0.9866714263369109,
+      -0.715095221240759,
+      0.4047013575166991
+    ],
+    "base_start_pos": [
+      -0.4559176691813741,
+      -0.4404874609472009,
+      0.0
+    ],
+    "base_start_bearing": 2.1758914635222473,
+    "physics": {}
+  },
+  {
+    "condition": "nominal",
+    "scenario_id": "nominal-11",
+    "seed": 990011,
+    "target_ee_pos": [
+      -1.6243546273780185,
+      -1.5015060063879115,
+      0.12097198526610595
+    ],
+    "base_start_pos": [
+      0.03102308632270101,
+      -0.32654771858232834,
+      0.0
+    ],
+    "base_start_bearing": -1.4526605278176323,
+    "physics": {}
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-00",
+    "seed": 991000,
+    "target_ee_pos": [
+      -0.6042561309952625,
+      0.9491608813455776,
+      0.17426275093294757
+    ],
+    "base_start_pos": [
+      0.3977865552499549,
+      0.15546817758383047,
+      0.0
+    ],
+    "base_start_bearing": -0.3491312185009878,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-01",
+    "seed": 991001,
+    "target_ee_pos": [
+      -2.1373504358810442,
+      -1.2367189036119184,
+      1.2045798472369695
+    ],
+    "base_start_pos": [
+      -0.0973236170921169,
+      0.4099312117482551,
+      0.0
+    ],
+    "base_start_bearing": -3.006987600034592,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-02",
+    "seed": 991002,
+    "target_ee_pos": [
+      -0.7178706257031089,
+      2.953564793541504,
+      0.4135567723695206
+    ],
+    "base_start_pos": [
+      -0.10748098064318945,
+      0.3652338801785765,
+      0.0
+    ],
+    "base_start_bearing": 0.7992922065320784,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-03",
+    "seed": 991003,
+    "target_ee_pos": [
+      0.9154215871688339,
+      1.176516032080501,
+      0.33001537565665146
+    ],
+    "base_start_pos": [
+      -0.22623502221643188,
+      -0.37215384125289397,
+      0.0
+    ],
+    "base_start_bearing": -1.2718746055987071,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-04",
+    "seed": 991004,
+    "target_ee_pos": [
+      -0.9678157585987759,
+      -0.19428038373285547,
+      0.8938577799139515
+    ],
+    "base_start_pos": [
+      0.09878297746828224,
+      -0.24746949194316648,
+      0.0
+    ],
+    "base_start_bearing": -2.2131145842892943,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-05",
+    "seed": 991005,
+    "target_ee_pos": [
+      -0.09636126358593144,
+      -1.1046479512503204,
+      0.9001012401413722
+    ],
+    "base_start_pos": [
+      0.17996272443118366,
+      0.14351123562554635,
+      0.0
+    ],
+    "base_start_bearing": -2.790738407742361,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-06",
+    "seed": 991006,
+    "target_ee_pos": [
+      -0.009481876871412775,
+      0.7541914752192409,
+      0.6691164075653986
+    ],
+    "base_start_pos": [
+      0.47214705105400256,
+      0.21082674585052674,
+      0.0
+    ],
+    "base_start_bearing": 0.39195308389283756,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-07",
+    "seed": 991007,
+    "target_ee_pos": [
+      0.2312018066699335,
+      -0.6340690723949312,
+      0.8747482406486138
+    ],
+    "base_start_pos": [
+      -0.033734787081598494,
+      0.24520861790606652,
+      0.0
+    ],
+    "base_start_bearing": 2.291286965937145,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-08",
+    "seed": 991008,
+    "target_ee_pos": [
+      1.5244959240854765,
+      -1.9371986121985345,
+      0.767299307389834
+    ],
+    "base_start_pos": [
+      -0.1077606654759391,
+      -0.29792757244310153,
+      0.0
+    ],
+    "base_start_bearing": -2.740252293501398,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-09",
+    "seed": 991009,
+    "target_ee_pos": [
+      -1.770869316322801,
+      0.5332859605513923,
+      1.1716158627367828
+    ],
+    "base_start_pos": [
+      -0.1789116526333615,
+      0.4227086997098698,
+      0.0
+    ],
+    "base_start_bearing": 2.1602531052752356,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-10",
+    "seed": 991010,
+    "target_ee_pos": [
+      1.6481818991887112,
+      -0.8507497462411839,
+      0.8410418263575106
+    ],
+    "base_start_pos": [
+      0.007016546726338224,
+      -0.2055750868641515,
+      0.0
+    ],
+    "base_start_bearing": 0.8829182759381684,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x0.5",
+    "scenario_id": "friction x0.5-11",
+    "seed": 991011,
+    "target_ee_pos": [
+      0.037363490804086574,
+      -0.8643467158258009,
+      0.555422908147013
+    ],
+    "base_start_pos": [
+      -0.22286045833182966,
+      -0.4283773422895921,
+      0.0
+    ],
+    "base_start_bearing": 1.6905185325076095,
+    "physics": {
+      "friction_scale": 0.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-00",
+    "seed": 992000,
+    "target_ee_pos": [
+      0.9720114904998661,
+      0.5703775340067291,
+      0.7790211460722598
+    ],
+    "base_start_pos": [
+      0.008215624746401806,
+      -0.21860123663765085,
+      0.0
+    ],
+    "base_start_bearing": -1.7693972850477921,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-01",
+    "seed": 992001,
+    "target_ee_pos": [
+      2.6967650468717648,
+      -0.2117809304349661,
+      0.7632093585843394
+    ],
+    "base_start_pos": [
+      -0.10107600280370432,
+      -0.10862007233073201,
+      0.0
+    ],
+    "base_start_bearing": -0.2199629560071963,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-02",
+    "seed": 992002,
+    "target_ee_pos": [
+      0.7629555307859626,
+      -1.6210251490474978,
+      0.5353885334728821
+    ],
+    "base_start_pos": [
+      0.27074959942366816,
+      0.12688416003520142,
+      0.0
+    ],
+    "base_start_bearing": 2.708097540713182,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-03",
+    "seed": 992003,
+    "target_ee_pos": [
+      -1.588297381535877,
+      -1.1706551824705602,
+      0.6292585045645582
+    ],
+    "base_start_pos": [
+      -0.4683029494147418,
+      -0.25870776089540837,
+      0.0
+    ],
+    "base_start_bearing": -1.1618435069528814,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-04",
+    "seed": 992004,
+    "target_ee_pos": [
+      -1.2728133998814357,
+      -1.91088692897723,
+      1.193239039406827
+    ],
+    "base_start_pos": [
+      -0.09116204310723519,
+      0.33781577161406917,
+      0.0
+    ],
+    "base_start_bearing": -1.7679455725252493,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-05",
+    "seed": 992005,
+    "target_ee_pos": [
+      1.4976614789007225,
+      -1.0896715777947172,
+      0.15341095133875526
+    ],
+    "base_start_pos": [
+      -0.20976896704801506,
+      0.16481063028518017,
+      0.0
+    ],
+    "base_start_bearing": -1.115277974598099,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-06",
+    "seed": 992006,
+    "target_ee_pos": [
+      -0.2871555493850243,
+      1.5982925174451639,
+      1.2302683657619258
+    ],
+    "base_start_pos": [
+      -0.4261426655584173,
+      -0.1336982280522977,
+      0.0
+    ],
+    "base_start_bearing": 2.3396539162236323,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-07",
+    "seed": 992007,
+    "target_ee_pos": [
+      -0.0668726847783957,
+      -0.7909739661067597,
+      0.7417321179764544
+    ],
+    "base_start_pos": [
+      0.40536994143794514,
+      -0.48615916646198754,
+      0.0
+    ],
+    "base_start_bearing": 3.079346709186084,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-08",
+    "seed": 992008,
+    "target_ee_pos": [
+      0.2603596011055023,
+      -1.6029428773379526,
+      0.5306292073487979
+    ],
+    "base_start_pos": [
+      -0.04186294378873112,
+      0.2580590117600301,
+      0.0
+    ],
+    "base_start_bearing": 0.3784543308148596,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-09",
+    "seed": 992009,
+    "target_ee_pos": [
+      0.1615876215130118,
+      -0.7361460778943102,
+      0.8467293549452662
+    ],
+    "base_start_pos": [
+      0.3967040985040209,
+      0.3436424921762925,
+      0.0
+    ],
+    "base_start_bearing": -0.7678417934719168,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-10",
+    "seed": 992010,
+    "target_ee_pos": [
+      -0.8642781523633967,
+      -2.465834703244563,
+      0.46637906816588826
+    ],
+    "base_start_pos": [
+      -0.25448602240848783,
+      0.023013715638284693,
+      0.0
+    ],
+    "base_start_bearing": 3.0405975820332163,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "friction x1.5",
+    "scenario_id": "friction x1.5-11",
+    "seed": 992011,
+    "target_ee_pos": [
+      1.2379415975772488,
+      0.6003278001824709,
+      0.9566375041459488
+    ],
+    "base_start_pos": [
+      -0.08126949005715034,
+      -0.32522582771129416,
+      0.0
+    ],
+    "base_start_bearing": -2.0867615997444258,
+    "physics": {
+      "friction_scale": 1.5
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-00",
+    "seed": 993000,
+    "target_ee_pos": [
+      0.48570332113739667,
+      1.725070250740326,
+      0.5844862379523134
+    ],
+    "base_start_pos": [
+      -0.11106061276318768,
+      -0.06696545507992901,
+      0.0
+    ],
+    "base_start_bearing": -1.4110990903118146,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-01",
+    "seed": 993001,
+    "target_ee_pos": [
+      -2.2236837916117373,
+      -0.56582311253829,
+      0.8548648395163376
+    ],
+    "base_start_pos": [
+      -0.2770591890386298,
+      0.017108925909346873,
+      0.0
+    ],
+    "base_start_bearing": 1.6711561798345889,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-02",
+    "seed": 993002,
+    "target_ee_pos": [
+      0.612390089925495,
+      2.331301749234818,
+      0.9822572207248833
+    ],
+    "base_start_pos": [
+      -0.14992674302077325,
+      -0.04026069688111711,
+      0.0
+    ],
+    "base_start_bearing": -0.3356924501420453,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-03",
+    "seed": 993003,
+    "target_ee_pos": [
+      -1.4176471174887686,
+      -0.29250769768772344,
+      1.2081103008239902
+    ],
+    "base_start_pos": [
+      -0.28911395006196516,
+      0.2819219553689083,
+      0.0
+    ],
+    "base_start_bearing": -1.6331065062796706,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-04",
+    "seed": 993004,
+    "target_ee_pos": [
+      -2.0000763641527834,
+      0.03825400523601136,
+      0.8724448737786344
+    ],
+    "base_start_pos": [
+      0.3064324740521349,
+      0.4116711225653821,
+      0.0
+    ],
+    "base_start_bearing": 1.8215684957743514,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-05",
+    "seed": 993005,
+    "target_ee_pos": [
+      -0.40230083502280967,
+      2.835859575922797,
+      0.17413533320642613
+    ],
+    "base_start_pos": [
+      -0.21758271522146044,
+      0.036885874849275635,
+      0.0
+    ],
+    "base_start_bearing": 0.3558219018688593,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-06",
+    "seed": 993006,
+    "target_ee_pos": [
+      0.22995041723187853,
+      -0.7040288223105563,
+      0.8648082437043165
+    ],
+    "base_start_pos": [
+      -0.06149929777933538,
+      0.184159742100251,
+      0.0
+    ],
+    "base_start_bearing": -1.2588597092030258,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-07",
+    "seed": 993007,
+    "target_ee_pos": [
+      2.1492079746434722,
+      1.56754714585201,
+      1.1274317818793096
+    ],
+    "base_start_pos": [
+      -0.2225823859974838,
+      0.16582966973301994,
+      0.0
+    ],
+    "base_start_bearing": -2.250290913887947,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-08",
+    "seed": 993008,
+    "target_ee_pos": [
+      0.3548314500709117,
+      1.0646816199885856,
+      0.5814959171988483
+    ],
+    "base_start_pos": [
+      0.40209047057871405,
+      -0.03487982392976907,
+      0.0
+    ],
+    "base_start_bearing": -0.5137010336767704,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-09",
+    "seed": 993009,
+    "target_ee_pos": [
+      -0.7939927810462579,
+      1.1896844817209122,
+      0.8812820824765939
+    ],
+    "base_start_pos": [
+      -0.3927165021119703,
+      0.28127466497469933,
+      0.0
+    ],
+    "base_start_bearing": -0.560475960457357,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-10",
+    "seed": 993010,
+    "target_ee_pos": [
+      1.3920189071182283,
+      -0.7722416242770671,
+      0.1017670459303579
+    ],
+    "base_start_pos": [
+      0.4510292475491857,
+      0.03166100669639971,
+      0.0
+    ],
+    "base_start_bearing": 2.45472662430081,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x0.9",
+    "scenario_id": "mass x0.9-11",
+    "seed": 993011,
+    "target_ee_pos": [
+      -0.6371033583970285,
+      0.19866170956278267,
+      0.3246575866389207
+    ],
+    "base_start_pos": [
+      -0.07732567383973932,
+      -0.18589801208505718,
+      0.0
+    ],
+    "base_start_bearing": 1.6443662304868631,
+    "physics": {
+      "mass_scale": 0.9
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-00",
+    "seed": 994000,
+    "target_ee_pos": [
+      0.6751828233560094,
+      1.9276331902059551,
+      0.43486456319238964
+    ],
+    "base_start_pos": [
+      -0.15836011400848637,
+      -0.14843347389972283,
+      0.0
+    ],
+    "base_start_bearing": 2.650171447566196,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-01",
+    "seed": 994001,
+    "target_ee_pos": [
+      0.48902175803097314,
+      0.13010694482745838,
+      1.1125726518358205
+    ],
+    "base_start_pos": [
+      0.10166908685644649,
+      -0.2500846918885362,
+      0.0
+    ],
+    "base_start_bearing": -0.5454904704578398,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-02",
+    "seed": 994002,
+    "target_ee_pos": [
+      0.8736191900658913,
+      1.6614140342664179,
+      0.395564660293813
+    ],
+    "base_start_pos": [
+      0.003045116073867926,
+      -0.40401416323815564,
+      0.0
+    ],
+    "base_start_bearing": -2.8405174662749912,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-03",
+    "seed": 994003,
+    "target_ee_pos": [
+      1.1087036429765773,
+      -0.5007264127204094,
+      0.10198812188346296
+    ],
+    "base_start_pos": [
+      0.46434505120085,
+      -0.2733571484347668,
+      0.0
+    ],
+    "base_start_bearing": 2.531438799328358,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-04",
+    "seed": 994004,
+    "target_ee_pos": [
+      -1.1649091665617508,
+      0.14113106747862414,
+      0.6271513698545522
+    ],
+    "base_start_pos": [
+      0.09984231612699324,
+      -0.3509126739596172,
+      0.0
+    ],
+    "base_start_bearing": -0.46006698938888135,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-05",
+    "seed": 994005,
+    "target_ee_pos": [
+      0.23068629915912658,
+      1.3278446102992407,
+      0.4468682343979714
+    ],
+    "base_start_pos": [
+      -0.17785642787414224,
+      0.30325995734508837,
+      0.0
+    ],
+    "base_start_bearing": 0.903891831150557,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-06",
+    "seed": 994006,
+    "target_ee_pos": [
+      -0.9700877703622317,
+      -1.145003635179813,
+      0.36042710178517123
+    ],
+    "base_start_pos": [
+      -0.2355498749167786,
+      0.49676376761194074,
+      0.0
+    ],
+    "base_start_bearing": -0.3901336149134944,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-07",
+    "seed": 994007,
+    "target_ee_pos": [
+      -2.381504508639098,
+      2.4064808747555038,
+      1.0908001138125045
+    ],
+    "base_start_pos": [
+      -0.27414942215448546,
+      0.4121541234452504,
+      0.0
+    ],
+    "base_start_bearing": -2.1977197218831805,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-08",
+    "seed": 994008,
+    "target_ee_pos": [
+      0.675873161644849,
+      -0.7698901174192359,
+      0.4002250462622432
+    ],
+    "base_start_pos": [
+      -0.18608800825507232,
+      -0.3218880776716996,
+      0.0
+    ],
+    "base_start_bearing": -0.4401933704998582,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-09",
+    "seed": 994009,
+    "target_ee_pos": [
+      -1.5032969649356271,
+      2.6140276647913803,
+      0.568816748491357
+    ],
+    "base_start_pos": [
+      -0.356757739178688,
+      0.22037914225599065,
+      0.0
+    ],
+    "base_start_bearing": 3.1374215967185837,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-10",
+    "seed": 994010,
+    "target_ee_pos": [
+      -0.13996539084824655,
+      -0.31389363272645177,
+      0.6764894731218533
+    ],
+    "base_start_pos": [
+      0.16432909360616355,
+      0.29701673220437586,
+      0.0
+    ],
+    "base_start_bearing": -2.6033230946566945,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "mass x1.1",
+    "scenario_id": "mass x1.1-11",
+    "seed": 994011,
+    "target_ee_pos": [
+      2.4442758771593027,
+      -0.08081634639491947,
+      0.31264211377553064
+    ],
+    "base_start_pos": [
+      -0.3894922668948678,
+      -0.22130660590313078,
+      0.0
+    ],
+    "base_start_bearing": -2.163520159245555,
+    "physics": {
+      "mass_scale": 1.1
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-00",
+    "seed": 995000,
+    "target_ee_pos": [
+      0.672309889080063,
+      0.1654358649485866,
+      1.0068821214943842
+    ],
+    "base_start_pos": [
+      -0.30831307642326766,
+      0.2671607536232673,
+      0.0
+    ],
+    "base_start_bearing": -1.6635706789151827,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-01",
+    "seed": 995001,
+    "target_ee_pos": [
+      -1.646102666600353,
+      1.1743628159142991,
+      0.9194345044971745
+    ],
+    "base_start_pos": [
+      0.15365535450173562,
+      -0.2782520037174283,
+      0.0
+    ],
+    "base_start_bearing": 1.5417198311358185,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-02",
+    "seed": 995002,
+    "target_ee_pos": [
+      0.9810852639586608,
+      0.04397010226888773,
+      0.6094204368332001
+    ],
+    "base_start_pos": [
+      0.187899551281133,
+      0.21526252001212554,
+      0.0
+    ],
+    "base_start_bearing": -1.888652830929255,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-03",
+    "seed": 995003,
+    "target_ee_pos": [
+      -1.7333142658335432,
+      -1.0588991806905494,
+      0.7762681881892897
+    ],
+    "base_start_pos": [
+      -0.25343140411078213,
+      0.12038858770485483,
+      0.0
+    ],
+    "base_start_bearing": 0.8031975415613122,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-04",
+    "seed": 995004,
+    "target_ee_pos": [
+      0.9327686473140188,
+      -1.7054579744975942,
+      0.4106382358814592
+    ],
+    "base_start_pos": [
+      -0.004914817266386873,
+      -0.041761308943043196,
+      0.0
+    ],
+    "base_start_bearing": 1.4732305538095156,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-05",
+    "seed": 995005,
+    "target_ee_pos": [
+      -0.4894391085909967,
+      -2.8984434469160707,
+      0.9535499591118879
+    ],
+    "base_start_pos": [
+      -0.44661446650198655,
+      -0.10125785842853663,
+      0.0
+    ],
+    "base_start_bearing": 0.7452835947784626,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-06",
+    "seed": 995006,
+    "target_ee_pos": [
+      -2.1155872737975927,
+      0.708345375418635,
+      1.1956018742353633
+    ],
+    "base_start_pos": [
+      -0.36881316580839774,
+      0.37762562955610135,
+      0.0
+    ],
+    "base_start_bearing": -2.6323319643828977,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-07",
+    "seed": 995007,
+    "target_ee_pos": [
+      -1.4752943728566683,
+      -1.4766160069663883,
+      0.7876023906773275
+    ],
+    "base_start_pos": [
+      -0.16351266997848857,
+      -0.22207527602529575,
+      0.0
+    ],
+    "base_start_bearing": 0.03851927597949434,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-08",
+    "seed": 995008,
+    "target_ee_pos": [
+      0.7018174683637913,
+      -2.670376873503902,
+      1.0987139004281463
+    ],
+    "base_start_pos": [
+      0.1675309541447184,
+      0.09106268917232652,
+      0.0
+    ],
+    "base_start_bearing": -1.220902333341397,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-09",
+    "seed": 995009,
+    "target_ee_pos": [
+      1.279047079668231,
+      1.4990102460672303,
+      0.6047891945458622
+    ],
+    "base_start_pos": [
+      0.25404463532913757,
+      -0.17957673909304672,
+      0.0
+    ],
+    "base_start_bearing": 2.6488161477624077,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-10",
+    "seed": 995010,
+    "target_ee_pos": [
+      -1.0889643833592033,
+      1.1849385946311752,
+      0.10404870415477281
+    ],
+    "base_start_pos": [
+      0.018015857373316457,
+      0.44958156005317707,
+      0.0
+    ],
+    "base_start_bearing": 0.9871289419360121,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "sensor noise x20",
+    "scenario_id": "sensor noise x20-11",
+    "seed": 995011,
+    "target_ee_pos": [
+      -0.13552407025104451,
+      1.9184007445352882,
+      0.3634475263502964
+    ],
+    "base_start_pos": [
+      0.12042432552487214,
+      0.4218440338969748,
+      0.0
+    ],
+    "base_start_bearing": -0.4391220865904182,
+    "physics": {
+      "sensor_noise_scale": 20.0
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-00",
+    "seed": 996000,
+    "target_ee_pos": [
+      -1.535713835906313,
+      -0.6395280005396429,
+      1.2325030979829572
+    ],
+    "base_start_pos": [
+      -0.011542268106809028,
+      0.48154357912137247,
+      0.0
+    ],
+    "base_start_bearing": 0.8464933837730411,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -1.537251592701155,
+          -119.99015316908608,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-01",
+    "seed": 996001,
+    "target_ee_pos": [
+      0.5601241983684523,
+      2.9465768359845024,
+      0.5393864151806991
+    ],
+    "base_start_pos": [
+      -0.08778986175774017,
+      0.16776920448966126,
+      0.0
+    ],
+    "base_start_bearing": 1.9995555489238122,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -72.39005961010669,
+          -95.70621332831635,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-02",
+    "seed": 996002,
+    "target_ee_pos": [
+      2.7195090032828837,
+      -1.3826638745809694,
+      0.9524572073657886
+    ],
+    "base_start_pos": [
+      0.19888346728633644,
+      -0.11262749246918646,
+      0.0
+    ],
+    "base_start_bearing": 0.7182938896423918,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -117.36005119830986,
+          -25.032346728385043,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-03",
+    "seed": 996003,
+    "target_ee_pos": [
+      1.5420220494526962,
+      -1.0470218199928218,
+      1.036984926321245
+    ],
+    "base_start_pos": [
+      -0.24647991537222547,
+      -0.12224741437984088,
+      0.0
+    ],
+    "base_start_bearing": -2.7950753568863296,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -81.77837324528996,
+          -87.81968839249002,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-04",
+    "seed": 996004,
+    "target_ee_pos": [
+      0.1461099234251962,
+      -0.6409658596431409,
+      0.8948045657100157
+    ],
+    "base_start_pos": [
+      0.10338163068546247,
+      0.08238082122379209,
+      0.0
+    ],
+    "base_start_bearing": -2.349518866868646,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -91.05367934247559,
+          -78.16154731194638,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-05",
+    "seed": 996005,
+    "target_ee_pos": [
+      0.30337682794093546,
+      -1.6855075504015649,
+      0.6435946441140151
+    ],
+    "base_start_pos": [
+      0.47118257411252473,
+      0.04387527395568824,
+      0.0
+    ],
+    "base_start_bearing": -1.8007717482588188,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -41.33296011597229,
+          112.65694123333655,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-06",
+    "seed": 996006,
+    "target_ee_pos": [
+      -2.153167500015075,
+      0.0957750996201644,
+      0.6636493081132147
+    ],
+    "base_start_pos": [
+      -0.03896385156080184,
+      0.15851690497012472,
+      0.0
+    ],
+    "base_start_bearing": 1.2121610080976275,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          113.5405603483538,
+          -38.839942788086475,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-07",
+    "seed": 996007,
+    "target_ee_pos": [
+      1.5602749372354423,
+      -1.5193492448072803,
+      0.6406923117177009
+    ],
+    "base_start_pos": [
+      0.4331948270172573,
+      -0.13503343811624446,
+      0.0
+    ],
+    "base_start_bearing": 0.6080128449604856,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -39.12907573641913,
+          113.44124220059288,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-08",
+    "seed": 996008,
+    "target_ee_pos": [
+      -1.9745001878232755,
+      1.3929723354005452,
+      1.059746855248934
+    ],
+    "base_start_pos": [
+      0.05059718123308243,
+      -0.4883992232743535,
+      0.0
+    ],
+    "base_start_bearing": -0.3119950499370798,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -110.45925071479239,
+          -46.89087258226955,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-09",
+    "seed": 996009,
+    "target_ee_pos": [
+      -0.7820736129923916,
+      -1.6212314480609549,
+      0.7154847727152253
+    ],
+    "base_start_pos": [
+      0.05277461200759215,
+      0.4465679171372262,
+      0.0
+    ],
+    "base_start_bearing": 1.8241636214731667,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -38.822894490423096,
+          113.54639079858715,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-10",
+    "seed": 996010,
+    "target_ee_pos": [
+      2.4122260207269135,
+      0.09064085535657132,
+      0.5263627632114107
+    ],
+    "base_start_pos": [
+      0.1214893895901561,
+      0.23341604107037772,
+      0.0
+    ],
+    "base_start_bearing": 2.004414986679203,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          50.16337476939727,
+          109.0120903007781,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, driving",
+    "scenario_id": "push base, driving-11",
+    "seed": 996011,
+    "target_ee_pos": [
+      2.158698024245429,
+      -0.3302961063957394,
+      1.2129983929650328
+    ],
+    "base_start_pos": [
+      -0.3178285951569959,
+      -0.2797431128232273,
+      0.0
+    ],
+    "base_start_bearing": 2.123066843036246,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -25.262615519332947,
+          -117.31069967024473,
+          0.0
+        ],
+        "duration": 0.2,
+        "start": 3.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-00",
+    "seed": 997000,
+    "target_ee_pos": [
+      1.1479580121924022,
+      -2.3010804565312593,
+      0.9115409240121255
+    ],
+    "base_start_pos": [
+      -0.37889424726187293,
+      -0.2780520106679888,
+      0.0
+    ],
+    "base_start_bearing": 2.7545579871243397,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          58.30669626371741,
+          104.88245406554235,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-01",
+    "seed": 997001,
+    "target_ee_pos": [
+      -1.910808044721937,
+      2.3281934542626157,
+      0.12214223859717532
+    ],
+    "base_start_pos": [
+      -0.3128475238159827,
+      0.21600976417302964,
+      0.0
+    ],
+    "base_start_bearing": 2.233637085029918,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          105.6429803223817,
+          -56.91713897065516,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-02",
+    "seed": 997002,
+    "target_ee_pos": [
+      1.5565546861174377,
+      0.491975164937549,
+      1.2055600995373648
+    ],
+    "base_start_pos": [
+      0.09916496774084693,
+      0.09832572579063237,
+      0.0
+    ],
+    "base_start_bearing": -2.4876569963759936,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -36.311348203187755,
+          -114.37432400528911,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-03",
+    "seed": 997003,
+    "target_ee_pos": [
+      1.896716802423075,
+      -2.4591510841067934,
+      0.6524896686795569
+    ],
+    "base_start_pos": [
+      0.04999028368585723,
+      -0.48845236171072515,
+      0.0
+    ],
+    "base_start_bearing": 0.8690391862084006,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          82.29890382564876,
+          -87.33206987754622,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-04",
+    "seed": 997004,
+    "target_ee_pos": [
+      2.748302861819162,
+      -0.06051259529857661,
+      0.5099126396044812
+    ],
+    "base_start_pos": [
+      0.0010627346184994835,
+      0.39216692151815014,
+      0.0
+    ],
+    "base_start_bearing": -2.2690964535617124,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -27.56028269671394,
+          -116.79225495587116,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-05",
+    "seed": 997005,
+    "target_ee_pos": [
+      -0.8929352128429252,
+      -2.1170369683166563,
+      0.9546493661028653
+    ],
+    "base_start_pos": [
+      -0.025803500878511576,
+      0.2552153298136556,
+      0.0
+    ],
+    "base_start_bearing": 2.0979131399733815,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -119.007257476208,
+          -15.403657617317194,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-06",
+    "seed": 997006,
+    "target_ee_pos": [
+      -0.06572124694637121,
+      -0.7286365659841887,
+      0.2181567920290885
+    ],
+    "base_start_pos": [
+      0.25556099786129116,
+      -0.05143667704037236,
+      0.0
+    ],
+    "base_start_bearing": 2.5486688415730683,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -99.04648256182023,
+          67.74802057721718,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-07",
+    "seed": 997007,
+    "target_ee_pos": [
+      0.46952268518763796,
+      -2.023147550859415,
+      0.3040673410993836
+    ],
+    "base_start_pos": [
+      -0.32009897139299914,
+      -0.10596504010016028,
+      0.0
+    ],
+    "base_start_bearing": -0.7375471737433053,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -42.36564804282636,
+          -112.27266749263313,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-08",
+    "seed": 997008,
+    "target_ee_pos": [
+      0.7299401847643314,
+      2.518092630521476,
+      0.8487133666072803
+    ],
+    "base_start_pos": [
+      0.3346968695490715,
+      -0.0841197454178646,
+      0.0
+    ],
+    "base_start_bearing": -0.9183938941978287,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          44.66340406353039,
+          111.37854522958098,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-09",
+    "seed": 997009,
+    "target_ee_pos": [
+      0.6213548972145897,
+      1.4162713648218346,
+      0.9317058811009714
+    ],
+    "base_start_pos": [
+      0.032015930568151774,
+      0.27148548699646846,
+      0.0
+    ],
+    "base_start_bearing": -1.3795119348217861,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          -51.7562549754077,
+          108.26490692242149,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-10",
+    "seed": 997010,
+    "target_ee_pos": [
+      0.2618726213852013,
+      -2.333155397894715,
+      0.31944589903011344
+    ],
+    "base_start_pos": [
+      0.3271776796355478,
+      0.028996725585656136,
+      0.0
+    ],
+    "base_start_bearing": -1.3233243154727636,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          58.645735783286604,
+          -104.69325515255001,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push base, at target",
+    "scenario_id": "push base, at target-11",
+    "seed": 997011,
+    "target_ee_pos": [
+      1.4605141598792204,
+      0.21151771733376987,
+      0.9165498662320134
+    ],
+    "base_start_pos": [
+      0.18790836517887144,
+      0.15397126946815964,
+      0.0
+    ],
+    "base_start_bearing": -1.0613241810687493,
+    "physics": {
+      "push": {
+        "link": "base",
+        "force": [
+          105.91887281590478,
+          -56.40206008124336,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-00",
+    "seed": 998000,
+    "target_ee_pos": [
+      1.417341795254281,
+      2.7183798127353014,
+      0.18243797057636885
+    ],
+    "base_start_pos": [
+      0.1882449614266457,
+      0.07635302437301139,
+      0.0
+    ],
+    "base_start_bearing": -1.788503770167417,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          -16.4985542780806,
+          11.304764780092874,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-01",
+    "seed": 998001,
+    "target_ee_pos": [
+      1.7408764732601356,
+      -0.027490767629606283,
+      0.7161978696421689
+    ],
+    "base_start_pos": [
+      -0.047017402393404906,
+      0.31156411654648575,
+      0.0
+    ],
+    "base_start_bearing": 0.3781939135837096,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          -19.608710483266577,
+          -3.9368100263324077,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-02",
+    "seed": 998002,
+    "target_ee_pos": [
+      -2.7800129274145893,
+      -1.3757879394758432,
+      0.9510356932537949
+    ],
+    "base_start_pos": [
+      -0.38985089667274764,
+      0.34977347779612844,
+      0.0
+    ],
+    "base_start_bearing": -0.8559009238394828,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          16.105496647467326,
+          -11.858034311740655,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-03",
+    "seed": 998003,
+    "target_ee_pos": [
+      2.381265830159121,
+      -1.0759371183450734,
+      1.0474727824184928
+    ],
+    "base_start_pos": [
+      0.45510980126856593,
+      -0.44356347439924815,
+      0.0
+    ],
+    "base_start_bearing": -2.9256310155109317,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          6.153474065245449,
+          19.02983859438518,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-04",
+    "seed": 998004,
+    "target_ee_pos": [
+      -0.14400336389408497,
+      0.5078201200108006,
+      0.9133664050607698
+    ],
+    "base_start_pos": [
+      0.39178935170775964,
+      0.1413735888955595,
+      0.0
+    ],
+    "base_start_bearing": -0.2324092075110955,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          -13.177754860013977,
+          15.04482558388026,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-05",
+    "seed": 998005,
+    "target_ee_pos": [
+      0.5399735131391656,
+      1.6609149220245425,
+      0.5065127913095075
+    ],
+    "base_start_pos": [
+      0.2807551301274066,
+      0.45764250400783635,
+      0.0
+    ],
+    "base_start_bearing": -2.9630368792556823,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          6.676895891196838,
+          -18.852561132592005,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-06",
+    "seed": 998006,
+    "target_ee_pos": [
+      -2.247427527983681,
+      -1.6482618172459942,
+      0.44361779954457625
+    ],
+    "base_start_pos": [
+      -0.10914842856805351,
+      -0.3209449466443982,
+      0.0
+    ],
+    "base_start_bearing": 0.5285649445187444,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          9.940675418976166,
+          -17.354623943334612,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-07",
+    "seed": 998007,
+    "target_ee_pos": [
+      1.8303653491759635,
+      2.2236993993809424,
+      0.19096420295593536
+    ],
+    "base_start_pos": [
+      -0.05676295335916204,
+      0.01066859968777567,
+      0.0
+    ],
+    "base_start_bearing": -2.640054798398399,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          -19.999966225812145,
+          -0.03675549446741077,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-08",
+    "seed": 998008,
+    "target_ee_pos": [
+      2.061793558822578,
+      1.6824698324802512,
+      1.0433081524442376
+    ],
+    "base_start_pos": [
+      0.46429391697027156,
+      -0.18302329191806577,
+      0.0
+    ],
+    "base_start_bearing": 2.6934149792970805,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          17.576812706431898,
+          -9.54230868726296,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-09",
+    "seed": 998009,
+    "target_ee_pos": [
+      -1.1981892592164116,
+      0.6705108211279622,
+      0.5837833007868102
+    ],
+    "base_start_pos": [
+      0.0719377648350753,
+      0.16755313022890472,
+      0.0
+    ],
+    "base_start_bearing": -2.5706404732538974,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          -15.940718304010115,
+          12.078638166291633,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-10",
+    "seed": 998010,
+    "target_ee_pos": [
+      1.6750414327984715,
+      -1.4544282129440793,
+      1.0241307130466557
+    ],
+    "base_start_pos": [
+      -0.06720960559449118,
+      -0.1341963754043657,
+      0.0
+    ],
+    "base_start_bearing": -1.1826202552447125,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          9.164753425928565,
+          -17.77659401128154,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  },
+  {
+    "condition": "push hand, at target",
+    "scenario_id": "push hand, at target-11",
+    "seed": 998011,
+    "target_ee_pos": [
+      -2.0868919766017733,
+      -2.0983997471216314,
+      1.0174312966279375
+    ],
+    "base_start_pos": [
+      0.2720532201117749,
+      -0.4848489179549337,
+      0.0
+    ],
+    "base_start_bearing": -2.17265341925974,
+    "physics": {
+      "push": {
+        "link": "ee",
+        "force": [
+          19.999353588686635,
+          0.16079811779683165,
+          0.0
+        ],
+        "duration": 0.2,
+        "after_reach": 1.0
+      }
+    }
+  }
+]
