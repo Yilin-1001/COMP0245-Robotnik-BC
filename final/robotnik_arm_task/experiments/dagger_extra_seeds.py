@@ -1,15 +1,20 @@
-"""Extra training seeds for early DAgger rounds of ablation v2, on the existing round datasets (no new collection).
+"""Extra training seeds for early DAgger rounds (ablation v2 or v3), on the existing round datasets (no new collection).
 
 The 2026-11-01 v2 run (experiments.dagger_rounds) trained seeds 1-2 only for the chosen round (r3). This script trains
 seeds for the earlier rounds k on the same aggregated datasets (dagger-R<n>-v2-r1..rk), with the same recipe, so that
 "f-DAgger + Gate, round k" (R8-rk) and "DAgger + Gate, round k" (R6-rk) can be compared at k = 1, 2 with three seeds.
 The DAgger data of round k was collected by the 2026-11-01 seed-0 model of round k - 1; that model stays seed 0.
 
-Models: checkpoints/ablation/<date>__training-ablation-v2/; results: results/ablation/<date>__training-ablation-v2/dagger/<row>/.
+Models: checkpoints/ablation/<date>__training-ablation-<version>/; results: results/ablation/<date>__training-ablation-<version>/
+dagger/<row>/. --version, --variant-suffix and --source-date select the DAgger run whose datasets and seed-0 collectors
+are reused (defaults: v2, no suffix, 2026-11-01). For v3 the date may equal the source date: the extra seeds then join
+the v3 run's folders, since only rounds/seeds that do not exist yet are trained.
 
 Usage (from final/robotnik_arm_task/):
     python -m experiments.dagger_extra_seeds --date 2026-11-03 --rows R8-dart-gate-dagger R6-gate-dagger \
         --rounds 1 2 --seeds 1 2 --workers 20
+    python -m experiments.dagger_extra_seeds --date 2026-11-05 --rows R8-dart-gate-dagger R6-gate-dagger \
+        --rounds 1 2 --seeds 1 2 --workers 20 --version v3 --variant-suffix=-nodev --source-date 2026-11-05 --dev-scenes 0
 """
 import argparse
 import time
@@ -20,12 +25,12 @@ from experiments.dagger_rounds import ROWS, TASK_DIR, VERSION, train_and_validat
 SOURCE_DATE = "2026-11-01"  # the v2 run whose DAgger datasets and seed-0 collectors are reused
 
 
-def collector(row: str, k: int) -> str:
+def collector(row: str, k: int, version: str = VERSION, suffix: str = "", source_date: str = SOURCE_DATE) -> str:
     """The seed-0 model that collected round k's data, as dagger_rounds records it."""
     if k == 1:
         base = ROWS[row][0]
         return f"{base}__MLP01-256x3__s0__v1__2026-10-28.npz"
-    return f"{row}-r{k - 1}__MLP01-256x3__s0__{VERSION}__{SOURCE_DATE}.npz"
+    return f"{row}{suffix}-r{k - 1}__MLP01-256x3__s0__{version}__{source_date}.npz"
 
 
 def main(argv=None) -> int:
@@ -37,16 +42,23 @@ def main(argv=None) -> int:
     p.add_argument("--rounds", nargs="+", type=int, required=True)
     p.add_argument("--seeds", nargs="+", type=int, required=True)
     p.add_argument("--workers", type=int, default=20)
+    p.add_argument("--version", default=VERSION)
+    p.add_argument("--variant-suffix", default="", help="write --variant-suffix=-nodev for v3")
+    p.add_argument("--source-date", default=SOURCE_DATE, help="date of the DAgger run whose data is reused")
+    p.add_argument("--dev-scenes", type=int, default=64, help="that run's development scenes (variant file header only)")
     args = p.parse_args(argv)
-    if args.date == SOURCE_DATE:
+    if args.version == VERSION and args.date == SOURCE_DATE:
         raise SystemExit("use a new date; the 2026-11-01 run is the reference record")
     for k in args.rounds:
         for row in args.rows:
-            out_dir = TASK_DIR / f"results/ablation/{args.date}__training-ablation-{VERSION}/dagger/{row}"
+            out_dir = TASK_DIR / f"results/ablation/{args.date}__training-ablation-{args.version}/dagger/{row}"
             out_dir.mkdir(parents=True, exist_ok=True)
             for seed in args.seeds:
                 print(f"\n===== {row} round {k} seed {seed} ({time.strftime('%H:%M:%S')}) =====", flush=True)
-                train_and_validate(row, k, seed, args.date, collector(row, k), args.workers, out_dir)
+                train_and_validate(row, k, seed, args.date,
+                                   collector(row, k, args.version, args.variant_suffix, args.source_date),
+                                   args.workers, out_dir, version=args.version, suffix=args.variant_suffix,
+                                   dev_scenes=args.dev_scenes)
     return 0
 
 

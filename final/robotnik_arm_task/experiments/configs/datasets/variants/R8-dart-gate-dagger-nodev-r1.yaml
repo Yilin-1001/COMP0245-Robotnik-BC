@@ -1,0 +1,6 @@
+# R8-dart-gate-dagger without development scenes, DAgger round 1 (v3, --dev-scenes 0): R4-dart-gate's data (clean253, dart-d2s075x2) plus DAgger rounds 1..1,
+# inputs features-v1-gate. Written by the nodev wrapper around experiments/dagger_rounds.py.
+data:
+  feature_definition: features-v1-gate
+  datasets: [clean253__features-v1-gate, dart-d2s075x2__features-v1-gate, dagger-R8-v3-r1__features-v1-gate]
+  validation_dataset: clean253__features-v1-gate

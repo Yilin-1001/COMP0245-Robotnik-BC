@@ -25,7 +25,7 @@ from core.model_names import canonical_id, legacy_id, report_label
 
 TASK_DIR = Path(__file__).resolve().parents[1]
 RUN = re.compile(r"^(?P<variant>.+?)__(?P<arch>[^_]+)__s(?P<seed>\d+)__(?P<version>v\d+)__(?P<date>\d{4}-\d{2}-\d{2})$")
-ROUND = re.compile(r"^(?P<row>.+)-r(?P<round>\d+)$")
+ROUND = re.compile(r"^(?P<row>.+?)(?:-nodev)?-r(?P<round>\d+)$")  # v3 variants: <row>-nodev-r<k>
 
 # Categorical slots 1-3 of the validated reference palette (all-pairs CVD-safe); markers are the secondary encoding.
 ROUND_STYLE = {0: ("#8a8986", "o"), 1: ("#2a78d6", "o"), 2: ("#eb6834", "s"), 3: ("#1baf7a", "^")}
