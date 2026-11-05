@@ -37,7 +37,7 @@ The course brief is `references/2026-10-24__assignment__comp0245-final-project.p
 
 ## Archived
 
-Earlier plans, research notes and designs (24–26 October: project plan, milestones, ablation strategy, clean MLP baseline plan, training recipe research, training code structure) and the reports of earlier training versions (clean M1–M6, arm/wheel 0.8/0.2 retraining, D8-W256, the 27 October DAgger round 1) are in [`Archive/docs/`](../Archive/docs/). The full list is in [Archive/README.md](../Archive/README.md).
+Earlier plans, research notes and designs (24–26 October: project plan, milestones, ablation strategy, clean MLP baseline plan, training recipe research, training code structure) and the reports of earlier training versions (clean M1–M6, arm/wheel 0.8/0.2 retraining, D8-W256, the 27 October DAgger round 1) are kept in a local `Archive/` folder together with the retired code and models. `Archive/` is not part of the submission. Mentions of `Archive/...` paths in documents, configs and report READMEs record provenance only. Everything needed to run or check the submitted work is outside it.
 
 ## Old document names
 
@@ -45,11 +45,7 @@ Source comments and the manifests of recorded data still use these old names. Th
 
 | Old name (`docs/…`) | Current location |
 |---|---|
-| `project_plan.md` | [Archive/docs/plans/2026-10-26__plan__project-overview.md](../Archive/docs/plans/2026-10-26__plan__project-overview.md) |
-| `milestones.md` | [Archive/docs/plans/2026-10-24__roadmap__project-milestones.md](../Archive/docs/plans/2026-10-24__roadmap__project-milestones.md) |
-| `ablation_strategy.md` | [Archive/docs/plans/2026-10-26__plan__ablation-strategy.md](../Archive/docs/plans/2026-10-26__plan__ablation-strategy.md) |
-| `mlp_baseline_training_plan.md` | [Archive/docs/plans/2026-10-26__plan__mlp-baseline-training.md](../Archive/docs/plans/2026-10-26__plan__mlp-baseline-training.md) |
-| `mlp_training_research.md` | [Archive/docs/research/2026-10-26__research__mlp-training-recipe.md](../Archive/docs/research/2026-10-26__research__mlp-training-recipe.md) |
+| `project_plan.md`, `milestones.md`, `ablation_strategy.md`, `mlp_baseline_training_plan.md`, `mlp_training_research.md` | Archived locally (not submitted) |
 | `expert_datasets.md` | [specs/2026-10-26__spec__expert-datasets.md](specs/2026-10-26__spec__expert-datasets.md) |
 | `expert_model_accuracy.md` | [reports/2026-10-24__report__markovian-expert-model-accuracy.md](reports/2026-10-24__report__markovian-expert-model-accuracy.md) |
 | `expert_operating_limits.md` | [reports/2026-10-26__report__expert-operating-limits.md](reports/2026-10-26__report__expert-operating-limits.md) |

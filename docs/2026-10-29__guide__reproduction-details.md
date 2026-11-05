@@ -347,7 +347,7 @@ Use them to locate bottlenecks and retain `mode=student` as the primary model re
 and should be reported with that test-set exposure disclosed. Freeze models, hyperparameters and checkpoint choices using training/validation data
 before testing, and disclose any use of these test outcomes in subsequent design.
 The `evaluation.evaluate` CLI has no `--split test` option.
-The clean-data MLP pipeline that preceded the ablation (M1–M6, `experiments.run`, frozen protocols; no clean model held a validation target) is archived with its commands and results in [Archive/docs/2026-10-29__guide__clean-pipeline-legacy.md](../Archive/docs/2026-10-29__guide__clean-pipeline-legacy.md).
+The clean-data MLP pipeline that preceded the ablation (M1–M6, `experiments.run`, frozen protocols; no clean model held a validation target) is archived locally with its commands and results (not part of the submission).
 
 ### 7. DAgger rows (ablation v2)
 
@@ -435,8 +435,7 @@ COMP_0245_2026_Final/
 │   ├── checkpoints/       git-ignored: ablation/<date>__training-ablation-<version>/<run>/
 │   └── results/           results.csv (v1 evaluation index); ablation/<date>__training-ablation-<version>/ (summaries tracked)
 ├── tests/                 pytest suite (pytest.ini: testpaths = tests)
-├── docs/                  guides, specs, reports, references (index: docs/README.md)
-└── Archive/               retired code (tracked) and pre-ablation models (git-ignored); see Archive/README.md
+└── docs/                  guides, specs, reports, references (index: docs/README.md)
 ```
 
 Where the splits live: training = the 221 `fitting_ids` and validation = the 32 `validation_ids` of `experiments/splits/clean253.json` (their rows are in `data/datasets/A/clean253__*`; DART datasets hold training scenarios only); test = the 64 sealed scenarios in `data/Markovian/Clean_253/scenarios_test.csv`, evaluated in closed loop only.

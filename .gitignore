@@ -1,63 +1,103 @@
-# Upstream RoboEnv source/build: install it into your own environment instead
+# Hidden files and folders (tool caches, editor/agent state, .venv, .pytest_cache, .DS_Store, ...).
+# Only the repository's own .gitignore and the results/figures placeholder are published.
+.*
+!/.gitignore
+!final/robotnik_arm_task/results/figures/.gitkeep
+
+# External simulator: assessors clone RoboEnv themselves (README section 3)
 RoboEnv/
 
+# Retired experiments: kept locally, not part of the submission
+Archive/
+
 # Python environments and caches
-.venv/
 venv/
-.pixi/
 __pycache__/
 *.py[cod]
 *.egg-info/
 build/
 dist/
-.ipynb_checkpoints/
 
-# Only commit the robot assets the final task actually loads
+# Robot assets: only the config, the two URDFs (PyBullet, Pinocchio) and the 16 meshes they reference
 final/robotnik_arm_task/configs/*
 !final/robotnik_arm_task/configs/robotnik_arm.json
 final/robotnik_arm_task/models/*
 !final/robotnik_arm_task/models/summit_xl_arm_description/
+final/robotnik_arm_task/models/summit_xl_arm_description/*
+!final/robotnik_arm_task/models/summit_xl_arm_description/summit_xl_complete.urdf
+!final/robotnik_arm_task/models/summit_xl_arm_description/summit_xl_complete_pin.urdf
+!final/robotnik_arm_task/models/summit_xl_arm_description/arm_half_1.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/arm_half_2.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/base.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/finger_distal.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/finger_proximal.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/forearm.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/hand_3finger.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/ring_big.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/ring_small.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/rubber_wheel_left.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/rubber_wheel_right.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/shoulder.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/summit_xl_chassis.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/summit_xl_chassis_collision.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/wrist_spherical_1.dae
+!final/robotnik_arm_task/models/summit_xl_arm_description/wrist_spherical_2.dae
 
-# Generated outputs (datasets, checkpoints, plots, logs)
+# Generated outputs: datasets, weights, archives, logs
 *.log
 *.pt
 *.pth
 *.ckpt
 *.npz
 *.pkl
+*.zip
+*.swp
+outputs/
+runs/
+wandb/
 final/robotnik_arm_task/data/
-final/robotnik_arm_task/checkpoints/
+
+# Weights are GitHub Release assets (tools/package_release.py, tools/fetch_release.py).
+# Only the release's small index files are tracked, so the model list is readable without downloading.
+final/robotnik_arm_task/checkpoints/*
+!final/robotnik_arm_task/checkpoints/2026-11-05final/
+final/robotnik_arm_task/checkpoints/2026-11-05final/*
+!final/robotnik_arm_task/checkpoints/2026-11-05final/README.md
+!final/robotnik_arm_task/checkpoints/2026-11-05final/model_index.csv
+!final/robotnik_arm_task/checkpoints/2026-11-05final/demo_models.yaml
+!final/robotnik_arm_task/checkpoints/2026-11-05final/manifest.json
+!final/robotnik_arm_task/checkpoints/2026-11-05final/SHA256SUMS
+
+# Results: experiment summaries (the source of reported numbers) are tracked, per-rollout details stay local
 final/robotnik_arm_task/results/**
 !final/robotnik_arm_task/results/results.csv
 !final/robotnik_arm_task/results/figures/
-!final/robotnik_arm_task/results/.gitkeep
-!final/robotnik_arm_task/results/figures/.gitkeep
-# Experiment summaries (small; the source of reported numbers) are tracked, per-rollout details stay local.
 !final/robotnik_arm_task/results/ablation/
 !final/robotnik_arm_task/results/ablation/**/
 !final/robotnik_arm_task/results/ablation/**/summary.*
 !final/robotnik_arm_task/results/ablation/**/README.md
-outputs/
-runs/
-wandb/
 
-# Report evidence: diagnostic trajectories and frozen training curves/configs are submission sources.
+# Report evidence: diagnostic trajectories and frozen training curves/configs are submission sources
 !final/robotnik_arm_task/report/04_f_dagger/data/ou_noise/pilot/**/traces/*.npz
 !final/robotnik_arm_task/report/05_training_details/data/runs/
 !final/robotnik_arm_task/report/05_training_details/data/runs/**
 
-# Editor / OS
-.vscode/
-.idea/
-*.swp
-.DS_Store
+# Report LaTeX: sources are tracked; build products, drafts and notes are not
+final/robotnik_arm_task/report/paper/tmp/
+final/robotnik_arm_task/report/paper/output/
+final/robotnik_arm_task/report/Report Outline.txt
+*.aux
+*.out
+*.bbl
+*.blg
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Agent planning notes (not part of the submission)
+docs/superpowers/
 
 # Course brief (UCL course material): kept locally, not published
 docs/COMP0245-Assignment-2026-2.pdf
 docs/references/2026-10-24__assignment__comp0245-final-project.pdf
-
-# Archived model weights and run outputs (code under Archive/ stays tracked)
-Archive/final/robotnik_arm_task/checkpoints/
-Archive/final/robotnik_arm_task/data/
-Archive/final/robotnik_arm_task/results/
-Archive/docs/COMP0245-Assignment-2026-2.pdf

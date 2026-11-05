@@ -11,7 +11,7 @@ The values below are empirical results on a finite development set. They are not
 | Item | Source or configuration |
 | --- | --- |
 | Stress-test implementation | [evaluation/expert_noise_robustness.py](../../final/robotnik_arm_task/evaluation/expert_noise_robustness.py) |
-| Per-episode results | [results/expert_noise_robustness.csv](../../final/robotnik_arm_task/results/expert_noise_robustness.csv), generated and git-ignored |
+| Per-episode results | `results/expert_noise_robustness.csv` (generated, git-ignored); submitted copy: [report/01_markovian_expert/data/disturbance/expert_noise_robustness.csv](../../final/robotnik_arm_task/report/01_markovian_expert/data/disturbance/expert_noise_robustness.csv) |
 | Expert A | [data_collection/expert.py](../../final/robotnik_arm_task/data_collection/expert.py), explicitly instantiated with **`lead_time=0.50 s`** in this sweep |
 | Expert B | [data_collection/template_teacher.py](../../final/robotnik_arm_task/data_collection/template_teacher.py), calling the original [arm and base controllers](../../final/robotnik_arm_task/robotnik_arm_control.py) |
 | Simulation interface | [core/env.py](../../final/robotnik_arm_task/core/env.py) |

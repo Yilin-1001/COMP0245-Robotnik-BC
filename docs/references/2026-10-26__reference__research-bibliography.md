@@ -4,7 +4,7 @@ Reviewed: 26 October 2026.
 
 This document consolidates the research discussed for the Robotnik imitation-learning project and the supporting references in the earlier project plan. It separates published findings, available research software, and their proposed application to this robot. It is an annotated reference guide, not a claim that the methods have already been implemented or validated here.
 
-The [expert dataset specification](../specs/2026-10-26__spec__expert-datasets.md) defines the current collection contract: Dataset A uses the Markovian teacher with 21 default inputs; Dataset B uses the original stateful teacher with 26 default inputs. Both have 11 action labels. The body-frame unit gravity direction remains deferred. Earlier feature lists and methodological shorthand in the [project plan](../../Archive/docs/plans/2026-10-26__plan__project-overview.md) should be read in light of that specification and the qualifications below.
+The [expert dataset specification](../specs/2026-10-26__spec__expert-datasets.md) defines the current collection contract: Dataset A uses the Markovian teacher with 21 default inputs; Dataset B uses the original stateful teacher with 26 default inputs. Both have 11 action labels. The body-frame unit gravity direction remains deferred. Earlier feature lists and methodological shorthand in the earlier project plan (archived locally, not submitted) should be read in light of that specification and the qualifications below.
 
 ## Contents
 
@@ -362,6 +362,6 @@ For an efficient reading order, start with R02 and R01 for collection, R03 and R
 - [Original controller](../../final/robotnik_arm_task/robotnik_arm_control.py) and [task initialization](../../final/robotnik_arm_task/robotnik_arm_task.py): reference integration, navigation memory and call order.
 - [Observation/action interfaces](../../final/robotnik_arm_task/core/interfaces.py): deployment information and action ordering.
 - [Expert model accuracy notes](../reports/2026-10-24__report__markovian-expert-model-accuracy.md): local model mismatch and calibration evidence.
-- [Project plan](../../Archive/docs/plans/2026-10-26__plan__project-overview.md) and [ablation strategy](../../Archive/docs/plans/2026-10-26__plan__ablation-strategy.md): earlier planning context; dataset details should follow the current specification.
+- Project plan and ablation strategy (26 October): earlier planning context, archived locally and not part of the submission. Dataset details follow the current specification.
 
 When a method is implemented, record its variant and source revision in the experiment configuration. Cite the original paper for the method and the software project for reused code. Report project-specific modifications explicitly, and update this guide when new evidence changes a design decision.

@@ -37,9 +37,9 @@ The 0.2–3.2 mm in the [earlier expert model accuracy report](2026-10-24__repor
 
 ## Results and reproduction
 
-- [Raw per-sample diagnostics and summary](../../Archive/final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/fk_accuracy.json).
-- [Frozen probes, model and code hashes](../../Archive/final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/fk_accuracy_contract.json).
-- [Reproduction script](../../Archive/final/robotnik_arm_task/results/dagger/2026-10-27__experiment__d08w0256-a-r1/2026-10-27__analysis__fk-input-accuracy.py). The script matches its recorded source SHA. To rerun it, use a new result directory so the original frozen evidence is kept.
+- [Raw per-sample diagnostics and summary](../../final/robotnik_arm_task/report/03_feature_engineering/data/fk/fk_accuracy.json.gz) (gzip copy).
+- [Frozen probes, model and code hashes](../../final/robotnik_arm_task/report/03_feature_engineering/data/fk/fk_accuracy_contract.json).
+- The original reproduction script and result directory are archived locally and are not part of the submission. The report copies above (the first gzip-compressed) are listed with the SHA-256 of both copy and original in [`report/03_feature_engineering/data/source_inventory.json`](../../final/robotnik_arm_task/report/03_feature_engineering/data/source_inventory.json).
 - [FK implementation](../../final/robotnik_arm_task/core/features.py).
 
 No production code was changed. Verification consisted of 8 full closed-loop PyBullet replays and an independent geometric check of the PyBullet link frame against the full-attitude FK.
