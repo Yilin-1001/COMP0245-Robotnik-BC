@@ -1,0 +1,221 @@
+kind: demo-models
+experiment: 2026-11-05final
+decisions:
+  final:
+    artifacts:
+    - label: R1 Baseline | round 0 | seed 0
+      row: R1-Baseline
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R1-Baseline__MLP01-256x3__s0__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R1-Baseline/seed-0/R1-Baseline__MLP01-256x3__s0__v1__2026-10-28.npz
+      inference_sha256: 7b00894d3abce474df4de2f5ce94da95b6aaaa96caa8f0e44ec77755ef2e809f
+    - label: R1 Baseline | round 0 | seed 1
+      row: R1-Baseline
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R1-Baseline__MLP01-256x3__s1__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R1-Baseline/seed-1/R1-Baseline__MLP01-256x3__s1__v1__2026-10-28.npz
+      inference_sha256: a2511580047b2802a252b2caed0bab182cd97a95c85cd7cfcfdd1375f5093570
+    - label: R1 Baseline | round 0 | seed 2
+      row: R1-Baseline
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R1-Baseline__MLP01-256x3__s2__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R1-Baseline/seed-2/R1-Baseline__MLP01-256x3__s2__v1__2026-10-28.npz
+      inference_sha256: 754c734c843aa9f4e3235522de490d1700c872c5984ed823fe352c0d2f7c8c93
+    - label: R2 Baseline + Gate | round 0 | seed 0
+      row: R2-Baseline-Gate
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R2-Baseline-Gate__MLP01-256x3__s0__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R2-Baseline-Gate/seed-0/R2-Baseline-Gate__MLP01-256x3__s0__v1__2026-10-28.npz
+      inference_sha256: b19ce7b2cc1628814fee7f45c768c34d19b345b8f9f03d7fd9d525a2c8bdee54
+    - label: R2 Baseline + Gate | round 0 | seed 1
+      row: R2-Baseline-Gate
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R2-Baseline-Gate__MLP01-256x3__s1__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R2-Baseline-Gate/seed-1/R2-Baseline-Gate__MLP01-256x3__s1__v1__2026-10-28.npz
+      inference_sha256: 9de8b1a5b6fce3b252386a913bffc6b29826cf9a8419cd475ada1bc6ce03cbcb
+    - label: R2 Baseline + Gate | round 0 | seed 2
+      row: R2-Baseline-Gate
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R2-Baseline-Gate__MLP01-256x3__s2__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R2-Baseline-Gate/seed-2/R2-Baseline-Gate__MLP01-256x3__s2__v1__2026-10-28.npz
+      inference_sha256: 61d82fcdc2db619f118c1ca780fe876ba16e11e126250cee2dfce6973b6650c6
+    - label: R3 OU | round 0 | seed 0
+      row: R3-OU
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R3-OU__MLP01-256x3__s0__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R3-OU/seed-0/R3-OU__MLP01-256x3__s0__v1__2026-10-28.npz
+      inference_sha256: f8036e05f33372056b748a46d8197e2d943cbf1c2b8928f3dcc13fcb2fd47505
+    - label: R3 OU | round 0 | seed 1
+      row: R3-OU
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R3-OU__MLP01-256x3__s1__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R3-OU/seed-1/R3-OU__MLP01-256x3__s1__v1__2026-10-28.npz
+      inference_sha256: 0ee0db4bd9e52b536123cb2b03751ff598246f886345fa7030ce95ddc0f8aa62
+    - label: R3 OU | round 0 | seed 2
+      row: R3-OU
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R3-OU__MLP01-256x3__s2__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R3-OU/seed-2/R3-OU__MLP01-256x3__s2__v1__2026-10-28.npz
+      inference_sha256: 376ae40d5bb018c6bc68e29e103e773ed16c3add7e9c8fec0effc6f1c55f8386
+    - label: R4 OU + Gate | round 0 | seed 0
+      row: R4-OU-Gate
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R4-OU-Gate/seed-0/R4-OU-Gate__MLP01-256x3__s0__v1__2026-10-28.npz
+      inference_sha256: 5de504cde803d9aca868ed864d7cd61c93d5f8017f2e471749980125193ab6aa
+    - label: R4 OU + Gate | round 0 | seed 1
+      row: R4-OU-Gate
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R4-OU-Gate/seed-1/R4-OU-Gate__MLP01-256x3__s1__v1__2026-10-28.npz
+      inference_sha256: 4a040aa4a9f50b2c8b9f913d0e516841ab962e1f9f897716615a8934764bb7f3
+    - label: R4 OU + Gate | round 0 | seed 2
+      row: R4-OU-Gate
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28
+      inference: checkpoints/2026-11-05final/models/R4-OU-Gate/seed-2/R4-OU-Gate__MLP01-256x3__s2__v1__2026-10-28.npz
+      inference_sha256: 01c62daf4a64f799d1016c1a4fa1a3fe853da1b7bde3d81f2ff2711376a27f1b
+    - label: R5 DAgger | round 3 | seed 0
+      row: R5-DAgger
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R5-DAgger/seed-0/R5-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05.npz
+      inference_sha256: 6174482488335395015fb0ad27f119ac19977fcfcc4a91d7b290fe8628185b01
+    - label: R5 DAgger | round 3 | seed 1
+      row: R5-DAgger
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R5-DAgger/seed-1/R5-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05.npz
+      inference_sha256: 3c0bc184344aaeff9d263579b2f08d667d9cccae658c907d2aa7703dcdca3908
+    - label: R5 DAgger | round 3 | seed 2
+      row: R5-DAgger
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R5-DAgger/seed-2/R5-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05.npz
+      inference_sha256: 261a5c45979655fcb86b8b16d00a38963f849c50bf65e4bd55eb1921e6690b46
+    - label: R6 DAgger + Gate | round 3 | seed 0
+      row: R6-DAgger-Gate
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R6-DAgger-Gate/seed-0/R6-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05.npz
+      inference_sha256: b32e0c01bcdee4364818c35cb14185bf40fbed204b1b4c5bb7e699c134ae7ee6
+    - label: R6 DAgger + Gate | round 3 | seed 1
+      row: R6-DAgger-Gate
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R6-DAgger-Gate/seed-1/R6-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05.npz
+      inference_sha256: eba1673f988da1d3795e2161011c1b6325a8937c8de9cb1002aebabd1df61e8f
+    - label: R6 DAgger + Gate | round 3 | seed 2
+      row: R6-DAgger-Gate
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R6-DAgger-Gate/seed-2/R6-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05.npz
+      inference_sha256: e38a8cade665535b668a03036aaf1b7214f2df69addfbe197e8b83ca8770c741
+    - label: R7 f-DAgger | round 3 | seed 0
+      row: R7-f-DAgger
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R7-f-DAgger/seed-0/R7-f-DAgger-r3__MLP01-256x3__s0__v3__2026-11-05.npz
+      inference_sha256: 724c55d28c95442514ea9d28b609629ead44cb14b6c980b7c35d543b5b8e401a
+    - label: R7 f-DAgger | round 3 | seed 1
+      row: R7-f-DAgger
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R7-f-DAgger/seed-1/R7-f-DAgger-r3__MLP01-256x3__s1__v3__2026-11-05.npz
+      inference_sha256: 8b756378bf2f825102eb35c5065aa68e5a7d2ea59c521d0ca108328c34858ec2
+    - label: R7 f-DAgger | round 3 | seed 2
+      row: R7-f-DAgger
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R7-f-DAgger/seed-2/R7-f-DAgger-r3__MLP01-256x3__s2__v3__2026-11-05.npz
+      inference_sha256: a48c15444ec5a2c5e762b6522be700d3541bcbb4f8a3b77fb333e5803bc390ab
+    - label: R8 f-DAgger + Gate | round 3 | seed 0
+      row: R8-f-DAgger-Gate
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R8-f-DAgger-Gate/seed-0/R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05.npz
+      inference_sha256: a336de9cc2ca1a242ebb676b0e56c4240a1407341e91e408b96e91c9cc0a39b5
+    - label: R8 f-DAgger + Gate | round 3 | seed 1
+      row: R8-f-DAgger-Gate
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R8-f-DAgger-Gate/seed-1/R8-f-DAgger-Gate-r3__MLP01-256x3__s1__v3__2026-11-05.npz
+      inference_sha256: db14fa1fa86bab4c91a29de0bd9b08139155bdb5e6fa745883b3e23deadaa948
+    - label: R8 f-DAgger + Gate | round 3 | seed 2
+      row: R8-f-DAgger-Gate
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05
+      inference: checkpoints/2026-11-05final/models/R8-f-DAgger-Gate/seed-2/R8-f-DAgger-Gate-r3__MLP01-256x3__s2__v3__2026-11-05.npz
+      inference_sha256: 394b1f19dbf408ddc83cacf90b9eb326654ec333ecfa3fc189ad42378ee4996b
+    - label: R9 DART + Gate | round 3 | seed 0
+      row: R9-DART-Gate
+      teacher: A
+      objective: bcj
+      seed: 0
+      run_id: R9-DART-Gate-a6-r3__MLP01-256x3__s0__v2__2026-11-04
+      inference: checkpoints/2026-11-05final/models/R9-DART-Gate/seed-0/R9-DART-Gate-a6-r3__MLP01-256x3__s0__v2__2026-11-04.npz
+      inference_sha256: e801e9d91b6acdf61c791344e86276f2cbb945f34b381aaebeb4c42b567428db
+    - label: R9 DART + Gate | round 3 | seed 1
+      row: R9-DART-Gate
+      teacher: A
+      objective: bcj
+      seed: 1
+      run_id: R9-DART-Gate-a6-r3__MLP01-256x3__s1__v2__2026-11-04
+      inference: checkpoints/2026-11-05final/models/R9-DART-Gate/seed-1/R9-DART-Gate-a6-r3__MLP01-256x3__s1__v2__2026-11-04.npz
+      inference_sha256: bf9cb2765371589ef8abd6a72889afb45c73af54d901d48e995fe02678e405e9
+    - label: R9 DART + Gate | round 3 | seed 2
+      row: R9-DART-Gate
+      teacher: A
+      objective: bcj
+      seed: 2
+      run_id: R9-DART-Gate-a6-r3__MLP01-256x3__s2__v2__2026-11-04
+      inference: checkpoints/2026-11-05final/models/R9-DART-Gate/seed-2/R9-DART-Gate-a6-r3__MLP01-256x3__s2__v2__2026-11-04.npz
+      inference_sha256: bd60707c75475cf569dbcbf0432d703b85361500a38f120fd0526728aa41fb2e

@@ -1,105 +1,181 @@
-# Robotnik mobile manipulation: assessor's run guide
+# f-DAgger: behaviour cloning for a mobile manipulator (COMP0245 final project)
 
-This project learns to control a 7-DoF arm and a four-wheel mobile base from expert demonstrations. A student predicts arm torques and wheel speeds from measured robot state and the target position. Submitted methods are **Baseline, OU, DAgger and f-DAgger**, each without/with a reach-gate input (R1–R8), plus **full DART + Gate** (R9).
+A Robotnik mobile manipulator (7-DoF arm on a four-wheel base, PyBullet) must drive to a 3-D target, place its end effector **within 10 mm** of it and **hold for 3 s**. We replace the course's expert controller with a learned policy: a **141k-parameter MLP** that maps the current robot state and the target to **7 arm torques and 2 wheel speeds at 1 kHz**. There is no controller, planner or expert in the loop at run time.
 
-**To inspect submitted models:** complete [installation](#2-installation), read [what seeds mean](#3-before-choosing-a-model-what-do-the-seeds-mean), then use [live comparison](#5-live-comparison-expert-versus-your-chosen-model). No training or demonstration collection is needed. For numerical results, use [validation and testing](#6-validate-and-test-the-submitted-models). To reproduce training, follow [the full pipeline](#7-reproduce-the-data-and-training-pipeline).
+**What we built**
 
-## 1. Project framework and working directories
+1. **A memoryless (Markovian) expert** derived from the course template controller, so every state can be labelled on demand: a requirement for DAgger and DART ([report/01](final/robotnik_arm_task/report/01_markovian_expert/README.md)).
+2. **Deployable features**: robot-frame target geometry, forward-kinematics task error and an explicit **reach gate** input (22 inputs) ([report/03](final/robotnik_arm_task/report/03_feature_engineering/README.md)).
+3. **BC + damping-Jacobian loss**: a Huber action loss plus a Sobolev-style term that teaches the expert's velocity feedback ([report/05](final/robotnik_arm_task/report/05_training_details/README.md)).
+4. **f-DAgger**: expert demonstrations with phase-gated Ornstein–Uhlenbeck (OU) action noise first, then DAgger rounds ([report/04](final/robotnik_arm_task/report/04_f_dagger/README.md)).
+5. **A frozen 240-scene test suite** (in-range, far, near, height edges, shifted starts, 20 s hold), plus robustness, network-size and training-time studies ([report/06–10](final/robotnik_arm_task/report/README.md)).
 
-The **repository root** contains this README and `requirements.txt` (`COMP_0245_2026_Final/` in the surrounding workspace). The **task directory** is `final/robotnik_arm_task/` inside it. Commands use Bash on Linux or WSL2.
+**Results** (3 training seeds per row; unified-test success = error < 10 mm continuously for 3 s):
 
-```text
-COMP_0245_2026_Final/                 # repository root: install here
-├── README.md
-├── requirements.txt                 # pinned runtime dependencies
-├── requirements-dev.txt             # runtime dependencies + pytest
-├── tests/                           # unit, simulator and data checks
-├── RoboEnv/                         # external simulator; install separately
-├── docs/                            # method, protocol and reproduction references
-├── Archive/                         # retired experiments and documents
-└── final/robotnik_arm_task/          # task directory: run project modules here
-    ├── core/                        # environment, interfaces, features, model names
-    ├── data_collection/             # expert A/B, clean, OU, DAgger and DART collection
-    ├── training/                    # datasets, MLP, normalisation, losses, training
-    ├── evaluation/                  # validation, unified tests, diagnostics, live demo
-    ├── experiments/                 # recipes, runners, frozen splits, demo manifests
-    ├── configs/, models/            # simulator configuration and robot URDF/assets
-    ├── tools/                       # data preparation and checkpoint export
-    ├── data/                        # demonstrations and built feature datasets
-    ├── checkpoints/2026-11-05final/  # submitted weights and model index
-    ├── results/                     # evaluation tables, plots and rollout records
-    └── report/                      # report evidence, figures and supporting code
-```
+| Row | Method | Inputs | Validation hold (32 scenes × 3) | T0 test, 64 in-range scenes | All 240 test scenes |
+|---|---|---:|---:|---:|---:|
+| R1 | Baseline (BC + J) | 21 | 1/96 | 2.1% | 1.1% |
+| R2 | Baseline + Gate | 22 | 10/96 | 20.8% | 8.3% |
+| R3 | OU | 21 | 1/96 | 1.6% | 4.6% |
+| R4 | OU + Gate (= f-DAgger round 0) | 22 | 83/96 | 96.9% | **81.2%** |
+| R5 | DAgger | 21 | 85/96 | 96.4% | 80.0% |
+| R6 | DAgger + Gate | 22 | 82/96 | 91.7% | 76.7% |
+| R7 | f-DAgger | 21 | 85/96 | 96.4% | 67.6% |
+| **R8** | **f-DAgger + Gate (ours)** | 22 | **89/96** | **97.9%** | 70.0% |
+| R9 | DART + Gate (Laskey et al. 2017, α = 6) | 22 | 62/96 | 78.1% | 39.4% |
+| – | Expert A (teacher) | – | – | 100% | 97.5% |
 
-```text
-Frozen scenarios → expert trajectories → QA / Clean_253 split → feature datasets
-OU-perturbed expert trajectories ──────────────────────────────┘       │
-                                                                     ↓
-                                                          BC + Jacobian training
-                                                                     ↓
-                                                               validation
-                                                                     ↓
-Student rollouts + expert labels → aggregate DAgger data → retrain / validate
-                                                                     ↓
-                                                        frozen final checkpoints
-                                                                     ↓
-                                                   live comparison / unified tests
-```
+<p align="center"><img src="final/robotnik_arm_task/report/07_training_time_comparison/figures/efficiency_T0.png" width="560" alt="T0 success against training time for f-DAgger + Gate, DAgger + Gate and DART + Gate"></p>
 
-The default network is `MLP01`: three 256-unit hidden layers, each using Linear → LayerNorm → SiLU. It predicts 7 arm torques and 2 wheel speeds (right/left), expanded to 4 wheel commands. Gate variants add the `reach_gate` feature for 22 inputs; other final models have 21. Features and normalisation are shared by training and inference. The control interface is 1 kHz, with limits of ±30 N·m and ±6 rad/s.
+- **The gate and the OU noise are both needed:** either one alone leaves the arm unable to settle at the target (R1–R3: at most 21% on T0). With both, R4 reaches 96.9% after only 12.5 min of total pipeline time.
+- **f-DAgger + Gate gives the best in-range point estimates** (validation 89/96, T0 97.9%). DAgger + Gate needs three rounds and 33.5 min to reach 91.7%; full DART + Gate reaches 78.1% in 34.9 min. The R4–R8 differences on in-range scenes are not statistically significant ([report/06](final/robotnik_arm_task/report/06_ablation/README.md)).
+- **Limitation:** DAgger labels only states the student visits, so R8 loses far-target navigation (T1 > 6 m). Over all 240 scenes R4 (81.2%) beats R8 (70.0%).
 
-## 2. Installation
+Sources: [`report/06_ablation/tables/`](final/robotnik_arm_task/report/06_ablation/tables/) and [`report/07_training_time_comparison/tables/`](final/robotnik_arm_task/report/07_training_time_comparison/tables/).
 
-Use **Python 3.10** and **uv**. Native Windows Python is unsupported because the project uses `fcntl`; use WSL2. A desktop/WSLg is required for graphical live comparison. CPU inference and CPU training are supported.
+---
 
-Start in the **repository root**. If you opened the surrounding `ML_Final/` workspace, first run `cd COMP_0245_2026_Final`.
+## 1. Quick start (about 10 minutes, no training)
 
 ```bash
-# Skip cloning if the supplied RoboEnv checkout is already present.
+git clone https://github.com/Yilin-1001/COMP0245-Robotnik-BC.git
+cd COMP0245-Robotnik-BC
+
+# Simulator (course RoboEnv at the pinned commit) and Python 3.10 environment
 git clone https://github.com/VModugno/RoboEnv.git
 git -C RoboEnv checkout 7bb49439677c2ac111347b40e997025ce87bff50
 git -C RoboEnv submodule update --init
+uv venv --python 3.10 .venv && source .venv/bin/activate
+uv pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
+uv pip install -e RoboEnv -r requirements-dev.txt
+
+cd final/robotnik_arm_task
+python tools/fetch_release.py        # download, SHA-256-check and unpack the weights (56 MiB)
+python tools/verify_release.py       # load all 27 models in PyTorch, compare with the NumPy exports
+
+# Expert and f-DAgger + Gate side by side in two PyBullet windows
+python -m evaluation.live_compare --protocol checkpoints/2026-11-05final/demo_models.yaml \
+    --row R8-f-DAgger-Gate --seed 0 --scenario train-0186
+```
+
+Sections 3–6 explain each step. Section 2 lists what every folder contains.
+
+## 2. Repository structure
+
+The **repository root** holds this README and the requirements files. The **task directory** `final/robotnik_arm_task/` holds the project code. **Run all project commands from the task directory** (Bash on Linux or WSL2).
+
+```text
+<repository root>/
+├── README.md                     # this guide
+├── requirements.txt              # pinned runtime dependencies (Python 3.10)
+├── requirements-dev.txt          # + pytest
+├── pytest.ini, tests/            # 290+ unit, simulator and data tests (run from the root)
+├── RoboEnv/                      # course simulator: cloned by you (git-ignored)
+├── docs/                         # pipeline guide, test-suite protocol, naming, dated design notes and reports
+└── final/robotnik_arm_task/      # TASK DIRECTORY
+    ├── robotnik_arm_task.py, robotnik_arm_control.py   # course template (unchanged)
+    ├── settings.yaml             # task settings shared by every module
+    ├── configs/, models/         # simulator config and robot URDF/meshes (course assets)
+    ├── core/                     # environment wrapper, observation/action interfaces, features, reach gate, model names
+    ├── data_collection/          # Markovian expert A, template teacher B, scenario sampling, clean / OU / DAgger / DART collectors, QA
+    ├── training/                 # dataset builder, normalisation, MLP and gated MLP, Huber + Jacobian loss, training engine, policies
+    ├── evaluation/               # validation, unified test suite, live comparison, robustness / far / hold probes, plots
+    ├── experiments/              # training recipes (configs/), ablation and DAgger/DART runners, frozen splits, demo manifests
+    ├── tools/                    # fetch_release.py, verify_release.py, package_release.py, checkpoint export, data helpers
+    ├── report/                   # evidence for every report section: figures, tables, data and code (01–10), LaTeX in paper/
+    ├── results/                  # experiment summaries behind the reported numbers (per-rollout files stay local)
+    ├── checkpoints/2026-11-05final/  # submitted models: index files in Git, weights from the release (section 3)
+    └── data/                     # demonstrations and feature datasets (not shipped, rebuilt by section 7)
+```
+
+| Folder | What you will find |
+|---|---|
+| `report/01_markovian_expert` | Why the expert must be memoryless; expert A vs the template controller |
+| `report/02_data_collection` | Scenario sampling (scrambled Sobol), coverage, fixed seeds |
+| `report/03_feature_engineering` | 21/22 inputs, FK accuracy, reach gate, shared train/inference features |
+| `report/04_f_dagger` | f-DAgger algorithm (LaTeX pseudocode), OU noise parameter selection |
+| `report/05_training_details` | Recipe (AdamW, warm-up + cosine, 42k updates), BC vs BC + Jacobian, training curves |
+| `report/06_ablation` | R1–R8 ablation: validation, per-suite test, statistics (bootstrap, Holm) |
+| `report/07_training_time_comparison` | Training time vs success for f-DAgger, DAgger and full DART |
+| `report/08_dev_scene_removal` | Why the R5–R8 DAgger rounds use only the 221 fitting scenes (v3) |
+| `report/09_network_size` | Hidden widths 32–256 for f-DAgger + Gate and OU + Gate |
+| `report/10_robustness` | Friction, link mass, sensor noise and pushes on R4–R8 and the expert |
+
+Each report folder's `README.md` explains its figures, tables, data and code. Dated files in `docs/` keep their historical context. For submitted models, follow this README and the release manifest.
+
+**Not in Git:** `RoboEnv/` (clone it), model weights (GitHub Release, section 4), `data/` (about 128 GB of demonstrations and datasets, rebuilt by section 8), per-rollout result files, LaTeX build output, robot meshes that the URDFs do not load, and retired experiments (`Archive/`, kept locally; paths to it in documents are provenance only).
+
+## 3. Installation
+
+Use **Python 3.10** and **uv**. Native Windows is unsupported because the project uses `fcntl`; use WSL2. The graphical live comparison needs a desktop or WSLg. CPU is enough for inference and training.
+
+From the repository root:
+
+```bash
+git clone https://github.com/VModugno/RoboEnv.git                        # skip if RoboEnv/ already exists
+git -C RoboEnv checkout 7bb49439677c2ac111347b40e997025ce87bff50
+git -C RoboEnv submodule update --init                                  # required: simulation_and_control is a submodule
 
 uv venv --python 3.10 .venv
 source .venv/bin/activate
-
-# CPU installation. For NVIDIA CUDA 12.8, replace /cpu with /cu128.
-uv pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
+uv pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu   # NVIDIA CUDA 12.8: use /cu128
 uv pip install -e RoboEnv -r requirements-dev.txt
 
 cd final/robotnik_arm_task
 ```
 
-On minimal Ubuntu/WSL2, install `libgomp1` if Pinocchio reports a missing OpenMP runtime (`sudo apt install libgomp1`). In each new terminal, activate the environment from the repository root with `source .venv/bin/activate`, then `cd final/robotnik_arm_task`.
+On minimal Ubuntu/WSL2, install `libgomp1` if Pinocchio reports a missing OpenMP runtime (`sudo apt install libgomp1`). In each new terminal, run `source .venv/bin/activate` from the repository root, then `cd final/robotnik_arm_task`.
 
-**All commands below run from the task directory unless stated otherwise.** They work without the author's absolute paths and without Git in the submitted copy.
+Optional check from the repository root: `python -m pytest tests -m "not sim and not realdata"` (fast), then `python -m pytest tests -m sim` (simulator). The `realdata` tests need the original datasets.
 
-| Operation | Required project files, in addition to code and robot assets |
-|---|---|
-| Live comparison / validation | Complete `checkpoints/2026-11-05final/` and `experiments/splits/clean253.json`; no training data |
-| Unified tests | The above, `experiments/splits/unified-test-v1.json`, and the source-inventory metadata/scenario CSVs described in section 6 |
-| Retraining R1–R4 | Corresponding complete feature datasets under `data/datasets/A/` (section 7) |
-| Rebuilding data | Raw demonstrations or fresh collection; allow about 25 GiB for the original clean/OU preparation pipeline, plus space for DAgger/DART |
+## 4. Download the trained weights
 
-Weights, datasets and most results are Git-ignored: a source-only clone does not include them. Preserve the checkpoint directory structure and each model's adjacent `config.yaml`.
+Weights are not stored in Git. They are attached to the GitHub Release [**v1.0-submission**](https://github.com/Yilin-1001/COMP0245-Robotnik-BC/releases/tag/v1.0-submission):
 
-## 3. Before choosing a model: what do the seeds mean?
+| Asset | Size | Contents |
+|---|---:|---|
+| `robotnik-bc-checkpoints-2026-11-05final.zip` | 55 MiB | `checkpoints/2026-11-05final/`: 27 final models (R1–R9 × seeds 0–2) and 22 round-history models. Each has a `.pt` PyTorch checkpoint, a `.npz` NumPy export, the normaliser, `config.yaml`, metrics and provenance |
+| `robotnik-bc-test-inventory-2026-11-05.zip` | 1 MiB | Scenario CSVs and dataset `metadata.json` files that the unified test reads to prove that no test scene was used in training (no training arrays) |
+| `robotnik-bc-small-net-2026-11-05.zip` | 0.7 MiB | Optional: 9 small-width models for `report/09_network_size` |
+| `SHA256SUMS.txt` | | SHA-256 of the three zips |
 
-`seed-0`, `seed-1` and `seed-2` identify **three separately trained repetitions of the same method and recipe**. The training seed determines random streams for network initialisation, training-batch sampling and sampling in the Jacobian loss. Repeated seeds measure sensitivity to training randomness. A larger seed is neither a stronger model nor a harder task.
+From the task directory:
 
-BC+J loss calibration uses a fixed seed-0 initialisation and fitting batch, shared across seeds within a row. For DAgger, seed 0 drives the collection/validation chain; seeds 1/2 retrain on the selected round's aggregated data. These are not three independent collection chains. DART likewise uses a seed-0 iteration chain with additional training repetitions on the collected datasets.
+```bash
+python tools/fetch_release.py                    # checkpoints + test inventory
+python tools/fetch_release.py --with-small-net   # also the width-study models
+```
 
-| Seed/context | Meaning |
-|---|---|
-| Folder `seed-N`, filename `__sN__`, live `--seed N` | Selects an already-trained weight file; does not retrain or change the scene |
-| Scenario-generation / environment seeds | Determine sampled target/start poses and recorded scenario setup; separate from model seeds |
-| OU/DART collection noise seeds | Determine random demonstration perturbations; separate from model seeds |
+The script checks each zip's SHA-256 before unpacking into the task directory, then checks all 347 release files against `checkpoints/2026-11-05final/SHA256SUMS`. Did you download the zips in a browser instead? Put them in one folder and run `python tools/fetch_release.py --from-dir <folder>`. Manual equivalent: `unzip <zip> -d final/robotnik_arm_task`.
 
-To compare methods, keep the **same scenario** and inspect all three model seeds. A live demo shows one scene; use the test suite for aggregate performance. Fresh training across different hardware/software environments may produce different weights or success counts.
+### Check the weights in PyTorch
 
-## 4. Submitted model choices and filenames
+```bash
+python tools/verify_release.py          # 27 final models; --all adds the 22 round-history models
+```
 
-The release contains **27 final models**: R1–R9 × seeds 0, 1, 2. Every model is at terminal update 42,000. The table gives the exact live `--row` values; each accepts `--seed 0`, `1` or `2`.
+For every model the script loads the `.pt` with plain `torch.load(..., weights_only=True)` and rebuilds the network with `load_state_dict(strict=True)`. It then predicts 256 probe states and compares the result with the `.npz` NumPy export that the live demo uses. Expected output: `27/27 models passed`, 141,065 (21 inputs) or 141,321 (22 inputs) parameters, |PyTorch − NumPy| ≤ 5e-4 (float32 vs float64), and about 0.05 ms per CPU forward pass.
+
+Use a checkpoint in your own PyTorch code:
+
+```python
+import torch
+from training.common.models import model_from_spec          # run from final/robotnik_arm_task
+
+ckpt = torch.load("checkpoints/2026-11-05final/models/R8-f-DAgger-Gate/seed-0/"
+                  "R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05.pt", weights_only=True)
+net = model_from_spec(ckpt["meta"]["model"]); net.load_state_dict(ckpt["model_state"]); net.eval()
+n = {k: torch.tensor(ckpt["normaliser"][k]) for k in ("x_mean", "x_scale", "y_mean", "y_scale")}
+print(ckpt["meta"]["feature_names"])                          # the 22 inputs, in order
+x = n["x_mean"][None]                                         # one feature vector (here: the training mean)
+y = net((x - n["x_mean"]) / n["x_scale"]) * n["y_scale"] + n["y_mean"]   # 7 torques [N·m], right/left wheel [rad/s]
+```
+
+Closed-loop use computes features from the simulator observation with `training.common.policies.MLPPolicy` (`MLPPolicy.load(path, backend="torch")` for `.pt`, `backend="numpy"` for `.npz`). Torques are clipped to ±30 N·m and wheel speeds to ±6 rad/s, and the right/left wheel speeds expand to the 4 wheel commands `[R, L, L, R]`.
+
+## 5. Models and seeds
+
+The release contains **27 final models**: R1–R9 × training seeds 0, 1, 2, all at terminal update 42,000. The network is `MLP01`: three 256-unit hidden layers (Linear → LayerNorm → SiLU) with a 7-torque head and a 2-wheel head. Gate rows add the `reach_gate` input (22 inputs). The other rows have 21.
 
 | Row | Report name | `--row` value | Inputs | Released round |
 |---|---|---|---:|---:|
@@ -110,49 +186,21 @@ The release contains **27 final models**: R1–R9 × seeds 0, 1, 2. Every model 
 | R5 | DAgger | `R5-DAgger` | 21 | 3 |
 | R6 | DAgger + Gate | `R6-DAgger-Gate` | 22 | 3 |
 | R7 | f-DAgger | `R7-f-DAgger` | 21 | 3 |
-| R8 | f-DAgger + Gate | `R8-f-DAgger-Gate` | 22 | 3 |
+| R8 | f-DAgger + Gate (ours) | `R8-f-DAgger-Gate` | 22 | 3 |
 | R9 | DART + Gate | `R9-DART-Gate` | 22 | 3 (noise scale 6) |
 
-R3/R4 use fixed phase-gated OU perturbations; R7/R8 add DAgger to those data. R9 uses learner-fitted Gaussian DART. **Historical `dart` strings in R3/R4/R7/R8 paths mean OU, not full DART.** Gate means the extra input, independently of the phase gate used when injecting OU noise.
+R3/R4 use fixed phase-gated OU perturbations; R7/R8 add DAgger to those data. R9 uses learner-fitted Gaussian DART. **The historical `dart` strings in R3/R4/R7/R8 run ids mean OU, not full DART.** "Gate" means the extra input, independent of the phase gate used when injecting OU noise.
 
-Browse files under `checkpoints/2026-11-05final/models/<row>/seed-<N>/`. For example:
+**Seeds.** `seed-0`, `seed-1` and `seed-2` are three separately trained repetitions of the same recipe (network initialisation, batch sampling and Jacobian-loss sampling). A larger seed is neither a stronger model nor a harder task. For DAgger and DART, seed 0 drives the collection chain; seeds 1/2 retrain on the selected round's aggregated data. Scenario and noise seeds are separate from model seeds.
 
-```text
-models/R8-f-DAgger-Gate/seed-0/
-├── R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05.npz
-├── R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05.pt
-├── config.yaml
-└── ... normaliser, metrics and provenance
-```
+Files live in `checkpoints/2026-11-05final/models/<row>/seed-<N>/`, e.g. `R8-f-DAgger-Gate-r3__MLP01-256x3__s0__v3__2026-11-05.{pt,npz}`: round `r3`, architecture `MLP01-256x3`, seed `s0`, training version `v3` (R1–R4 `v1`, R9 `v2`), training date. The [model index](final/robotnik_arm_task/checkpoints/2026-11-05final/model_index.csv) maps every file to its source run and SHA-256. See also the [release README](final/robotnik_arm_task/checkpoints/2026-11-05final/README.md) and [naming reference](docs/model-naming.md).
 
-`r3` is the aggregation round, `MLP01-256x3` the architecture, `s0` the training seed, `v3` the training version (R1–R4: `v1`; R9: `v2`), and the date the recorded training experiment. `.npz` is the NumPy inference export used by live comparison; `.pt` is the PyTorch checkpoint. These release files are for inference, not training resume states.
-
-The [model index](final/robotnik_arm_task/checkpoints/2026-11-05final/model_index.csv) maps filenames, seeds, rounds, source runs and hashes. The release also preserves 22 additional models in `round_history/`; the supplied final demo manifest lists the 27 final models above. See the [release README](final/robotnik_arm_task/checkpoints/2026-11-05final/README.md) and [naming reference](docs/model-naming.md).
-
-## 5. Live comparison: expert versus your chosen model
-
-### Choose a method and seed
-
-**Live comparison model names:** copy one of these exact names into `ROW`. Each name supports `SEED=0`, `SEED=1` and `SEED=2`, giving 27 choices in total. Read [the seed explanation](#3-before-choosing-a-model-what-do-the-seeds-mean) before selecting a repetition.
-
-| Model shown in the report | Name to copy into `ROW` |
-|---|---|
-| Baseline | `R1-Baseline` |
-| Baseline + Gate | `R2-Baseline-Gate` |
-| OU | `R3-OU` |
-| OU + Gate | `R4-OU-Gate` |
-| DAgger | `R5-DAgger` |
-| DAgger + Gate | `R6-DAgger-Gate` |
-| f-DAgger | `R7-f-DAgger` |
-| f-DAgger + Gate | `R8-f-DAgger-Gate` |
-| DART + Gate | `R9-DART-Gate` |
-
-For example, `ROW=R1-Baseline; SEED=0` selects Baseline seed 0; `ROW=R4-OU-Gate; SEED=1` selects OU + Gate seed 1; `ROW=R8-f-DAgger-Gate; SEED=2` selects f-DAgger + Gate seed 2. Set the variables, then run the command below again for each model. R8 seed 0 below is an example; any listed combination works.
+## 6. Live comparison: expert vs a submitted model
 
 ```bash
 RELEASE=checkpoints/2026-11-05final
-ROW=R8-f-DAgger-Gate
-SEED=0
+ROW=R8-f-DAgger-Gate      # any --row value from section 5
+SEED=0                    # 0, 1 or 2
 
 python -m evaluation.live_compare \
     --protocol "$RELEASE/demo_models.yaml" \
@@ -161,73 +209,38 @@ python -m evaluation.live_compare \
     --output "results/live_compare/${ROW}-s${SEED}-train-0186.json"
 ```
 
-Two independent PyBullet windows open: **EXPERT A** and the **chosen student**. Both start with the same scenario and initial arm/base state, and synchronise every 20 physics steps. The student controls both base and arm. Overlays show model/seed, simulation time, end-effector error (mm), torque and wheel speeds.
+Two PyBullet windows open: **EXPERT A** and the **chosen student**. Both start from the same scenario and state and stay synchronised every 20 physics steps. The student controls both base and arm. Overlays show the model and seed, simulation time, end-effector error (mm), torques and wheel speeds. The program checks the weight file's hash before starting. To switch models, quit and rerun with a different `ROW` or `SEED`. Explicit `--protocol` selects the submitted release. This release contains teacher A / objective `bcj` only.
 
-Explicit `--protocol` selects the submitted release; omitting it selects the code's older demo manifest. This release contains only teacher A / objective `bcj`; teacher B or `bc` will not match its artifacts. The program checks the chosen weight's hash before starting. To switch models, quit and rerun with a different `ROW` or `SEED`.
-
-| Key (focus either simulation window) | Action |
+| Key (focus either window) | Action |
 |---|---|
 | Space | Pause/resume both simulations |
 | R | Reset/replay both from the same initial state |
 | F | Toggle follow camera in the focused window |
-| Q | Close both and save the summary |
+| Q | Close both and save the summary JSON |
 
-There is **no time limit** by default. Add `--seconds 40` to freeze both windows at 40 simulated seconds; R replays, Q quits. `--speed 2` requests twice normal playback speed while retaining 1 kHz physics. JSON is saved on exit; the same `--output` filename is overwritten on rerun, so use distinct names to retain comparisons.
+There is no time limit by default. `--seconds 40` freezes both at 40 simulated seconds. `--speed 2` doubles the playback speed while keeping 1 kHz physics. The JSON is written on exit and overwritten on rerun with the same `--output`.
 
-### Mouse-drag disturbances: inspect robustness interactively
+**Mouse-drag disturbances.** At `--speed 1` with no `--seconds`, focus the student's window (press F to fix the camera), then hold the left mouse button on a solid part of the robot (base or arm link), drag a short distance and release. No Ctrl/Alt: those keys move the camera. Watch whether the EE error returns below 10 mm without persistent oscillation or drift. Press R before the next trial. Only the window you drag is disturbed, and you can drag the expert for comparison. This is a qualitative check: forces are not recorded or calibrated. Measured robustness numbers are in [`report/10_robustness`](final/robotnik_arm_task/report/10_robustness/README.md).
 
-The graphical PyBullet windows support dragging the robot to apply a physical disturbance while its controller is running. This uses PyBullet's built-in mouse picking; no extra option is required. The [official PyBullet mouse-handling implementation](https://github.com/bulletphysics/bullet3/blob/master/examples/SharedMemory/PhysicsServerExample.cpp) uses an unmodified left-button press to pick and a release to stop dragging.
-
-1. Start the graphical comparison above at normal speed (`--speed 1`, the default). Leave `--seconds` unset so the simulation continues while you interact. First observe the robot without intervention.
-2. Focus the **student model's window**. Press **F** to turn off its follow camera if you want a fixed view while dragging. Ensure the overlay says **RUNNING**; Space resumes a paused run, and R restarts a run that reached its time limit.
-3. Place the pointer on a visible solid part of the robot, such as the mobile base or an arm link. **Hold the left mouse button, drag a short distance, then release.** Do not hold Ctrl or Alt: those modifiers are used for camera controls. Pick the robot itself, rather than the floor or red target marker.
-4. After release, observe whether the controller recovers: does the end effector return toward the target, does the displayed **EE error** fall below 10 mm again, and can the robot hold its position without persistent oscillation or drift? Try disturbances during motion and after reaching the target.
-5. Press **R** to reset both simulations before another trial. Quit with Q, choose a different `ROW`/`SEED`, and rerun the same scenario to inspect another model. You can also drag the robot in the **EXPERT A** window to inspect the expert's response.
-
-Only the robot in the window you drag receives the disturbance; synchronised simulation time does not copy mouse forces into the other window. For a useful qualitative comparison, keep the scene, model seed, camera view, selected body part and disturbance phase similar, and use approximately the same drag distance and duration. A large or sustained pull can prevent recovery; observe the response after releasing the mouse.
-
-Mouse dragging is an exploratory robustness check. Its force and duration are not calibrated or replayed by this program. The saved live-comparison JSON contains final states/errors, not a mouse-force history or an automatic recovery score. Record your observations separately and use the frozen tests in section 6 for the reported task metrics. Mouse interaction is available only in GUI mode, not with `--headless`.
-
-### Choose a scene or custom target
-
-`--scenario` accepts one of the 32 frozen validation scenes. Their `train-...` IDs are historical names; they are held out from fitting. List valid IDs:
+**Scenes.** `--scenario` accepts any of the 32 frozen validation scenes. Their `train-…` IDs are historical names; the scenes are held out from fitting. List them with:
 
 ```bash
-python - <<'PY'
-from evaluation.test_sets import get_split
-from pathlib import Path
-for scene in get_split("validation", Path("experiments/splits/clean253.json"), "A"):
-    print(scene.scenario_id)
-PY
+python -c "from evaluation.test_sets import get_split; from pathlib import Path; [print(s.scenario_id) for s in get_split('validation', Path('experiments/splits/clean253.json'), 'A')]"
 ```
 
-Custom target/base coordinates are in world-frame metres; bearing is yaw in radians (0 faces +X). This example is an interactive custom scene, not a frozen evaluation result:
+Custom scene (world frame, metres; bearing is yaw in radians; training ranges: target 0.5–3.0 m away, height 0.1–1.25 m, start within ±0.5 m):
 
 ```bash
-python -m evaluation.live_compare \
-    --protocol "$RELEASE/demo_models.yaml" --row "$ROW" --seed "$SEED" \
+python -m evaluation.live_compare --protocol "$RELEASE/demo_models.yaml" --row "$ROW" --seed "$SEED" \
     --scenario train-0186 --target 2.0 0.5 0.7 --start 0.0 0.0 --bearing 0.0 \
     --seconds 40 --output "results/live_compare/${ROW}-s${SEED}-custom.json"
 ```
 
-Normal collection ranges: target horizontal distance 0.5–3.0 m from the initial base, target height 0.1–1.25 m, start x/y within ±0.5 m. The program warns about custom scenes outside these ranges. The live 10 mm overlay is a visual reference; formal success is computed by the evaluators.
+**No display:** add `--headless --seconds 0.1` for a 100-step installation check. Each JSON `runs` entry should have `failure: null`.
 
-### No display: short installation check
+## 7. Validate and test the submitted models
 
-```bash
-python -m evaluation.live_compare \
-    --protocol "$RELEASE/demo_models.yaml" --row "$ROW" --seed "$SEED" \
-    --headless --seconds 0.1 \
-    --output "results/live_compare/${ROW}-s${SEED}-smoke.json"
-```
-
-This runs both simulators for 100 steps and exits. A finite `--seconds` is needed for an automatically finishing headless check; 0 means unlimited. This checks model loading/simulation, not task success. Each JSON `runs` entry should have `failure: null`.
-
-## 6. Validate and test the submitted models
-
-### Resolve the selected model file
-
-After setting `RELEASE`, `ROW` and `SEED` as in section 5, resolve the actual filename from the supplied manifest:
+Resolve the model file for `ROW`/`SEED` from the release manifest:
 
 ```bash
 MODEL=$(python - "$RELEASE/demo_models.yaml" "$ROW" "$SEED" <<'PY'
@@ -241,52 +254,34 @@ PY
 printf '%s\n' "$MODEL"
 ```
 
-### Validation: 32 held-out scenarios
+### Validation: 32 held-out scenes
 
 ```bash
-python -m evaluation.evaluate --policy mlp --artifact "$MODEL" \
-    --split validation --workers 4
+# NumPy export (.npz), the same path as the live demo
+python -m evaluation.evaluate --policy mlp --artifact "$MODEL" --split validation --workers 4
+# or the same model through PyTorch (.pt)
+python -m evaluation.evaluate --policy mlp --artifact "${MODEL%.npz}.pt" --backend torch --split validation --workers 4
 ```
 
-The evaluator prints success/error statistics and writes CSVs under `results/ablation/A/bcj/<run_id>/`. Historical validation requires reaching below 10 mm after 8 s, running another 3 s, and staying below 10 mm throughout the last second (40 s cap). Existing detail files cannot be overwritten; use a fresh working copy to repeat identical validation. `--record` is omitted to preserve the historical results index.
+The evaluator prints success and error statistics and writes CSVs under `results/ablation/A/bcj/<run_id>/`. Validation success means reaching < 10 mm after 8 s, running 3 s more, and staying < 10 mm for the whole last second (40 s cap). Per-scene detail files are never overwritten, and both commands write the same file. Before the second command, or before repeating one, delete `results/ablation/A/bcj/<run_id>/`; otherwise the run fails at the end. Check: R8 seed 0 holds 29/32 with either backend, as in `report/06_ablation/tables/validation.csv`.
 
-### Unified testing: 240 frozen scenarios
+### Unified test: 240 frozen scenes
 
-Use **`--models`** to select submitted files explicitly. The default `--rows` lookup uses historical training directories and covers R1–R8; it is not the release-file selector.
-
-For a new run, preserve the supplied `data/scenarios/scenarios_train.csv`, `data/Markovian/Clean_253/scenarios_test.csv`, all `data/datasets/A/*/metadata.json` files, and the `scenarios_train.csv` at each metadata file's `source.root`. The test runner reads these records to check training/test overlap; it does not read training `.npy` arrays or trajectory files. A copy containing only weights and split JSONs supports live comparison/validation, but cannot run this inventory audit.
-
-**Use the existing frozen-test wrapper below for this submission.** Newer DART data add source inventories after the test manifest was frozen. The plain `evaluation.test_suite` new-run command refuses that changed audit, even though all 240 scenes are identical. The report's wrapper rechecks the current inventories, requires identical scenes and zero overlap, then uses the original frozen manifest. It passes through the same test arguments.
+`tools/fetch_release.py` already installed the scenario inventory this needs. Use the frozen-test wrapper. It re-audits the current inventories against the frozen manifest (identical scenes, zero training/test overlap), then runs `evaluation.test_suite`:
 
 ```bash
-# Selected model + expert on the 64 original test scenes (T0).
-python report/07_training_time_comparison/code/test_suite_frozen.py \
-    --models "$MODEL" --suites T0 --workers 4
+# Selected model + expert on the 64 original test scenes (T0): 128 rollouts
+python report/07_training_time_comparison/code/test_suite_frozen.py --models "$MODEL" --suites T0 --workers 4
 
-# Selected model + expert on all 240 scenes (T0–T5).
-python report/07_training_time_comparison/code/test_suite_frozen.py \
-    --models "$MODEL" --workers 4
+# Selected model + expert on all 240 scenes (T0–T5)
+python report/07_training_time_comparison/code/test_suite_frozen.py --models "$MODEL" --workers 4
 
-# All 27 submitted models + expert on all 240 scenes: 6720 rollouts.
-mapfile -t MODELS < <(python - <<'PY'
-from pathlib import Path
-import yaml
-p = Path("checkpoints/2026-11-05final/demo_models.yaml")
-for a in yaml.safe_load(p.read_text())["decisions"]["final"]["artifacts"]:
-    print(a["inference"])
-PY
-)
-python report/07_training_time_comparison/code/test_suite_frozen.py \
-    --models "${MODELS[@]}" --workers 4
+# All 27 submitted models + expert on all 240 scenes: 6,720 rollouts (hours)
+mapfile -t MODELS < <(python -c "import yaml; [print(a['inference']) for a in yaml.safe_load(open('checkpoints/2026-11-05final/demo_models.yaml'))['decisions']['final']['artifacts']]")
+python report/07_training_time_comparison/code/test_suite_frozen.py --models "${MODELS[@]}" --workers 4
 ```
 
-These are alternative scopes; a full run is not required for a quick inspection. Add `--dry-run` to prepare/check without formal rollouts. New runs create timestamped directories under `results/test/`. Use the printed directory to resume or regenerate plots (replace the placeholder below):
-
-```bash
-RUN_DIR=results/test/REPLACE_WITH_PRINTED_DIRECTORY
-python -m evaluation.test_suite --resume "$RUN_DIR" --workers 4
-python -m evaluation.test_suite --plots-only "$RUN_DIR"
-```
+Add `--dry-run` to check the setup without running rollouts. Each run writes `results/test/<datetime>__<name>/`: `summary.md`/`summary.csv` (aggregates), `rollouts.csv` (every rollout), `plots/` and `run.json` (model/config hashes). Resume or replot with `python -m evaluation.test_suite --resume <dir>` or `--plots-only <dir>`.
 
 | Suite | Scenes | Purpose |
 |---|---:|---|
@@ -294,18 +289,23 @@ python -m evaluation.test_suite --plots-only "$RUN_DIR"
 | T1 | 72 | Far targets: 3–6, 6–10, 10–15 m |
 | T2 | 24 | Near targets: 0.3–0.5 m |
 | T3 | 32 | Height edges: 0.05–0.1, 1.25–1.30 m |
-| T4 | 24 | Paired translations of T0 with shifted starting positions |
+| T4 | 24 | T0 scenes translated to shifted starting positions |
 | T5 | 24 | New in-range scenes, 20 s continuous hold |
 
-**Unified-test success:** error strictly below 10 mm continuously for 3 s (20 s in T5), counted from t=0. Completion time includes the hold. Final precision is evaluated separately using maximum error in the last second of the fixed-duration rollout. This differs from historical validation/test diagnosis; compare results within the same protocol.
+Unified-test success means error strictly < 10 mm continuously for 3 s (20 s in T5), counted from t = 0. Final precision uses the maximum error in the last second. The [test protocol](docs/2026-11-01__guide__unified-test-suite.md) covers timings, precision grades and resume checks.
 
-Read `summary.md`/`summary.csv` for aggregates, `rollouts.csv` for individual outcomes, `plots/` for figures, and `run.json` for model/config hashes and run metadata. The expert runs once per scene. The [test protocol reference](docs/2026-11-01__guide__unified-test-suite.md) explains timings, precision grades and resume checks. Existing report evidence is indexed in [`report/`](final/robotnik_arm_task/report/README.md).
+## 8. Reproduce the data and training pipeline
 
-## 7. Reproduce the data and training pipeline
+Use a fresh working copy: existing datasets and run ids cause overwrite refusals or skipped work. Keep the frozen splits unchanged. Fresh training may differ numerically across machines. Sections 6–7 need only the released weights.
 
-Use a fresh working copy for collection/retraining: existing datasets/run IDs can cause overwrite refusals or cause runners to skip completed work. Keep frozen splits unchanged. These commands reproduce the recorded recipes; fresh training may differ numerically across machines. Sections 5–6 only need inference weights.
+```text
+Frozen Sobol scenarios → expert A trajectories → QA → Clean_253 split (221 fitting / 32 validation; 64 test separate)
+        + OU-perturbed expert trajectories → feature datasets → BC + Jacobian training (R1–R4)
+        → DAgger rounds: student rollouts relabelled by expert A, aggregated, retrained (R5–R8)
+        → full DART comparison (R9) → frozen release → live comparison / unified tests
+```
 
-### Step 1: collect clean demonstrations and build subsets
+### Step 1: clean demonstrations and subsets
 
 ```bash
 python -m data_collection.scenarios
@@ -314,115 +314,88 @@ python -m data_collection.qa_clean --teachers markovian stateful --workers 4
 python -m data_collection.build_clean_subsets
 ```
 
-Outputs: scenario CSVs in `data/scenarios/`, trajectories/QA in `data/Markovian/` and `data/Stateful/`, and paired `Clean_253`/`Clean_223` subsets. Teacher A (Markovian) supplies the final students; teacher B is collected because the paired builder checks both teachers. If local B episodes differ from the historical ones and the builder refuses, use `python tools/build_a_clean253.py` to build A's subset alone against the frozen split.
+Outputs: scenario CSVs in `data/scenarios/`, trajectories and QA in `data/Markovian/` and `data/Stateful/`, and the paired `Clean_253`/`Clean_223` subsets. Teacher A (Markovian) trains the students. Teacher B is collected because the paired builder checks both teachers. If local B episodes differ and the builder refuses, run `python tools/build_a_clean253.py` to build A's subset alone against the frozen split. These steps refuse to overwrite: do not unpack the test-inventory zip into a copy you use for collection.
 
-`Clean_253` has 221 fitting and 32 validation scenes. The 64 original test scenes are separate. Keep validation/test trajectories out of fitting and augmentation collection.
-
-### Step 2: collect fixed OU perturbations and build features
+### Step 2: OU-perturbed demonstrations and feature datasets
 
 ```bash
 # Historical module/protocol names say dart; this is the fixed OU collection.
-python -m data_collection.collect_dart \
-    --protocol experiments/configs/dart/d2-s075-x2.yaml --workers 4
-```
+python -m data_collection.collect_dart --protocol experiments/configs/dart/d2-s075-x2.yaml --workers 4
 
-The collector prints a directory under `data/Markovian/DART/`. Set `OU_DIR` to that exact directory; the block below selects it automatically only if exactly one match exists:
-
-```bash
-OU_DIR=$(python - <<'PY'
-from pathlib import Path
-paths = list(Path("data/Markovian/DART").glob("*__collection__d2-s075-x2-*"))
-assert len(paths) == 1, "Set OU_DIR manually to the printed collection directory"
-print(paths[0])
-PY
-)
-
+OU_DIR=$(python -c "from pathlib import Path; p=list(Path('data/Markovian/DART').glob('*__collection__d2-s075-x2-*')); assert len(p)==1, 'set OU_DIR manually'; print(p[0])")
 for FEATURES in features-v1 features-v1-gate; do
     python -m training.datasets.build --source clean253 --features "$FEATURES" --workers 4
-    python -m training.datasets.build --source "$OU_DIR" --name dart-d2s075x2 \
-        --features "$FEATURES" --workers 4
+    python -m training.datasets.build --source "$OU_DIR" --name dart-d2s075x2 --features "$FEATURES" --workers 4
 done
 ```
 
-Outputs: `data/datasets/A/{clean253,dart-d2s075x2}__{features-v1,features-v1-gate}/` (four datasets). The published OU dataset contains 441 accepted trajectories from 221 fitting scenes × 2 draws. Preserve metadata/checksums with the arrays. To retrain from shared data, restore these directories and skip collection. R4 alone needs the two `features-v1-gate` datasets (about 1.03 GiB). The [handoff reference](docs/2026-10-29__guide__reproduction-details.md#reproduction-and-data-handoff) lists exact files.
+Outputs: `data/datasets/A/{clean253,dart-d2s075x2}__{features-v1,features-v1-gate}/`. The OU dataset holds 441 accepted trajectories (221 fitting scenes × 2 draws). The [reproduction reference](docs/2026-10-29__guide__reproduction-details.md#reproduction-and-data-handoff) lists the exact files.
 
-### Step 3: train R1–R4 (clean/OU × without/with Gate)
-
-For one R4 seed-0 run:
+### Step 3: train R1–R4
 
 ```bash
+# One model (R4, seed 0)
 python -m training.datasets.train --variant R4-dart-gate \
     --set identity.version=v1 --set identity.date=2026-10-28 --set identity.seed=0 \
     --set identity.objective=bcj --set training.lr=1.0e-3 --set training.updates=42000 \
     --set loss.action=huber --set loss.arm_weight=0.5 --set loss.wheel_weight=0.5
+
+# All four rows × seeds 0/1/2
+python -m experiments.ablation.run --manifest experiments/ablation/2026-10-28__training-ablation-v1.yaml --stage train --parallel 1
 ```
 
-Add `--dry-run` to check data/calibration without optimisation (datasets are still required), or `--resume` to continue with training resume states. Outputs: checkpoints, exports, configs and metrics in `checkpoints/ablation/2026-10-28__training-ablation-v1/<run_id>/`.
+`--dry-run` checks data and calibration without optimising; `--resume` continues from training resume states. Outputs: `checkpoints/ablation/2026-10-28__training-ablation-v1/<run_id>/`. The historical run ids are deliberate, because the round runners below expect them.
 
-To train all four rows × seeds 0/1/2, use the frozen manifest instead of the single-model command:
+### Step 4: DAgger rounds (R5–R8)
 
-```bash
-python -m experiments.ablation.run \
-    --manifest experiments/ablation/2026-10-28__training-ablation-v1.yaml \
-    --stage train --parallel 1
-```
-
-Historical aliases are deliberate: the following round runners expect these original base-model run IDs. The single-model trainer also supports canonical names, but those create different run IDs and do not populate the runners' historical default paths.
-
-### Step 4: DAgger rounds for R5–R8
-
-Each row starts from the corresponding v1 seed-0 base: R5 ← R1, R6 ← R2, R7 ← R3, R8 ← R4. Ensure step 3's base models exist. The runner collects student-visited states with expert A labels, builds features, aggregates all rounds, trains from scratch and validates.
+R5 ← R1, R6 ← R2, R7 ← R3 and R8 ← R4, each from the seed-0 base model. Every round rolls the student out on the 221 fitting scenes, labels the visited states with expert A, aggregates all rounds, retrains from scratch and validates.
 
 ```bash
 for ROW in R5-baseline-dagger R6-gate-dagger R7-dart-dagger R8-dart-gate-dagger; do
-    python -m experiments.dagger_rounds --row "$ROW" --rounds 3 \
-        --date 2026-11-05 --final-seeds 1 2 --workers 4 \
+    python -m experiments.dagger_rounds --row "$ROW" --rounds 3 --date 2026-11-05 --final-seeds 1 2 --workers 4 \
         --version v3 --variant-suffix=-nodev --dev-scenes 0
 done
-# Optional: seeds 1/2 of rounds 1-2 for R6/R8 (the per-round curves of the training-time comparison)
+# Optional: seeds 1/2 of rounds 1-2 for R6/R8 (per-round curves in report/07)
 python -m experiments.dagger_extra_seeds --date 2026-11-05 --rows R8-dart-gate-dagger R6-gate-dagger \
     --rounds 1 2 --seeds 1 2 --workers 4 --version v3 --variant-suffix=-nodev --source-date 2026-11-05 --dev-scenes 0
 ```
 
-Every round rolls the student out on the 221 fitting scenarios only (`--dev-scenes 0`; write `--variant-suffix=-nodev` with `=`). This is ablation v3, which the submission uses. It replaces v2, whose rounds also collected 64 low/near-biased development scenes; see [`report/08_dev_scene_removal/`](final/robotnik_arm_task/report/08_dev_scene_removal/README.md). Without the three v3 options the runner reproduces v2. Round selection uses seed-0 validation hold, with ties choosing the later round; seeds 1/2 train on the selected data. Submitted R5–R8 all use round 3. Models: `checkpoints/ablation/2026-11-05__training-ablation-v3/`. Logs, per-round validation and `summary.csv`: `results/ablation/2026-11-05__training-ablation-v3/dagger/<row>/`.
+Write `--variant-suffix=-nodev` with `=`. This is ablation v3, which the submission uses. Without the three v3 options the runner reproduces v2, whose rounds also used 64 development scenes ([report/08](final/robotnik_arm_task/report/08_dev_scene_removal/README.md)). Rounds are selected by seed-0 validation hold, with ties going to the later round. Every submitted R5–R8 model uses round 3. Outputs: `checkpoints/ablation/2026-11-05__training-ablation-v3/` and `results/ablation/2026-11-05__training-ablation-v3/dagger/<row>/`.
 
-### Step 5: full DART comparison (R9)
-
-This separate pipeline starts from step 3's R2 seed-0 model. It estimates learner/expert action-error covariance on held-out demonstrations, collects Gaussian-perturbed expert data, aggregates and retrains. Released R9 uses noise scale 6, iteration 3, seeds 0/1/2:
+### Step 5: full DART (R9)
 
 ```bash
-python -m experiments.dart_full --date 2026-11-04 --scale 6 \
-    --iterations 3 --extra-seeds 1 2 --workers 4
+python -m experiments.dart_full --date 2026-11-04 --scale 6 --iterations 3 --extra-seeds 1 2 --workers 4
 ```
 
-Models: `checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r*/`. Covariance, validation, timing and logs: `results/ablation/2026-11-04__dart-full/`. Scale-1 exploratory weights are excluded from the release. See the [DART experiment record](final/robotnik_arm_task/results/ablation/2026-11-04__dart-full/README.md).
+Starts from R2 seed 0. Each iteration estimates the learner/expert action-error covariance on held-out demonstrations, collects Gaussian-perturbed expert data, aggregates it and retrains. Outputs: `checkpoints/ablation/2026-11-04__training-ablation-v2/R9-dart-full-a6-r*/` and [`results/ablation/2026-11-04__dart-full/`](final/robotnik_arm_task/results/ablation/2026-11-04__dart-full/README.md).
 
-### Step 6: evaluate newly trained models
+### Step 6: evaluate new models
 
-Set `MODEL` to the new run's actual `.npz`, then use section 6's validation/test commands. Choose models using validation before testing. For live comparison of retrained weights, generate a matching demo manifest: the submitted manifest pins original hashes. The [detailed reproduction reference](docs/2026-10-29__guide__reproduction-details.md) covers the v1 runner's `validate`, `hold`, `summary` and `demo` stages.
+Set `MODEL` to the new `.npz` and use section 7. Choose models on validation before testing. Live comparison of retrained weights needs a new demo manifest, because the submitted one pins the original hashes ([reproduction reference](docs/2026-10-29__guide__reproduction-details.md)).
 
-## 8. Troubleshooting and further reading
+## 9. Troubleshooting
 
 | Symptom | Action |
 |---|---|
-| `No module named ...` | Activate the environment, run from the task directory, install RoboEnv/pinned requirements |
-| Missing checkpoint / no matching artifact | Restore the release and select its manifest, a listed row, seed 0/1/2, teacher A, objective `bcj` |
-| Artifact hash differs | Restore the original submitted file; retrained weights require a matching new manifest |
-| No display | Use WSLg/a desktop, or `--headless --seconds 0.1` for an installation check |
-| Output already exists | Use a fresh result directory/working copy; resume unified runs with `--resume` |
-| Test suite looks for historical weights | Use `--models` with final release paths as shown in section 6 |
-| `frozen manifest differs; refusing overwrite` | Use the supplied frozen-test wrapper from section 6; retain the original split and source-inventory records |
+| `No module named ...` | Activate `.venv`, run from `final/robotnik_arm_task`, install RoboEnv with its submodule |
+| `weights not found` / no matching artifact | Run `python tools/fetch_release.py`; use a listed `--row`, seed 0/1/2 and the release `--protocol` |
+| `SHA-256 ... differs` | Download again; the zip was truncated or altered |
+| Artifact hash differs in live comparison | Restore the original release file; retrained weights need a new manifest |
+| No display | Use WSLg or a desktop, or `--headless --seconds 0.1` |
+| Output already exists | Use a fresh result folder or working copy; resume unified runs with `--resume` |
+| `frozen manifest differs; refusing overwrite` | Use the frozen-test wrapper in section 7 |
 
-From the **repository root**, optional installation checks are `python -m pytest tests -m "not sim and not realdata"` and `python -m pytest tests -m sim`. `realdata` tests additionally require their original datasets.
+Further reading: [report evidence index](final/robotnik_arm_task/report/README.md), [project pipeline](docs/2026-10-30__guide__project-pipeline.md), [documentation index](docs/README.md), [model naming](docs/model-naming.md), [detailed reproduction reference](docs/2026-10-29__guide__reproduction-details.md).
 
-For methods and evidence, start with the [report index](final/robotnik_arm_task/report/README.md). See also the [pipeline](docs/2026-10-30__guide__project-pipeline.md), [documentation index](docs/README.md), [model naming guide](docs/model-naming.md) and [detailed reproduction reference](docs/2026-10-29__guide__reproduction-details.md). Dated documents retain historical context; use this README and the final manifest for submitted-model commands.
-
-## External code
+## 10. External code
 
 | Code | Source | Status |
 |---|---|---|
 | `RoboEnv/`, `simulation_and_control` | COMP0245 course | Used as is |
 | `robotnik_arm_task.py`, `robotnik_arm_control.py`, `configs/`, `models/` | COMP0245 final task template | Used as is |
 | `data_collection/expert.py` | Based on `robotnik_arm_control.py` | Modified: made Markovian |
-| `data_collection/template_teacher.py` | Calls template `arm_controller`/`base_controller` unchanged | Project wrapper reproducing the template setup, verified bit-identical |
-| Other code in `core/`, `data_collection/`, `training/`, `evaluation/`, `experiments/`, `tools/` | Written for this project | From scratch |
+| `data_collection/template_teacher.py` | Calls the template's `arm_controller`/`base_controller` unchanged | Project wrapper that reproduces the template setup, verified bit-identical |
+| Everything else in `core/`, `data_collection/`, `training/`, `evaluation/`, `experiments/`, `tools/`, `report/` | Written for this project | From scratch |
+
+Python libraries (PyTorch, NumPy, SciPy, PyBullet, Pinocchio, Matplotlib) are used through their public APIs. DAgger (Ross et al. 2011) and DART (Laskey et al. 2017) are reimplemented from their papers. The bibliography is in [`docs/references/`](docs/references/2026-10-26__reference__research-bibliography.md).
