@@ -39,8 +39,15 @@ def chosen_round(summary: list[dict]) -> int | None:
     return int(max(cands, key=lambda r: (_frac(r["sustained_hold"])[0] / _frac(r["sustained_hold"])[1], int(r["round"])))["round"])
 
 
+TAG = ""
+
+
+def root_dir(date: str) -> Path:
+    return TASK_DIR / f"results/ablation/{date}__small-net-dagger{'-' + TAG if TAG else ''}-v2"
+
+
 def arch_dirs(date: str) -> dict:
-    root = TASK_DIR / f"results/ablation/{date}__small-net-dagger-v2"
+    root = root_dir(date)
     found = {d.name: d for d in sorted(root.glob("MLP*")) if d.is_dir()} if root.exists() else {}
     return {a: found[a] for a in sorted(found, key=lambda a: ORDER.index(a) if a in ORDER else 99)}
 
@@ -70,11 +77,14 @@ def main(argv=None) -> int:
     p.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     p.add_argument("--test", type=Path, help="unified test run directory (rollouts.csv)")
     p.add_argument("--latency", type=Path, help="evaluation.latency_bench CSV")
+    p.add_argument("--tag", default="", help="the --tag of experiments.dagger_arch_rounds")
     args = p.parse_args(argv)
+    global TAG
+    TAG = args.tag
     if args.list_models:
         print(" ".join(str(m.relative_to(TASK_DIR)) for m in chosen_models(args.date, args.seeds)))
         return 0
-    root = TASK_DIR / f"results/ablation/{args.date}__small-net-dagger-v2"
+    root = root_dir(args.date)
     latency_path = args.latency or root / "latency.csv"
     latency = {row["architecture"].split("-")[0]: row for row in _csv(latency_path)}
     tests = _csv(args.test / "rollouts.csv") if args.test else []
@@ -146,7 +156,7 @@ def main(argv=None) -> int:
         md.append("| " + " | ".join(cells) + " |")
     devices = sorted({line.get("device") for line in lines if line.get("device")})
     md += ["", f"Training device: {', '.join(devices) or 'unknown'}. Inputs: `results/ablation/{args.date}__small-net-dagger-v2/"
-           "<arch>/{summary,cost}.csv`" + (f", `{args.test}`" if args.test else "") + "."]
+           "<arch>/{summary,cost}.csv`".replace("small-net-dagger-v2", root.name) + (f", `{args.test}`" if args.test else "") + "."]
     (root / "summary.md").write_text("\n".join(md) + "\n")
     print("\n".join(md))
     print(f"\nwritten {root / 'summary.md'} and summary.csv")

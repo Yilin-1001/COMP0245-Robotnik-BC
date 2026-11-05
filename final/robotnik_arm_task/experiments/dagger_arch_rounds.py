@@ -41,6 +41,7 @@ _, DEFINITION, OWN = dr.ROWS[ROW]
 VERSION = dr.VERSION
 EXPERIMENT = "small-net-dagger"
 MANIFEST = TASK_DIR / "experiments/ablation/2026-11-02__architecture-ablation-v1.yaml"
+TAG = ""  # set by --tag; empty keeps the original names
 COST_FIELDS = ["arch", "round", "seed", "step", "wall_s", "train_elapsed_s", "device", "new_episodes", "new_rows",
                "train_episodes", "train_rows", "model", "detail", "written"]
 
@@ -60,11 +61,16 @@ def learning_rate(arch: str) -> str:
 
 
 def dataset(arch: str, k: int) -> str:
-    return f"dagger-R8-{VERSION}-{arch}-r{k}"
+    return f"dagger-R8-{VERSION}-{arch}{TAG}-r{k}"
 
 
 def variant_name(arch: str, k: int) -> str:
-    return BASE if k == 0 else f"{ROW}-{arch}-r{k}"
+    return BASE if k == 0 else f"{ROW}-{arch}{TAG}-r{k}"
+
+
+def out_dir_for(date: str, arch: str, tag: str = None) -> Path:
+    tag = TAG if tag is None else tag
+    return TASK_DIR / f"results/ablation/{date}__{EXPERIMENT}{'-' + tag if tag else ''}-{VERSION}/{arch}"
 
 
 def write_variant(arch: str, k: int) -> str:
@@ -156,6 +162,23 @@ def validate(arch: str, k: int, seed: int, date: str, model: Path, collector: st
     return res
 
 
+def reuse_round0(arch: str, date: str, out_dir: Path, cost: Cost) -> None:
+    """Copy the round-0 cost rows and validation of the untagged run of `date` (same model, nothing retrained)."""
+    src = out_dir_for(date, arch, tag="")
+    model = model_path(arch, 0, 0, date)
+    if not model.exists():
+        raise SystemExit(f"--round0-date {date}: {model} not found")
+    have = {(r["round"], r["seed"], r["step"]) for r in csv.DictReader(open(cost.path))} if cost.path.exists() else set()
+    for r in (csv.DictReader(open(src / "cost.csv")) if (src / "cost.csv").exists() else []):
+        if r["round"] == "0" and r["seed"] == "0" and ("0", "0", r["step"]) not in have:
+            cost.add(0, 0, r["step"], float(r["wall_s"]), **{k: r[k] for k in COST_FIELDS if k not in
+                     ("arch", "round", "seed", "step", "wall_s", "device", "written")} | {"detail": f"reused from {src}"})
+    cached = src / "validation" / f"{model.stem}.json"
+    if cached.exists():
+        (out_dir / "validation").mkdir(parents=True, exist_ok=True)
+        shutil.copy(cached, out_dir / "validation" / cached.name)
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--arch", required=True, help="registered architecture, e.g. MLP04 (64x3)")
@@ -164,16 +187,26 @@ def main(argv=None) -> int:
     p.add_argument("--dev-scenes", type=int, default=64)
     p.add_argument("--final-seeds", type=int, nargs="*", default=[1, 2], help="extra seeds for the chosen round")
     p.add_argument("--workers", type=int, default=20)
+    p.add_argument("--tag", default="", help="letters/digits added to dataset, variant and result names, e.g. nodev")
+    p.add_argument("--round0-date", help="reuse the round-0 model (and its recorded cost and validation) of the "
+                                         "untagged run of this date instead of training it again")
     args = p.parse_args(argv)
+    global TAG
+    if args.tag and not args.tag.isalnum():
+        raise SystemExit("--tag must be letters and digits only")
+    TAG = args.tag
     if args.arch not in registry():
         raise SystemExit(f"unknown architecture {args.arch}; registered: {', '.join(registry())}")
-    out_dir = TASK_DIR / f"results/ablation/{args.date}__{EXPERIMENT}-{VERSION}/{args.arch}"
+    out_dir = out_dir_for(args.date, args.arch)
     out_dir.mkdir(parents=True, exist_ok=True)
     cost = Cost(out_dir, args.arch, device_name())
-    print(f"\n===== {args.arch} ({label(args.arch)}, lr {learning_rate(args.arch)}, {cost.device}) round 0: {BASE} =====",
-          flush=True)
-    student = train(args.arch, 0, 0, args.date, out_dir, cost)
-    validate(args.arch, 0, 0, args.date, student, "-", args.workers, out_dir, cost)
+    print(f"\n===== {args.arch} ({label(args.arch)}, lr {learning_rate(args.arch)}, {cost.device}) round 0: {BASE} "
+          f"(dev scenes per round: {args.dev_scenes}) =====", flush=True)
+    r0_date = args.round0_date or args.date
+    if args.round0_date:
+        reuse_round0(args.arch, r0_date, out_dir, cost)
+    student = train(args.arch, 0, 0, r0_date, out_dir, cost)
+    validate(args.arch, 0, 0, r0_date, student, "-", args.workers, out_dir, cost)
     results = []
     for k in range(1, args.rounds + 1):
         print(f"\n===== {args.arch} DAgger round {k}: collector {student.name} =====", flush=True)
