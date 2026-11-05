@@ -1,0 +1,37 @@
+% Robustness table (report Sec. 3.2.3). Needs \usepackage{booktabs,makecell}.
+% Expert = A, DART = R4, DAgger = R6 (R2D-dagger-R2v1-r3), f-DAgger = R8 (R6-dagger-v1-r2), all with gate.
+% Data: R4-R5r3-R6r3-R8r2-s0/summary.json and R6r3-R8r2-s12/summary.json in this folder;
+% 95% Wilson intervals on pooled counts (n = 36).
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & & \multicolumn{4}{c}{Learner success (\%), all with gate} \\
+\cmidrule(l){3-6}
+ & & \multicolumn{2}{c}{All scenes} & \multicolumn{2}{c}{Expert holds} \\
+\cmidrule(lr){3-4}\cmidrule(l){5-6}
+Condition & Expert & DAgger & f-DAgger & DAgger & f-DAgger \\
+\midrule
+Nominal                  & 12/12 & 89 {\scriptsize(75--96)} & 94 {\scriptsize(82--98)} & 89 & 94 \\
+\addlinespace
+\multicolumn{6}{@{}l}{\textit{Learners match the expert}} \\
+\quad Friction $\times$0.5     & 12/12 & 97 {\scriptsize(86--100)} & 89 {\scriptsize(75--96)} & 97 & 89 \\
+\quad Friction $\times$1.5     & 12/12 & 92 {\scriptsize(78--97)} & 92 {\scriptsize(78--97)} & 92 & 92 \\
+\quad Sensor noise $\times$20  & 12/12 & 100 {\scriptsize(90--100)} & 100 {\scriptsize(90--100)} & 100 & 100 \\
+\quad Push hand, at target     & 12/12 & 89 {\scriptsize(75--96)} & 94 {\scriptsize(82--98)} & 89 & 94 \\
+\addlinespace
+\multicolumn{6}{@{}l}{\textit{The expert itself fails}} \\
+\quad Mass $\times$0.9         & 4/12  & 42 {\scriptsize(27--58)} & 47 {\scriptsize(32--63)} & 25 & 58 \\
+\quad Mass $\times$1.1         & 10/12 & 44 {\scriptsize(30--60)} & 50 {\scriptsize(34--66)} & 50 & 53 \\
+\quad Push base, at target     & 7/12  & 36 {\scriptsize(22--52)} & 36 {\scriptsize(22--52)} & 62 & 57 \\
+\addlinespace
+\multicolumn{6}{@{}l}{\textit{Learners differ}} \\
+\quad Push base, driving       & 6/12  & \textbf{42} {\scriptsize(27--58)} & 17 {\scriptsize(8--32)} & \textbf{83} & 33 \\
+\bottomrule
+\end{tabular}
+\caption{Robustness to unseen perturbations: sustained-hold success with 95\% Wilson interval
+(12 scenes per condition, 3 seeds, $n=36$). ``Expert holds'': only scenes the expert holds.}
+\label{tab:robustness}
+\end{table}
