@@ -100,6 +100,18 @@ Bands (`tables/test_by_band.csv`):
 
 The heatmap shows point estimates only. Per band, with the 95% scene-bootstrap CI, per-seed counts, median completion time and median terminal error: `tables/test_by_band.csv`.
 
+## Results by Accuracy and Generalization
+
+The unified test is split into two groups. **Accuracy** covers scenes inside the training range: T0 in range, T4 shifted start, T5 20 s hold. **Generalization** covers scenes outside it: T1 far targets per distance band, T2 near, T3 per height band. Training covers base-to-target distances of 0.5–3.1 m and target heights of 0.1–1.25 m. Both figures use the same bars as `ablation_overview`: hatched orange = without Gate, solid blue = with Gate, 95% scene-bootstrap error bars, and a dashed line for the expert on the same scenes. R8 is bold.
+
+![Accuracy](figures/ablation_accuracy.png)
+
+`figures/ablation_accuracy.pdf`. In range, the five rows that work (R4–R8) reach 92–98% on T0 and 85–94% on T4; none of the differences between them is Holm-significant. T5 separates them more (R8 79%, R5 69%, R4 68%, R6 61%, R7 50%), still without a Holm-significant difference. Panel (d) gives terminal precision. R8 has the lowest median final-second error of the students (6.4 mm, against 8.1–21.5 mm). Paired by scene, its error is 0.60× R4's [0.49, 0.75] and 0.42× R6's [0.32, 0.55] (`tables/precision.csv`; a secondary analysis added after the v3 results were seen).
+
+![Generalization](figures/ablation_generalization.png)
+
+`figures/ablation_generalization.pdf`. **Far targets.** At 3–6 m every working row (R4–R8) still succeeds (94–100%). Beyond 6 m only R4 (97% / 78%) and the DAgger rows that started from a failing student (R5, R6: 97–100%) hold up. Those rows owe this to far-distance coverage in their round-1 data (see the caveats). R7 and R8 fall to 90% / 10% and 36% / 6%; R8 − R4 on T1 is −44.9 pp (Holm p = 0.0056). **Near targets (T2)**: R8 has the highest point estimate (57%), with no significant difference. **Height edges (T3)**: high targets favour OU + Gate (R4 92%, R8 75%, the others ≤ 35%; R8 − R6 over T3 +26.0 pp, Holm p = 0.018). Low targets are hard for every row; the expert itself holds only 10 of 16. There R8 (31%) gains over R4 (17%), while R5 (40%) is highest.
+
 ## What the ablation shows
 
 Each claim gives the paired difference Δ (with minus without, percentage points) with its **95% paired scene-bootstrap CI** and the **Holm-adjusted p** (`tables/comparisons.csv`).
@@ -185,6 +197,8 @@ f-DAgger + Gate has the *fewest* DAgger rows of the four DAgger rows. A DAgger e
 06_ablation/
   README.md
   figures/   ablation_overview.{pdf,png}     validation, test T0, test all 240; 4 methods x without/with Gate (report figure)
+             ablation_accuracy.{pdf,png}     Accuracy: T0, T4, T5 success and in-range terminal error (report figure)
+             ablation_generalization.{pdf,png}  Generalization: T1 per distance band, T2, T3 per height band (report figure)
              test_suites.{pdf,png}           success per suite T0-T5 and all 240, R1-R8 and expert A
              dagger_rounds.{pdf,png}         validation per DAgger round, R5-R8
              terminal_error_ecdf.{pdf,png}   T0 final-second max error, one panel per method
@@ -208,6 +222,7 @@ f-DAgger + Gate has the *fewest* DAgger rows of the four DAgger rows. A DAgger e
                            OU collection write log (attempts.jsonl)
   code/      make_tables.py    data/ -> tables/
              plot_ablation.py  tables/ + data/ -> figures/
+             plot_accuracy_generalization.py  -> figures/ablation_accuracy.*, ablation_generalization.*
              test_data.py      merges the two test runs (R1-R4 + expert, R5-R8) and checks they are comparable
 ```
 
@@ -218,6 +233,7 @@ All commands run from `final/robotnik_arm_task/`. Every number in this folder is
 ```bash
 python report/06_ablation/code/make_tables.py      # tables/ from data/ (no simulation)
 python report/06_ablation/code/plot_ablation.py    # figures/ from tables/ and data/ (needs matplotlib)
+python report/06_ablation/code/plot_accuracy_generalization.py  # Accuracy / Generalization figures
 ```
 
 `make_tables.py` checks its per-suite counts against each test run's own `summary.csv`, its per-scene validation counts against the run summaries and its hold-test counts against the v1 summary, and stops on any mismatch. The bootstrap and permutation draws use fixed seeds, so the intervals and p values are reproduced exactly.
