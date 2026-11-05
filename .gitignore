@@ -82,9 +82,8 @@ final/robotnik_arm_task/results/**
 !final/robotnik_arm_task/report/05_training_details/data/runs/
 !final/robotnik_arm_task/report/05_training_details/data/runs/**
 
-# Report LaTeX: sources are tracked; build products, drafts and notes are not
-final/robotnik_arm_task/report/paper/tmp/
-final/robotnik_arm_task/report/paper/output/
+# Report LaTeX and drafts: the report is submitted as a PDF on Moodle, not through this repository
+final/robotnik_arm_task/report/paper/
 final/robotnik_arm_task/report/Report Outline.txt
 *.aux
 *.out

@@ -82,7 +82,7 @@ The **repository root** holds this README and the requirements files. The **task
     ├── evaluation/               # validation, unified test suite, live comparison, robustness / far / hold probes, plots
     ├── experiments/              # training recipes (configs/), ablation and DAgger/DART runners, frozen splits, demo manifests
     ├── tools/                    # fetch_release.py, verify_release.py, package_release.py, checkpoint export, data helpers
-    ├── report/                   # evidence for every report section: figures, tables, data and code (01–10), LaTeX in paper/
+    ├── report/                   # evidence for every report section: figures, tables, data and code (01–10)
     ├── results/                  # experiment summaries behind the reported numbers (per-rollout files stay local)
     ├── checkpoints/2026-11-05final/  # submitted models: index files in Git, weights from the release (section 3)
     └── data/                     # demonstrations and feature datasets (not shipped, rebuilt by section 7)
