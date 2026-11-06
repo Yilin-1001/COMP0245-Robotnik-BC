@@ -35,7 +35,7 @@ METHODS = {"teacher-A": ("Expert", "Expert", "--"), "R4": ("OU + Gate", "OU", "Y
            "R8": ("f-DAgger + Gate", "f-DAgger", "Yes")}
 LABELS = {"nominal": "Nominal", "friction x0.5": r"Friction $\times0.5$", "friction x1.5": r"Friction $\times1.5$",
           "mass x0.9": r"Mass $\times0.9$", "mass x1.1": r"Mass $\times1.1$",
-          "sensor noise x20": r"Sensor noise $\times20$", "push base, driving": "Base push, driving",
+          "sensor noise x20": "Sensor noise", "push base, driving": "Base push, driving",
           "push base, at target": "Base push, at target", "push hand, at target": "Hand push, at target"}
 
 
@@ -117,7 +117,8 @@ def main() -> int:
     expert_fail = [c for c in conditions if c not in expert_ok]
 
     def line_tex(c):
-        cells = [LABELS.get(c, c), "%d/%d" % counts[(c, "teacher-A")]]
+        k, n = counts[(c, "teacher-A")]
+        cells = [LABELS.get(c, c), f"{100 * k / n:.1f}"]
         vals = [100 * counts[(c, m)][0] / counts[(c, m)][1] for m in students]
         best = max(vals)
         cells += [(r"\textbf{%.1f}" if v == best else "%.1f") % v for v in vals]
@@ -126,22 +127,22 @@ def main() -> int:
     lines = [r"\begin{table}[!htbp]",
              r"\caption{Robustness: Hold Success (\%) Under Unseen Perturbations.}",
              r"\label{tab:robustness}", r"\centering", r"\setlength{\tabcolsep}{3pt}",
-             r"\begin{tabular}{@{}lcrrrrr@{}}", r"\toprule",
+             r"\begin{tabular}{@{}lrrrrrr@{}}", r"\toprule",
              r"Condition & Expert & OU & DAgger & DAgger & f-DAgger & f-DAgger \\",
              r"Gate & -- & Yes & No & Yes & No & Yes \\", r"\midrule",
              r"\multicolumn{7}{@{}l}{\textit{Expert holds every scene}} \\"]
     lines += [line_tex(c) for c in expert_ok]
-    lines += [r"\midrule", r"\multicolumn{7}{@{}l}{\textit{Expert itself fails}} \\"]
+    lines += [r"\midrule", r"\multicolumn{7}{@{}l}{\textit{Expert fails in some scenes}} \\"]
     lines += [line_tex(c) for c in expert_fail]
     LABELS["all 8 perturbations"] = "All perturbations"
-    # same 8 perturbations, restricted to the scenes the expert holds (expert column: held scenes / held scenes)
+    # Same eight perturbations, restricted to the scenes the expert holds.
     LABELS["all 8 perturbations | expert-held"] = "Expert-held scenes"
     lines += [r"\midrule", line_tex("all 8 perturbations"), line_tex("all 8 perturbations | expert-held")]
     lines += [r"\bottomrule", r"\end{tabular}", r"\par\smallskip", r"\begin{minipage}{\columnwidth}\footnotesize",
               r"12 in-range scenes per condition; students pool three seeds ($n=36$), the expert",
               r"runs once. Success: final 1\,s below 10\,mm after reaching. Pushes last 0.2\,s:",
               r"120\,N on the base, 20\,N on the hand, at target 1\,s after first reaching.",
-              r"Bottom rows pool the eight perturbations; expert-held keeps only the 76",
+              r"Bottom rows pool the eight perturbations (96 scenes); expert-held keeps the 76",
               r"perturbed scenes the expert holds. Bold: best student per row.",
               r"\end{minipage}", r"\end{table}"]
     (OUT / "robustness.tex").write_text("\n".join(lines) + "\n")

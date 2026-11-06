@@ -205,7 +205,8 @@ def main() -> int:
         val.append({"size": size_label(arch), "parameters": mlp_cost(SIZES[arch][0])[0],
                     "ou_gate_per_seed": " / ".join(str(a) for a, _ in ou), "ou_gate_pooled": fmt(ou_r),
                     "f_dagger_gate_round": k, "f_dagger_gate_per_seed": " / ".join(str(a) for a, _ in fd),
-                    "f_dagger_gate_pooled": fmt(fd_r), "gain_pp": round(fd_r["pct"] - ou_r["pct"], 1),
+                    "f_dagger_gate_pooled": fmt(fd_r),
+                    "gain_pp": round(100 * (fd_r["k"] / fd_r["n"] - ou_r["k"] / ou_r["n"]), 1),
                     "chain_round0_seed0": r0,
                     "chain_seed0_by_round": tm[arch]["by_round_s0"] if arch != "MLP01" else ""})
     write_csv("validation.csv", val)
@@ -265,35 +266,46 @@ def main() -> int:
             write_csv("rerun.csv", rerun)
 
     # ---------------------------------------------------------------- LaTeX
-    def pct(r):
-        return f"{r['pct']:.1f}"
-    lines = [r"\begin{table}[!htbp]",
-             r"\caption{MLP Size: Validation and Test Success (\%) Across Hidden Widths.}",
-             r"\label{tab:network-size}", r"\centering", r"\setlength{\tabcolsep}{2.5pt}",
-             r"\begin{tabular}{@{}lrrrrrrrr@{}}", r"\toprule",
-             r" & & \multicolumn{3}{c}{Validation} & \multicolumn{4}{c}{Test: f-DAgger+Gate} \\",
-             r"\cmidrule(lr){3-5}\cmidrule(l){6-9}",
-             r"Hidden & Params & \shortstack{OU\\+Gate} & \shortstack{f-DAgger\\+Gate} & $\Delta$ & \shortstack{T0+T4\\+T5} & "
-             r"\shortstack{T2\\+T3} & T1 & All \\", r"\midrule"]
+    def paper_rates(counts):
+        far_k, far_n = counts["far (T1)"]
+        edge_k, edge_n = counts["edges (T2+T3)"]
+        return [rate(*counts["in range (T0+T4+T5)"]), rate(far_k + edge_k, far_n + edge_n)]
+
+    paper_rows = []
     for arch, v in zip(ORDER, val):
         counts = lt["R8"] if arch == "MLP01" else tm[arch]["test"]
         ou_k, fd_k = (sum(int(x) for x in v[c].split(" / ")) for c in ("ou_gate_per_seed", "f_dagger_gate_per_seed"))
-        ou_r, fd_r = rate(ou_k, 96), rate(fd_k, 96)
-        cells = [f"${SIZES[arch][0][0]}\\times3$", f"{v['parameters']:,}", pct(ou_r), pct(fd_r),
-                 f"${fd_r['pct'] - ou_r['pct']:+.1f}$"] + [pct(rate(*counts[g])) for g in GROUPS]
-        if arch == "MLP01":
-            cells = [r"$\mathbf{256\times3}$"] + [r"$\mathbf{" + c.strip("$") + "}$" if c.startswith("$")
-                                                  else r"\textbf{" + c + "}" for c in cells[1:]]
+        values = [rate(ou_k, 96)["pct"], rate(fd_k, 96)["pct"]] + [r["pct"] for r in paper_rates(counts)]
+        paper_rows.append((arch, v, values))
+    best = [max(values[i] for _, _, values in paper_rows) for i in range(4)]
+
+    def cell(value, column):
+        text = f"{value:.1f}"
+        return r"\textbf{" + text + "}" if value == best[column] else text
+
+    lines = [r"\begin{table}[!htbp]",
+             r"\caption{MLP Size: Validation and Test Success (\%) Across Hidden Widths.}",
+             r"\label{tab:network-size}", r"\centering", r"\setlength{\tabcolsep}{2.5pt}",
+             r"\begin{tabular}{@{}lrrrrrr@{}}", r"\toprule",
+             r" & & \multicolumn{3}{c}{Validation} & \multicolumn{2}{c}{Test: f-DAgger+Gate} \\",
+             r"\cmidrule(lr){3-5}\cmidrule(l){6-7}",
+             r"Hidden & Params & \shortstack{OU\\+Gate} & \shortstack{f-DAgger\\+Gate} & "
+             r"\shortstack{$\Delta$\\(pp)} & Accuracy & Generalization \\", r"\midrule"]
+    for arch, v, values in paper_rows:
+        cells = [f"${SIZES[arch][0][0]}\\times3$", f"{v['parameters']:,}",
+                 cell(values[0], 0), cell(values[1], 1), f"${v['gain_pp']:+.1f}$",
+                 cell(values[2], 2), cell(values[3], 3)]
         lines.append(" & ".join(cells) + r" \\")
     lines += [r"\midrule",
-              "Expert & -- & -- & -- & -- & " + " & ".join(pct(rate(*lt["expert"][g])) for g in GROUPS) + r" \\",
+              "Expert & -- & -- & -- & -- & " + " & ".join(f"{r['pct']:.1f}" for r in paper_rates(lt["expert"])) + r" \\",
               r"\bottomrule", r"\end{tabular}", r"\par\smallskip",
               r"\begin{minipage}{\columnwidth}\footnotesize",
-              r"Three hidden layers of width $w$. $\Delta$: f-DAgger+Gate minus OU+Gate on",
-              r"validation (points). Student rates pool three seeds; the expert is",
-              r"evaluated once. Validation: 32 scenes. Test: T0+T4+T5 112 scenes, T2+T3 56,",
-              r"T1 72. Each width uses its own f-DAgger collection chain; $w\le128$ ran on a",
-              r"second machine. Bold: the main model of Section~\ref{sec:performance}.",
+              r"Three hidden layers of width $w$. Student rates pool three seeds;",
+              r"the expert is evaluated once. Validation: 32 scenes.",
+              r"Accuracy: T0+T4+T5 (112 scenes); Generalization: T1+T2+T3 (128 scenes).",
+              r"Each width uses its own f-DAgger collection chain.",
+              r"Peak learning rate: $10^{-2}$ for $w=32$, $10^{-3}$ otherwise.",
+              r"Bold: best student result per column.",
               r"\end{minipage}", r"\end{table}"]
     (OUT / "network-size.tex").write_text("\n".join(lines) + "\n")
 

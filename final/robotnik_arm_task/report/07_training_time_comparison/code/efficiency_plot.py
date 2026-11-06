@@ -5,7 +5,7 @@ Names ("+ Gate" = the 22-input models, as in ../../06_ablation/; every model her
   - f-DAgger + Gate (ours): phase-gated OU noise, then DAgger (R4 -> R8).
   - DAgger + Gate: DAgger from clean data (R2 -> R6).
   - DART + Gate: full DART with noise optimisation, alpha = 6 (R2 -> R9-dart-full-a6).
-Training time is the wall-clock time of the whole pipeline. It adds each method's own time (OU-noise collection; every
+Pipeline time is reconstructed from stage timings. It adds each method's own time (OU-noise collection; every
 train -> collect cycle) to the shared clean collection and round-0 training (SHARED_MIN, the same for every method).
 The figure shows rounds 1-3. Curves are monotone PCHIP interpolation between the measured rounds; bands are 95%
 scene-bootstrap CIs. The table keeps round 0 as well.
@@ -68,7 +68,7 @@ def plot(rows, out: Path):
                         color=colour, alpha=0.13, lw=0, zorder=1)
         ax.plot(xs, PchipInterpolator(x, y)(xs), color=colour, lw=1.6, zorder=2)
         ax.plot(x, y, ls="none", marker=marker, ms=4.5, color=colour, mec="white", mew=0.7, zorder=3)
-    ax.set_xlabel("Training time (min)")
+    ax.set_xlabel("Cumulative pipeline time (min)")
     ax.set_ylabel("T0 success rate (%)")
     ax.set_xlim(16, 39)
     ax.set_ylim(50, 101)
