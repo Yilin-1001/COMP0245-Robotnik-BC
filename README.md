@@ -56,6 +56,10 @@ python tools/verify_release.py       # load all 27 models in PyTorch, compare wi
 # Expert and f-DAgger + Gate side by side in two PyBullet windows
 python -m evaluation.live_compare --protocol checkpoints/2026-11-05final/demo_models.yaml \
     --row R8-f-DAgger-Gate --seed 0 --scenario train-0186
+
+# Same, with your own start pose and goal (world frame, metres; bearing in radians)
+python -m evaluation.live_compare --protocol checkpoints/2026-11-05final/demo_models.yaml \
+    --row R8-f-DAgger-Gate --seed 0 --start 0.0 0.0 --bearing 0.0 --target 2.0 0.5 0.7
 ```
 
 Sections 3–6 explain each step. Section 2 lists what every folder contains.
@@ -228,13 +232,26 @@ There is no time limit by default. `--seconds 40` freezes both at 40 simulated s
 python -c "from evaluation.test_sets import get_split; from pathlib import Path; [print(s.scenario_id) for s in get_split('validation', Path('experiments/splits/clean253.json'), 'A')]"
 ```
 
-Custom scene (world frame, metres; bearing is yaw in radians; training ranges: target 0.5–3.0 m away, height 0.1–1.25 m, start within ±0.5 m):
+### Choosing your own start and goal
+
+You can set the robot's start pose and the end-effector goal yourself. Both simulators (expert and student) get the same custom scene.
+
+| Flag | Meaning | Units |
+|---|---|---|
+| `--start X Y` | Base start position on the ground (z is always 0) | m, world frame |
+| `--bearing B` | Base start yaw; `0` faces +X, `1.57` faces +Y | rad |
+| `--target X Y Z` | End-effector goal; `Z` is height above the ground | m, world frame |
 
 ```bash
 python -m evaluation.live_compare --protocol "$RELEASE/demo_models.yaml" --row "$ROW" --seed "$SEED" \
-    --scenario train-0186 --target 2.0 0.5 0.7 --start 0.0 0.0 --bearing 0.0 \
-    --seconds 40 --output "results/live_compare/${ROW}-s${SEED}-custom.json"
+    --start 0.0 0.0 --bearing 0.0 --target 2.0 0.5 0.7 \
+    --output "results/live_compare/${ROW}-s${SEED}-custom.json"
 ```
+
+- The flags override fields of the `--scenario` scene (default `train-0186`: start (0.46, 0.38), bearing 1.33, target (−1.42, −1.59, 0.95)). Any flag you leave out keeps that scene's value, so `--target` alone moves only the goal.
+- Training ranges: target 0.5–3.0 m from the start (horizontal distance), height 0.1–1.25 m, start x and y within ±0.5 m. Outside them the demo still runs but prints a `WARNING`: the student never saw such scenes.
+- Physical limit: targets above about 1.30 m or below about 0.05 m are out of the arm's reach, and the expert fails there too.
+- The JSON records the custom scene with the ID `train-0186/custom-<changed fields>`, e.g. `train-0186/custom-target-start-bearing`.
 
 **No display:** add `--headless --seconds 0.1` for a 100-step installation check. Each JSON `runs` entry should have `failure: null`.
 
