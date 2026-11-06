@@ -351,6 +351,14 @@ Frozen Sobol scenarios → expert A trajectories → QA → Clean_253 split (221
         → full DART comparison (R9) → frozen release → live comparison / unified tests
 ```
 
+### Scenario coverage
+
+Each scenario samples six parameters jointly with scrambled Sobol sampling: target distance 0.5–3.0 m from the starting base, target azimuth −180° to 180° relative to the starting heading, target height 0.1–1.25 m, and starting base x, y (±0.5 m) and yaw (−180° to 180°). Training (256 scenes, seed `1026001`) and test (64 scenes, seed `1026002`) are separate Sobol designs. The split is made by scenario, not by time step. Validation takes one scene from each of 2 distance × 4 azimuth × 4 height strata (32 scenes). The other 221 Clean_253 scenes are used for fitting.
+
+<p align="center"><img src="final/robotnik_arm_task/report/02_data_collection/figures/scenario_coverage.png" width="900" alt="3-D target positions relative to the starting robot pose for the fitting (221), validation (32) and test (64) scenarios"></p>
+
+*Target positions in the starting robot frame: x_rel points forward, y_rel left, z is world height; one point per scenario. All three panels use the same axes. The empty core is the 0.5 m minimum distance. The figure shows the target geometry only, not the start pose or the states the robot visits. Test suites T1–T4 (section 7) go beyond this range: far, near, height-edge targets and shifted starts. Details and the Sobol-vs-IID comparison: [report/02](final/robotnik_arm_task/report/02_data_collection/README.md).*
+
 ### Step 1: clean demonstrations and subsets
 
 ```bash
