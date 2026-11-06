@@ -53,13 +53,14 @@ cd final/robotnik_arm_task
 python tools/fetch_release.py        # download, SHA-256-check and unpack the weights (56 MiB)
 python tools/verify_release.py       # load all 27 models in PyTorch, compare with the NumPy exports
 
-# Expert and f-DAgger + Gate side by side in two PyBullet windows
+# Expert and f-DAgger + Gate side by side in two PyBullet windows.
+# Pick another model with --row R1 ... R9 and --seed 0, 1 or 2 (table in section 6).
 python -m evaluation.live_compare --protocol checkpoints/2026-11-05final/demo_models.yaml \
-    --row R8-f-DAgger-Gate --seed 0 --scenario train-0186
+    --row R8 --seed 0
 
 # Same, with your own start pose and goal (world frame, metres; bearing in radians)
 python -m evaluation.live_compare --protocol checkpoints/2026-11-05final/demo_models.yaml \
-    --row R8-f-DAgger-Gate --seed 0 --start 0.0 0.0 --bearing 0.0 --target 2.0 0.5 0.7
+    --row R8 --seed 0 --start 0.0 0.0 --bearing 0.0 --target 2.0 0.5 0.7
 ```
 
 Sections 3–6 explain each step. Section 2 lists what every folder contains.
@@ -201,19 +202,47 @@ Files live in `checkpoints/2026-11-05final/models/<row>/seed-<N>/`, e.g. `R8-f-D
 
 ## 6. Live comparison: expert vs a submitted model
 
+### Choosing the model
+
+Two flags pick the model; everything else is optional.
+
+- `--row`: which method. The short ID `R1` … `R9` or the full name in the table below.
+- `--seed`: which of the three trained copies, `0`, `1` or `2` (see "Seeds" in section 5; none is better than the others).
+
+| `--row` | Full name | Method | T0 test | All 240 scenes |
+|---|---|---|---:|---:|
+| `R1` | `R1-Baseline` | Baseline (BC + J) | 2.1% | 1.1% |
+| `R2` | `R2-Baseline-Gate` | Baseline + Gate | 20.8% | 8.3% |
+| `R3` | `R3-OU` | OU | 1.6% | 4.6% |
+| `R4` | `R4-OU-Gate` | OU + Gate | 96.9% | **81.2%** |
+| `R5` | `R5-DAgger` | DAgger | 96.4% | 80.0% |
+| `R6` | `R6-DAgger-Gate` | DAgger + Gate | 91.7% | 76.7% |
+| `R7` | `R7-f-DAgger` | f-DAgger | 96.4% | 67.6% |
+| `R8` | `R8-f-DAgger-Gate` | **f-DAgger + Gate (ours)** | **97.9%** | 70.0% |
+| `R9` | `R9-DART-Gate` | DART + Gate | 78.1% | 39.4% |
+
+Suggested picks: `R8` (our method, best in range), `R4` (best over all 240 scenes, including far targets) and `R1` (the baseline, to see the arm fail to settle).
+
+```bash
+# Run from final/robotnik_arm_task/ after python tools/fetch_release.py
+python -m evaluation.live_compare --protocol checkpoints/2026-11-05final/demo_models.yaml \
+    --row R4 --seed 1
+```
+
+Always pass `--protocol checkpoints/2026-11-05final/demo_models.yaml`, which selects the submitted release. A name that is not in the table stops with `no matching artifact in the final protocol`. Everything below (scene, start, goal, duration, output) is optional and can be combined with any `--row`/`--seed`, e.g. to save the summary under a model-specific name:
+
 ```bash
 RELEASE=checkpoints/2026-11-05final
-ROW=R8-f-DAgger-Gate      # any --row value from section 5
+ROW=R8-f-DAgger-Gate      # any --row value from the table above
 SEED=0                    # 0, 1 or 2
 
-python -m evaluation.live_compare \
-    --protocol "$RELEASE/demo_models.yaml" \
-    --teacher A --objective bcj --row "$ROW" --seed "$SEED" \
-    --scenario train-0186 \
+python -m evaluation.live_compare --protocol "$RELEASE/demo_models.yaml" --row "$ROW" --seed "$SEED" \
     --output "results/live_compare/${ROW}-s${SEED}-train-0186.json"
 ```
 
-Two PyBullet windows open: **EXPERT A** and the **chosen student**. Both start from the same scenario and state and stay synchronised every 20 physics steps. The student controls both base and arm. Overlays show the model and seed, simulation time, end-effector error (mm), torques and wheel speeds. The program checks the weight file's hash before starting. To switch models, quit and rerun with a different `ROW` or `SEED`. Explicit `--protocol` selects the submitted release. This release contains teacher A / objective `bcj` only.
+`--teacher A` and `--objective bcj` are the defaults and the only values in this release, so they can be left out.
+
+Two PyBullet windows open: **EXPERT A** and the **chosen student**. Both start from the same scenario and state and stay synchronised every 20 physics steps. The student controls both base and arm. Overlays show the model and seed, simulation time, end-effector error (mm), torques and wheel speeds. The program checks the weight file's hash before starting. To switch models, press Q and rerun with a different `--row` or `--seed`.
 
 | Key (focus either window) | Action |
 |---|---|
